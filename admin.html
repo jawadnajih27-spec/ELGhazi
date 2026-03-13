@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — ELGhazi Blog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --stone:      #c8b89a;
+      --stone-lt:   #e8ddd0;
+      --stone-dk:   #8b7355;
+      --parchment:  #f5f0e8;
+      --parchment2: #ede5d8;
+      --olive:      #6b7c4a;
+      --olive-lt:   #8a9e5c;
+      --gold:       #c9a84c;
+      --gold-lt:    #e8c97a;
+      --charcoal:   #2c2416;
+      --ink:        #3d3020;
+      --mist:       #f9f6f0;
+      --danger:     #a84c4c;
+      --danger-lt:  #f5e8e8;
+      --success:    #4a7c4a;
+      --success-lt: #e8f5e8;
+
+      --ff-display: 'Cinzel', serif;
+      --ff-body:    'Cormorant Garamond', serif;
+      --ff-prose:   'EB Garamond', serif;
+      --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: var(--ff-body);
+      background: var(--parchment2);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ── TOP BAR ─────────────────────────────────────────────────── */
+    #admin-header {
+      background: var(--charcoal);
+      color: var(--gold-lt);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    .admin-logo {
+      font-family: var(--ff-display);
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      color: var(--gold-lt);
+    }
+    .admin-logo span { color: var(--stone-lt); opacity: 0.6; }
+    .header-nav { display: flex; gap: 1rem; align-items: center; }
+    .back-btn {
+      font-family: var(--ff-display);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--stone-lt);
+      text-decoration: none;
+      padding: 0.4rem 1rem;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.08); color: var(--gold-lt); }
+
+    /* ── LAYOUT ──────────────────────────────────────────────────── */
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 57px);
+    }
+
+    /* ── SIDEBAR ─────────────────────────────────────────────────── */
+    #sidebar {
+      background: var(--parchment);
+      border-right: 1px solid rgba(200,184,154,0.4);
+      overflow-y: auto;
+      max-height: calc(100vh - 57px);
+      position: sticky;
+      top: 57px;
+    }
+    .sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(200,184,154,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-title {
+      font-family: var(--ff-display);
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--stone-dk);
+    }
+    .post-count {
+      font-family: var(--ff-display);
+      font-size: 0.65rem;
+      background: var(--charcoal);
+      color: var(--gold-lt);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+    }
+
+    .new-btn {
+      display: block;
+      margin: 1rem;
+      padding: 0.75rem 1rem;
+      background: var(--charcoal);
+      color: var(--gold-lt);
+      font-family: var(--ff-display);
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-align: center;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .new-btn:hover { background: var(--olive); }
+
+    .posts-list { padding: 0.5rem; }
+    .list-item {
+      padding: 1rem 1rem;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      margin-bottom: 4px;
+    }
+    .list-item:hover { background: var(--parchment2); border-color: rgba(200,184,154,0.3); }
+    .list-item.active { background: var(--parchment2); border-color: rgba(201,168,76,0.35); }
+    .list-item-title {
+      font-family: var(--ff-display);
+      font-size: 0.85rem;
+      color: var(--charcoal);
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .list-item-meta {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+    .list-cat {
+      font-size: 0.62rem;
+      color: var(--olive);
+      font-family: var(--ff-display);
+      letter-spacing: 0.1em;
+    }
+    .list-date { font-size: 0.72rem; color: var(--stone-dk); font-style: italic; }
+
+    /* ── EDITOR ──────────────────────────────────────────────────── */
+    #editor-area {
+      padding: 2rem;
+      overflow-y: auto;
+    }
+    .editor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(200,184,154,0.4);
+    }
+    .editor-heading {
+      font-family: var(--ff-display);
+      font-size: 1.1rem;
+      color: var(--charcoal);
+      letter-spacing: 0.06em;
+    }
+    .editor-actions { display: flex; gap: 0.6rem; }
+
+    /* ── FORM ────────────────────────────────────────────────────── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label {
+      font-family: var(--ff-display);
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--stone-dk);
+    }
+    input[type="text"], input[type="date"], select, textarea {
+      font-family: var(--ff-prose);
+      font-size: 1rem;
+      color: var(--ink);
+      background: var(--mist);
+      border: 1px solid rgba(200,184,154,0.5);
+      border-radius: 2px;
+      padding: 0.65rem 0.9rem;
+      transition: var(--transition);
+      outline: none;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--gold);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+    }
+    textarea { resize: vertical; min-height: 240px; line-height: 1.7; }
+    select { cursor: pointer; }
+
+    /* ── BUTTONS ─────────────────────────────────────────────────── */
+    .btn {
+      font-family: var(--ff-display);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.4rem;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-primary {
+      background: var(--charcoal);
+      color: var(--gold-lt);
+    }
+    .btn-primary:hover { background: var(--olive); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--stone);
+      color: var(--stone-dk);
+    }
+    .btn-outline:hover { border-color: var(--charcoal); color: var(--charcoal); }
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+
+    /* ── TOAST ───────────────────────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 0.85rem 1.5rem;
+      border-radius: 3px;
+      font-family: var(--ff-display);
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    #toast.success { background: var(--success); color: #fff; }
+    #toast.error   { background: var(--danger); color: #fff; }
+
+    /* ── EMPTY STATE ─────────────────────────────────────────────── */
+    .empty-editor {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      text-align: center;
+      color: var(--stone-dk);
+    }
+    .empty-editor-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+    .empty-editor-text { font-style: italic; font-size: 1.1rem; }
+
+    /* ── DELETE CONFIRM ──────────────────────────────────────────── */
+    #confirm-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+    #confirm-modal.open { display: flex; }
+    .confirm-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(44,36,22,0.5);
+      backdrop-filter: blur(4px);
+    }
+    .confirm-box {
+      position: relative;
+      background: var(--parchment);
+      border: 1px solid rgba(200,184,154,0.4);
+      border-radius: 3px;
+      padding: 2rem;
+      width: min(400px, 90vw);
+      z-index: 1;
+      box-shadow: 0 20px 60px rgba(44,36,22,0.25);
+    }
+    .confirm-title {
+      font-family: var(--ff-display);
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      color: var(--charcoal);
+      margin-bottom: 0.8rem;
+    }
+    .confirm-text {
+      font-style: italic;
+      color: var(--stone-dk);
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .confirm-actions { display: flex; gap: 0.6rem; justify-content: flex-end; }
+
+    /* ── INFO NOTICE ─────────────────────────────────────────────── */
+    .info-notice {
+      background: rgba(201,168,76,0.12);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 3px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.88rem;
+      color: var(--stone-dk);
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .admin-layout { grid-template-columns: 1fr; }
+      #sidebar { max-height: 280px; position: static; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ HEADER ════════════════════════════════════════════════════ -->
+  <header id="admin-header">
+    <div class="admin-logo">ELGHAZI_BLOG <span>· Admin</span></div>
+    <div class="header-nav">
+      <a href="index.html" class="back-btn">← View Blog</a>
+    </div>
+  </header>
+
+  <!-- ═══ LAYOUT ════════════════════════════════════════════════════ -->
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">All Articles</span>
+        <span class="post-count" id="post-count-badge">0</span>
+      </div>
+      <button class="new-btn" onclick="newPost()">+ New Article</button>
+      <div class="posts-list" id="posts-list">
+        <div style="padding:1rem;color:var(--stone-dk);font-style:italic;font-size:0.9rem">Loading…</div>
+      </div>
+    </aside>
+
+    <!-- Editor -->
+    <main id="editor-area">
+      <div class="empty-editor" id="empty-editor">
+        <div class="empty-editor-icon">✦</div>
+        <p class="empty-editor-text">Select an article to edit, or create a new one.</p>
+      </div>
+
+      <div id="editor-form" style="display:none">
+        <div class="editor-header">
+          <h2 class="editor-heading" id="editor-heading">New Article</h2>
+          <div class="editor-actions">
+            <button class="btn btn-danger" id="delete-btn" onclick="confirmDelete()" style="display:none">Delete</button>
+            <button class="btn btn-outline" onclick="cancelEdit()">Cancel</button>
+            <button class="btn btn-primary" onclick="savePost()">Save Article</button>
+          </div>
+        </div>
+
+        <div class="info-notice">
+          ℹ️ <strong>Note:</strong> This admin panel manages your blog data in the browser's memory. To persist changes across sessions, click <strong>"Export JSON"</strong> below to download the updated <code>data.json</code> and replace the file in your project folder.
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="f-title">Article Title</label>
+            <input type="text" id="f-title" placeholder="Faith and Resilience…" />
+          </div>
+          <div class="form-group">
+            <label for="f-author">Author</label>
+            <input type="text" id="f-author" placeholder="ELGhazi" />
+          </div>
+          <div class="form-group">
+            <label for="f-date">Date</label>
+            <input type="date" id="f-date" />
+          </div>
+          <div class="form-group">
+            <label for="f-category">Category</label>
+            <select id="f-category">
+              <option value="Humanity">Humanity</option>
+              <option value="Reflection">Reflection</option>
+              <option value="Spirituality">Spirituality</option>
+              <option value="Ethics">Ethics</option>
+              <option value="Nature & Spirit">Nature &amp; Spirit</option>
+              <option value="Stories">Stories</option>
+              <option value="Faith">Faith</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="f-image">Image URL (optional)</label>
+            <input type="text" id="f-image" placeholder="https://… or leave blank" />
+          </div>
+          <div class="form-group full">
+            <label for="f-excerpt">Short Excerpt (shown on cards)</label>
+            <input type="text" id="f-excerpt" placeholder="A brief, evocative line from the article…" />
+          </div>
+          <div class="form-group full">
+            <label for="f-content">Full Content (use blank lines to separate paragraphs)</label>
+            <textarea id="f-content" placeholder="Write your reflection here…&#10;&#10;Use double line breaks to separate paragraphs."></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem;display:flex;gap:0.6rem;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="savePost()">Save Article</button>
+          <button class="btn btn-outline" onclick="exportJSON()">⬇ Export JSON</button>
+          <button class="btn btn-outline" onclick="cancelEdit()">Cancel</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══ DELETE CONFIRM ════════════════════════════════════════════ -->
+  <div id="confirm-modal">
+    <div class="confirm-backdrop" onclick="closeConfirm()"></div>
+    <div class="confirm-box">
+      <h3 class="confirm-title">Delete this article?</h3>
+      <p class="confirm-text">This action cannot be undone. The article will be removed from your blog data permanently.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-outline" onclick="closeConfirm()">Cancel</button>
+        <button class="btn btn-danger" onclick="executeDelete()">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TOAST ════════════════════════════════════════════════════ -->
+  <div id="toast"></div>
+
+  <!-- ═══ JAVASCRIPT ════════════════════════════════════════════════ -->
+  <script>
+    /* ── State ── */
+    let posts       = [];
+    let editingId   = null;  // null = new post
+    let nextId      = 1;
+
+    /* ── Load ── */
+    async function loadData() {
+      try {
+        const res  = await fetch('data.json?v=' + Date.now());
+        const data = await res.json();
+        posts = data.posts || [];
+        nextId = posts.length ? Math.max(...posts.map(p => p.id)) + 1 : 1;
+        renderList();
+      } catch(e) {
+        showToast('Could not load data.json', 'error');
+        renderList();
+      }
+    }
+
+    /* ── Render sidebar list ── */
+    function renderList() {
+      document.getElementById('post-count-badge').textContent = posts.length;
+      const list = document.getElementById('posts-list');
+      if (!posts.length) {
+        list.innerHTML = '<div style="padding:1rem;color:var(--stone-dk);font-style:italic;font-size:0.9rem">No articles yet. Create one!</div>';
+        return;
+      }
+      list.innerHTML = [...posts].reverse().map(p => `
+        <div class="list-item${editingId === p.id ? ' active' : ''}" onclick="editPost(${p.id})">
+          <div class="list-item-title">${p.title}</div>
+          <div class="list-item-meta">
+            <span class="list-cat">${p.category}</span>
+            <span class="list-date">${formatDate(p.date)}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* ── New post ── */
+    function newPost() {
+      editingId = null;
+      showForm('New Article');
+      clearForm();
+      document.getElementById('delete-btn').style.display = 'none';
+      document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('f-author').value = 'ELGhazi';
+    }
+
+    /* ── Edit post ── */
+    function editPost(id) {
+      const post = posts.find(p => p.id === id);
+      if (!post) return;
+      editingId = id;
+      showForm('Edit Article');
+      document.getElementById('f-title').value   = post.title || '';
+      document.getElementById('f-author').value  = post.author || '';
+      document.getElementById('f-date').value    = post.date || '';
+      document.getElementById('f-category').value= post.category || 'Humanity';
+      document.getElementById('f-image').value   = post.image || '';
+      document.getElementById('f-excerpt').value = post.excerpt || '';
+      document.getElementById('f-content').value = post.content || '';
+      document.getElementById('delete-btn').style.display = 'inline-flex';
+      renderList();
+    }
+
+    /* ── Show form ── */
+    function showForm(heading) {
+      document.getElementById('empty-editor').style.display = 'none';
+      document.getElementById('editor-form').style.display  = 'block';
+      document.getElementById('editor-heading').textContent = heading;
+    }
+
+    /* ── Clear form ── */
+    function clearForm() {
+      ['f-title','f-author','f-date','f-category','f-image','f-excerpt','f-content']
+        .forEach(id => {
+          const el = document.getElementById(id);
+          if (el.tagName === 'SELECT') el.selectedIndex = 0;
+          else el.value = '';
+        });
+    }
+
+    /* ── Save post ── */
+    function savePost() {
+      const title   = document.getElementById('f-title').value.trim();
+      const author  = document.getElementById('f-author').value.trim();
+      const date    = document.getElementById('f-date').value;
+      const category= document.getElementById('f-category').value;
+      const image   = document.getElementById('f-image').value.trim();
+      const excerpt = document.getElementById('f-excerpt').value.trim();
+      const content = document.getElementById('f-content').value.trim();
+
+      if (!title || !content) {
+        showToast('Title and content are required.', 'error');
+        return;
+      }
+
+      if (editingId !== null) {
+        const idx = posts.findIndex(p => p.id === editingId);
+        if (idx !== -1) {
+          posts[idx] = { id: editingId, title, author, date, category, image, excerpt, content };
+          showToast('Article updated ✓', 'success');
+        }
+      } else {
+        const id = nextId++;
+        posts.push({ id, title, author, date, category, image, excerpt, content });
+        editingId = id;
+        document.getElementById('delete-btn').style.display = 'inline-flex';
+        showToast('Article created ✓', 'success');
+      }
+      renderList();
+    }
+
+    /* ── Cancel ── */
+    function cancelEdit() {
+      editingId = null;
+      document.getElementById('editor-form').style.display  = 'none';
+      document.getElementById('empty-editor').style.display = 'flex';
+      renderList();
+    }
+
+    /* ── Delete ── */
+    function confirmDelete() {
+      document.getElementById('confirm-modal').classList.add('open');
+    }
+    function closeConfirm() {
+      document.getElementById('confirm-modal').classList.remove('open');
+    }
+    function executeDelete() {
+      if (editingId === null) return;
+      posts = posts.filter(p => p.id !== editingId);
+      closeConfirm();
+      cancelEdit();
+      showToast('Article deleted', 'success');
+    }
+
+    /* ── Export JSON ── */
+    function exportJSON() {
+      const data = JSON.stringify({ posts }, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = 'data.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('data.json downloaded ✓', 'success');
+    }
+
+    /* ── Toast ── */
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className   = `show ${type}`;
+      setTimeout(() => { toast.className = ''; }, 3000);
+    }
+
+    /* ── Format date ── */
+    function formatDate(d) {
+      try { return new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }); }
+      catch { return d; }
+    }
+
+    /* ── ESC ── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeConfirm();
+    });
+
+    /* ── Init ── */
+    loadData();
+  </script>
+</body>
+</html>
+
