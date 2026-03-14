@@ -5,7 +5,7 @@
     "siteNameEn": "ELGhazi Blog",
     "tagline": "تأمّلات في الإنسان والأرض والإيمان",
     "taglineEn": "Reflections on humanity, land, and faith",
-    "heroQuote": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
+    "heroQuote": "{وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ}",
     "heroQuoteSource": "سورة الطلاق ٣",
     "heroQuoteEn": "Whoever places his trust in God — He is enough for him.",
     "heroQuoteSourceEn": "Quran 65:3",
@@ -18,7 +18,7 @@
       "gold": "#c9a84c",
       "stone": "#a1a1a1",
       "olive": "#6b7c4a",
-      "bg": "#9fa137",
+      "bg": "#e6f0c5",
       "text": "#1a0f08"
     }
   },
