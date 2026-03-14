@@ -2,47 +2,69 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>لوحة تحكم ELGhazi</title>
+    <title>إضافة مقال | ELGhazi</title>
     <style>
         body { font-family: sans-serif; background: #E6DDC4; padding: 20px; }
-        .admin-box { background: white; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; }
-        input, textarea, select { width: 100%; margin: 10px 0; padding: 10px; }
-        button { background: #556B2F; color: white; border: none; padding: 10px 20px; cursor: pointer; width: 100%; }
+        .admin-box { background: white; padding: 30px; border-radius: 12px; max-width: 700px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input, textarea { width: 100%; margin: 10px 0; padding: 12px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { background: #556B2F; color: white; border: none; padding: 15px; cursor: pointer; width: 100%; font-size: 1.1rem; border-radius: 5px; }
+        label { font-weight: bold; color: #2F4F4F; }
     </style>
 </head>
 <body>
 
 <div class="admin-box">
-    <h2>إضافة محتوى جديد - ELGhazi</h2>
+    <h2>إضافة مقال جديد للمدونة</h2>
     
-    <input type="password" id="gh-token" placeholder="أدخل مفتاح GitHub الخاص بك (ghp_...)">
-    
-    <select id="file-type">
-        <option value="articles">مقال جديد (articles.json)</option>
-        <option value="testimonies">شهادة جديدة (testimonies.json)</option>
-    </select>
+    <label>مفتاح الأمان (GitHub Token):</label>
+    <input type="password" id="gh-token" placeholder="الصق المفتاح هنا">
 
-    <textarea id="json-content" rows="10" placeholder="ضع بيانات الـ JSON هنا..."></textarea>
-    
-    <button onclick="publishToGithub()">نشر الآن</button>
+    <hr>
+
+    <label>عنوان المقال:</label>
+    <input type="text" id="title" placeholder="مثال: ذكريات من حجر القدس">
+
+    <label>عنوان فرعي:</label>
+    <input type="text" id="subtitle" placeholder="وصف قصير للمقال">
+
+    <label>اسم الكاتب:</label>
+    <input type="text" id="author" value="جواد">
+
+    <label>محتوى المقال:</label>
+    <textarea id="paragraph" rows="8" placeholder="اكتب قصة المقال هنا..."></textarea>
+
+    <button onclick="prepareAndSend()">نشر المقال فوراً</button>
     <p id="status"></p>
 </div>
 
 <script>
-async function publishToGithub() {
+async function prepareAndSend() {
     const token = document.getElementById('gh-token').value;
-    const type = document.getElementById('file-type').value;
-    const content = document.getElementById('json-content').value;
+    const title = document.getElementById('title').value;
+    const subtitle = document.getElementById('subtitle').value;
+    const author = document.getElementById('author').value;
+    const paragraph = document.getElementById('paragraph').value;
     const status = document.getElementById('status');
 
-    if(!token || !content) {
-        alert("يرجى إدخال المفتاح والبيانات!");
+    if(!token || !title || !paragraph) {
+        alert("أكمل البيانات أولاً!");
         return;
     }
 
-    status.innerText = "جاري الإرسال إلى GitHub...";
+    // تحويل كلامك إلى هيكل JSON تلقائياً
+    const newArticle = [{
+        "id": "story_" + Date.now(),
+        "title": title,
+        "subtitle": subtitle,
+        "author": author,
+        "date": new Date().toLocaleDateString('ar-EG'),
+        "sections": [
+            { "type": "text", "heading": title, "paragraph": paragraph }
+        ]
+    }];
 
-    // إرسال الإشارة لـ GitHub Actions
+    status.innerText = "جاري النشر...";
+
     try {
         const response = await fetch('https://api.github.com/repos/jawadnajih27-spec/ELGhazi/dispatches', {
             method: 'POST',
@@ -53,24 +75,22 @@ async function publishToGithub() {
             body: JSON.stringify({
                 event_type: 'update-json',
                 client_payload: {
-                    filename: type,
-                    content: content
+                    filename: 'articles',
+                    content: JSON.stringify(newArticle, null, 2)
                 }
             })
         });
 
         if (response.ok) {
-            status.innerText = "✅ تم الإرسال بنجاح! سيقوم GitHub بتحديث الموقع خلال دقيقة.";
+            status.innerText = "✅ تم النشر! سيظهر المقال في الموقع خلال دقيقة.";
         } else {
-            const err = await response.json();
-            status.innerText = "❌ خطأ: " + err.message;
+            status.innerText = "❌ خطأ في الصلاحيات، تأكد من الـ Token.";
         }
     } catch (error) {
-        status.innerText = "❌ فشل الاتصال بالـ API.";
+        status.innerText = "❌ فشل الاتصال.";
     }
 }
 </script>
 
 </body>
 </html>
-
