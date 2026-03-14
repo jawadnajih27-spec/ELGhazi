@@ -1,814 +1,850 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ELGhazi Blog — Reflections on Humanity & Faith</title>
-  <meta name="description" content="A quiet space for reflections on humanity, faith, and dignity." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>مدوّنة الغازي</title>
+  <meta name="description" content="تأمّلات في الإنسان والأرض والإيمان"/>
+
+  <!-- ═══ FONTS ═══════════════════════════════════════════════════
+       Arabic: Noto Naskh Arabic — رشيق، نابع من خط النسخ العريق
+               مستوحى من خطوط المخطوطات الشامية والأندلسية
+       English: Cormorant Garamond Italic — رصين، أدبي، لا يطغى
+  ═══════════════════════════════════════════════════════════════ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;500&display=swap" rel="stylesheet"/>
 
   <style>
-    /* ── DESIGN TOKENS ─────────────────────────────────────────────── */
+    /* ════════════════════════════════════════════════════════════
+       CSS CUSTOM PROPERTIES — driven by data.json settings
+    ════════════════════════════════════════════════════════════ */
     :root {
+      --primary:    #2c1810;
+      --gold:       #c9a84c;
+      --gold-lt:    #e8c97a;
       --stone:      #c8b89a;
       --stone-lt:   #e8ddd0;
       --stone-dk:   #8b7355;
-      --parchment:  #f5f0e8;
-      --parchment2: #ede5d8;
       --olive:      #6b7c4a;
       --olive-lt:   #8a9e5c;
-      --olive-dk:   #4a5934;
-      --gold:       #c9a84c;
-      --gold-lt:    #e8c97a;
-      --charcoal:   #2c2416;
-      --ink:        #3d3020;
-      --mist:       #f9f6f0;
-      --shadow:     rgba(44,36,22,0.12);
-      --shadow-md:  rgba(44,36,22,0.22);
+      --bg:         #f5f0e8;
+      --bg2:        #ede5d8;
+      --surface:    #f9f6f0;
+      --text:       #1a0f08;
+      --text-muted: #7a6248;
+      --border:     rgba(200,184,154,0.4);
+      --shadow:     rgba(44,24,16,0.12);
+      --shadow-lg:  rgba(44,24,16,0.25);
 
-      --ff-display: 'Cinzel', serif;
-      --ff-body:    'Cormorant Garamond', serif;
-      --ff-prose:   'EB Garamond', serif;
-
-      --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      --radius:     2px;
+      --ff-ar:      'Noto Naskh Arabic', 'Georgia', serif;
+      --ff-en:      'Cormorant Garamond', 'Georgia', serif;
+      --ff-title:   'Cinzel', serif;
+      --T:          0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    /* ── RESET ──────────────────────────────────────────────────────── */
+    /* ════════════════════════════════════════════════════════════
+       BASE
+    ════════════════════════════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; font-size: 17px; }
+    html { scroll-behavior: smooth; font-size: 18px; }
+
     body {
-      font-family: var(--ff-body);
-      background: var(--parchment);
-      color: var(--ink);
+      font-family: var(--ff-ar);
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
+      transition: background var(--T), color var(--T);
     }
+    body.lang-en {
+      font-family: var(--ff-en);
+      direction: ltr;
+    }
+    body.lang-en * { direction: ltr; text-align: left; }
+    body.lang-en .rtl-only { display: none; }
+    body.lang-ar .ltr-only { display: none; }
 
-    /* ── GRAIN TEXTURE OVERLAY ──────────────────────────────────────── */
-    body::before {
+    /* Parchment grain */
+    body::after {
       content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 1000;
-      opacity: 0.6;
+      position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      opacity: 0.5;
     }
 
-    /* ── SCROLLBAR ──────────────────────────────────────────────────── */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: var(--parchment2); }
-    ::-webkit-scrollbar-thumb { background: var(--stone-dk); border-radius: 10px; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: var(--stone-dk); border-radius: 4px; }
 
-    /* ── HEADER ─────────────────────────────────────────────────────── */
+    /* ════════════════════════════════════════════════════════════
+       HEADER
+    ════════════════════════════════════════════════════════════ */
     #site-header {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 900;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: fixed; inset-block-start: 0; inset-inline: 0;
+      z-index: 500;
+      display: flex; align-items: center; justify-content: space-between;
       padding: 1.1rem 3rem;
-      background: rgba(245,240,232,0.85);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(201,168,76,0.25);
-      transition: var(--transition);
+      background: rgba(245,240,232,0.82);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      transition: padding var(--T), box-shadow var(--T);
     }
     #site-header.scrolled {
-      padding: 0.75rem 3rem;
+      padding-block: 0.7rem;
       box-shadow: 0 4px 30px var(--shadow);
     }
-    .logo {
-      font-family: var(--ff-display);
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: var(--charcoal);
-      letter-spacing: 0.12em;
-      text-decoration: none;
+
+    .site-logo {
+      font-family: var(--ff-ar);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
       cursor: pointer;
-      transition: color var(--transition);
-    }
-    .logo span { color: var(--gold); }
-    .logo:hover { color: var(--olive-dk); }
-
-    nav { display: flex; gap: 2rem; align-items: center; }
-    nav a {
-      font-family: var(--ff-display);
-      font-size: 0.7rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--stone-dk);
+      letter-spacing: 0.02em;
+      transition: color var(--T);
       text-decoration: none;
-      transition: color var(--transition);
-      position: relative;
+      display: flex; align-items: center; gap: 0.5rem;
     }
-    nav a::after {
-      content: '';
-      position: absolute;
-      bottom: -3px; left: 0;
-      width: 0; height: 1px;
-      background: var(--gold);
-      transition: width var(--transition);
-    }
-    nav a:hover { color: var(--charcoal); }
-    nav a:hover::after { width: 100%; }
+    .lang-en .site-logo { font-family: var(--ff-title); font-size: 0.95rem; letter-spacing: 0.12em; }
+    .logo-gem { color: var(--gold); font-size: 0.7em; }
 
-    /* ── HERO ───────────────────────────────────────────────────────── */
+    nav { display: flex; align-items: center; gap: 0.5rem; }
+
+    /* Lang toggle */
+    #lang-toggle {
+      font-family: var(--ff-title);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.38rem 1rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--stone-dk);
+      cursor: pointer;
+      border-radius: 20px;
+      transition: var(--T);
+    }
+    #lang-toggle:hover { background: var(--primary); color: var(--gold-lt); border-color: var(--primary); }
+
+    /* ════════════════════════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════════════════════════ */
     #hero {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
       text-align: center;
-      padding: 8rem 2rem 5rem;
-      position: relative;
-      overflow: hidden;
+      padding: 8rem 2rem 6rem;
+      position: relative; overflow: hidden;
     }
+
+    /* Jerusalem skyline SVG background */
     #hero::before {
       content: '';
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(107,124,74,0.15) 0%, transparent 70%),
-        radial-gradient(ellipse 60% 40% at 30% 20%, rgba(201,168,76,0.10) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 50% at 70% 10%, rgba(200,184,154,0.20) 0%, transparent 60%);
+        radial-gradient(ellipse 90% 55% at 50% 100%, rgba(107,124,74,0.18) 0%, transparent 65%),
+        radial-gradient(ellipse 70% 40% at 25% 15%, rgba(201,168,76,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 45% at 75% 20%, rgba(200,184,154,0.18) 0%, transparent 55%);
+      pointer-events: none;
     }
 
     /* Dome silhouette */
-    #hero::after {
-      content: '';
+    .hero-dome {
       position: absolute;
-      bottom: 0; left: 50%;
-      transform: translateX(-50%);
-      width: min(600px, 90vw);
-      height: 220px;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 220'%3E%3Cg fill='%23c8b89a' fill-opacity='0.18'%3E%3Cellipse cx='300' cy='220' rx='300' ry='70'/%3E%3Cellipse cx='300' cy='140' rx='180' ry='120'/%3E%3Crect x='140' y='140' width='320' height='80'/%3E%3Crect x='180' y='120' width='20' height='100'/%3E%3Crect x='400' y='120' width='20' height='100'/%3E%3Cellipse cx='300' cy='80' rx='70' ry='90'/%3E%3Crect x='285' y='10' width='30' height='80'/%3E%3Ccircle cx='300' cy='8' r='12'/%3E%3Cline x1='300' y1='0' x2='300' y2='15' stroke='%23c8b89a' stroke-width='2'/%3E%3C/g%3E%3C/svg%3E") center bottom / contain no-repeat;
+      bottom: 0; left: 50%; transform: translateX(-50%);
+      width: min(700px, 95vw);
+      opacity: 0.13;
       pointer-events: none;
-      opacity: 0.7;
     }
 
-    .hero-eyebrow {
-      font-family: var(--ff-display);
-      font-size: 0.65rem;
+    .hero-label {
+      font-family: var(--ff-title);
+      font-size: 0.6rem;
       letter-spacing: 0.35em;
       text-transform: uppercase;
       color: var(--gold);
       margin-bottom: 1.5rem;
-      animation: fadeUp 1s ease both;
+      animation: riseUp 1s ease both;
     }
-    .hero-title {
-      font-family: var(--ff-display);
-      font-size: clamp(2.8rem, 8vw, 5.5rem);
-      font-weight: 600;
-      line-height: 1.05;
-      color: var(--charcoal);
-      letter-spacing: 0.06em;
-      margin-bottom: 0.3rem;
-      animation: fadeUp 1s 0.15s ease both;
-    }
-    .hero-title span { color: var(--gold); }
-    .hero-subtitle {
-      font-family: var(--ff-body);
-      font-style: italic;
-      font-size: clamp(1rem, 2.5vw, 1.35rem);
-      color: var(--stone-dk);
-      margin-bottom: 2.5rem;
-      animation: fadeUp 1s 0.25s ease both;
-    }
-    .hero-quote {
-      max-width: 560px;
-      font-family: var(--ff-prose);
-      font-style: italic;
-      font-size: clamp(1.05rem, 2vw, 1.3rem);
-      line-height: 1.75;
-      color: var(--ink);
-      position: relative;
-      padding: 1.5rem 2rem;
-      animation: fadeUp 1s 0.4s ease both;
-    }
-    .hero-quote::before, .hero-quote::after {
-      content: '';
-      position: absolute;
-      width: 40px; height: 1px;
-      background: var(--gold);
-    }
-    .hero-quote::before { top: 0; left: 50%; transform: translateX(-50%); }
-    .hero-quote::after  { bottom: 0; left: 50%; transform: translateX(-50%); }
 
-    .hero-scroll {
-      margin-top: 3rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      animation: fadeUp 1s 0.6s ease both;
-      cursor: pointer;
+    .hero-title {
+      font-family: var(--ff-ar);
+      font-size: clamp(2.6rem, 7vw, 5rem);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--primary);
+      margin-bottom: 0.4rem;
+      animation: riseUp 1s 0.1s ease both;
+      position: relative;
     }
-    .hero-scroll span {
-      font-family: var(--ff-display);
-      font-size: 0.6rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
+    .lang-en .hero-title { font-family: var(--ff-title); font-size: clamp(2rem, 5vw, 4rem); letter-spacing: 0.08em; font-weight: 500; }
+    .hero-title-gem { color: var(--gold); }
+
+    .hero-tagline {
+      font-size: clamp(0.95rem, 2vw, 1.2rem);
+      color: var(--stone-dk);
+      font-style: italic;
+      margin-bottom: 2.5rem;
+      animation: riseUp 1s 0.2s ease both;
+    }
+
+    .hero-quote-wrap {
+      position: relative;
+      max-width: 580px;
+      padding: 1.8rem 2.5rem;
+      animation: riseUp 1s 0.35s ease both;
+    }
+    .hero-quote-wrap::before, .hero-quote-wrap::after {
+      content: '';
+      position: absolute; left: 50%; transform: translateX(-50%);
+      width: 60px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .hero-quote-wrap::before { top: 0; }
+    .hero-quote-wrap::after  { bottom: 0; }
+
+    .hero-quote-text {
+      font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+      line-height: 1.85;
+      color: var(--text);
+      font-weight: 600;
+    }
+    .lang-en .hero-quote-text { font-style: italic; font-weight: 400; font-size: clamp(1rem, 2vw, 1.25rem); }
+
+    .hero-quote-source {
+      margin-top: 0.7rem;
+      font-size: 0.82rem;
+      color: var(--stone-dk);
+      letter-spacing: 0.08em;
+    }
+
+    .hero-scroll-hint {
+      margin-top: 3rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      cursor: pointer;
+      animation: riseUp 1s 0.5s ease both;
+    }
+    .hero-scroll-hint span {
+      font-family: var(--ff-title);
+      font-size: 0.55rem; letter-spacing: 0.25em; text-transform: uppercase;
       color: var(--stone-dk);
     }
     .scroll-line {
-      width: 1px;
-      height: 40px;
+      width: 1px; height: 40px;
       background: linear-gradient(to bottom, var(--gold), transparent);
-      animation: scrollPulse 2s ease-in-out infinite;
+      animation: scrollPulse 2.2s ease-in-out infinite;
     }
 
-    /* ── DIVIDER ────────────────────────────────────────────────────── */
-    .section-divider {
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-      margin: 1rem auto 3rem;
-      max-width: 200px;
-    }
-    .section-divider::before, .section-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--gold), transparent);
-    }
-    .divider-icon {
-      color: var(--gold);
-      font-size: 1rem;
-      line-height: 1;
-    }
-
-    /* ── SECTION LABELS ─────────────────────────────────────────────── */
-    .section-label {
-      font-family: var(--ff-display);
-      font-size: 0.62rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--gold);
-      text-align: center;
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    .section-heading {
-      font-family: var(--ff-display);
-      font-size: clamp(1.4rem, 3vw, 2rem);
-      font-weight: 400;
-      color: var(--charcoal);
-      text-align: center;
-      letter-spacing: 0.06em;
-      margin-bottom: 0.5rem;
-    }
-
-    /* ── ARTICLES SECTION ───────────────────────────────────────────── */
-    #articles-section {
-      padding: 5rem 2rem 6rem;
-      max-width: 1200px;
+    /* ════════════════════════════════════════════════════════════
+       ARTICLES SECTION
+    ════════════════════════════════════════════════════════════ */
+    #articles {
+      padding: 5rem 2rem 7rem;
+      max-width: 1260px;
       margin: 0 auto;
     }
 
-    /* Category filter */
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      justify-content: center;
+    .section-header {
+      text-align: center;
       margin-bottom: 3.5rem;
-      animation: fadeUp 0.8s ease both;
+    }
+    .section-eyebrow {
+      font-family: var(--ff-title);
+      font-size: 0.58rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--gold); display: block; margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-family: var(--ff-ar);
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 600; color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    .lang-en .section-title { font-family: var(--ff-title); font-weight: 400; letter-spacing: 0.06em; }
+    .ornament {
+      display: flex; align-items: center; gap: 1rem;
+      justify-content: center;
+    }
+    .ornament::before, .ornament::after {
+      content: '';
+      width: 60px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold));
+    }
+    .ornament::after { transform: scaleX(-1); }
+    .ornament-gem { color: var(--gold); font-size: 0.7rem; }
+
+    /* Filter bar */
+    #filter-bar {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      justify-content: center; margin-bottom: 3rem;
     }
     .filter-btn {
-      font-family: var(--ff-display);
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      padding: 0.45rem 1.2rem;
-      border: 1px solid var(--stone);
-      background: transparent;
-      color: var(--stone-dk);
-      cursor: pointer;
-      transition: var(--transition);
-      border-radius: var(--radius);
+      font-family: var(--ff-title);
+      font-size: 0.56rem; letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 0.38rem 1.1rem;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--stone-dk);
+      cursor: pointer; border-radius: 20px;
+      transition: var(--T);
     }
     .filter-btn:hover, .filter-btn.active {
-      background: var(--charcoal);
-      border-color: var(--charcoal);
+      background: var(--primary); border-color: var(--primary);
       color: var(--gold-lt);
     }
 
-    /* Posts grid */
+    /* Grid */
     #posts-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fill, minmax(min(360px,100%), 1fr));
+      gap: 1.8rem;
     }
 
-    /* ── CARD ───────────────────────────────────────────────────────── */
+    /* ── Card ── */
     .post-card {
-      background: var(--mist);
-      border: 1px solid rgba(200,184,154,0.4);
-      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
       overflow: hidden;
       cursor: pointer;
-      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
-      animation: cardReveal 0.6s ease both;
-      display: flex;
-      flex-direction: column;
+      display: flex; flex-direction: column;
+      transition: transform var(--T), box-shadow var(--T), border-color var(--T);
+      animation: cardIn 0.6s ease both;
     }
     .post-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 20px 60px var(--shadow-md);
-      border-color: rgba(201,168,76,0.35);
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px var(--shadow-lg);
+      border-color: rgba(201,168,76,0.4);
     }
-    .card-image {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      display: block;
-      background: linear-gradient(135deg, var(--stone-lt) 0%, var(--parchment2) 50%, var(--olive-lt) 100%);
-      position: relative;
-      overflow: hidden;
+
+    .card-thumb {
+      height: 190px;
+      position: relative; overflow: hidden;
     }
-    .card-image-placeholder {
-      width: 100%;
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
+    .card-thumb img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.6s ease;
     }
-    .card-image-placeholder svg {
-      width: 80px;
-      height: 80px;
-      opacity: 0.25;
+    .post-card:hover .card-thumb img { transform: scale(1.04); }
+
+    /* Placeholder thumb with Islamic geometric motif */
+    .card-thumb-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
     }
-    .card-body { padding: 1.8rem; flex: 1; display: flex; flex-direction: column; }
+    .card-thumb-placeholder svg { width: 90px; height: 90px; opacity: 0.18; }
+
+    .card-body { padding: 1.6rem; flex: 1; display: flex; flex-direction: column; }
     .card-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.9rem;
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 0.85rem;
     }
-    .card-category {
-      font-family: var(--ff-display);
-      font-size: 0.55rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
+    .card-cat {
+      font-family: var(--ff-title);
+      font-size: 0.52rem; letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--olive);
-      padding: 0.25rem 0.7rem;
-      border: 1px solid var(--olive-lt);
+      padding: 0.22rem 0.65rem;
+      border: 1px solid rgba(107,124,74,0.35);
       border-radius: 20px;
     }
-    .card-date {
-      font-size: 0.78rem;
-      color: var(--stone-dk);
-      font-style: italic;
-    }
+    .card-date { font-size: 0.78rem; color: var(--stone-dk); font-style: italic; }
     .card-title {
-      font-family: var(--ff-display);
-      font-size: 1.3rem;
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--charcoal);
-      margin-bottom: 0.9rem;
-      letter-spacing: 0.02em;
+      font-family: var(--ff-ar);
+      font-size: 1.25rem; font-weight: 600;
+      color: var(--primary); line-height: 1.45;
+      margin-bottom: 0.75rem;
     }
+    .lang-en .card-title { font-family: var(--ff-title); font-size: 1.1rem; letter-spacing: 0.02em; }
     .card-excerpt {
-      font-family: var(--ff-prose);
-      font-size: 0.95rem;
-      line-height: 1.72;
-      color: var(--ink);
-      opacity: 0.85;
+      font-size: 0.92rem; line-height: 1.8;
+      color: var(--text); opacity: 0.78;
       flex: 1;
     }
     .card-footer {
-      margin-top: 1.4rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid rgba(200,184,154,0.3);
-      padding-top: 1rem;
+      margin-top: 1.2rem; padding-top: 0.9rem;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
     }
-    .card-author {
-      font-size: 0.8rem;
-      color: var(--stone-dk);
-      font-style: italic;
-    }
-    .card-read {
-      font-family: var(--ff-display);
-      font-size: 0.58rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
+    .card-author { font-size: 0.78rem; color: var(--stone-dk); font-style: italic; }
+    .card-read-more {
+      font-family: var(--ff-title);
+      font-size: 0.54rem; letter-spacing: 0.2em; text-transform: uppercase;
       color: var(--gold);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: gap var(--transition);
+      display: flex; align-items: center; gap: 0.35rem;
+      transition: gap var(--T);
     }
-    .post-card:hover .card-read { gap: 0.8rem; }
+    .post-card:hover .card-read-more { gap: 0.65rem; }
 
-    /* ── ARTICLE READER ─────────────────────────────────────────────── */
-    #article-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 800;
-      display: none;
-      opacity: 0;
+    /* ════════════════════════════════════════════════════════════
+       ARTICLE READER OVERLAY
+    ════════════════════════════════════════════════════════════ */
+    #reader-overlay {
+      position: fixed; inset: 0; z-index: 700;
+      display: none; opacity: 0;
       transition: opacity 0.4s ease;
+      align-items: center; justify-content: center;
     }
-    #article-overlay.open {
-      display: flex;
-      flex-direction: column;
-    }
-    #article-overlay.visible { opacity: 1; }
+    #reader-overlay.open  { display: flex; }
+    #reader-overlay.show  { opacity: 1; }
 
-    .overlay-backdrop {
-      position: absolute;
-      inset: 0;
-      background: rgba(44,36,22,0.55);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+    .reader-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(26,15,8,0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
-    .article-panel {
-      position: relative;
-      z-index: 1;
-      margin: auto;
-      width: min(760px, 94vw);
-      max-height: 88vh;
-      background: var(--parchment);
-      border: 1px solid rgba(201,168,76,0.3);
+    .reader-panel {
+      position: relative; z-index: 1;
+      width: min(780px, 96vw);
+      max-height: 90vh;
+      background: var(--bg);
+      border: 1px solid rgba(201,168,76,0.25);
       border-radius: 3px;
       overflow-y: auto;
-      box-shadow: 0 40px 100px rgba(44,36,22,0.35);
-      display: flex;
-      flex-direction: column;
-      animation: panelSlide 0.5s cubic-bezier(0.34, 1.36, 0.64, 1) both;
+      box-shadow: 0 40px 100px rgba(26,15,8,0.4);
+      animation: panelIn 0.5s cubic-bezier(0.34,1.36,0.64,1) both;
     }
+    .reader-panel::-webkit-scrollbar { width: 3px; }
+    .reader-panel::-webkit-scrollbar-thumb { background: var(--stone); }
 
-    .article-header {
-      padding: 3rem 3.5rem 2rem;
-      border-bottom: 1px solid rgba(200,184,154,0.3);
+    .reader-header {
+      padding: 2.5rem 3rem 1.8rem;
+      border-bottom: 1px solid var(--border);
       position: relative;
     }
-    .article-close {
-      position: absolute;
-      top: 1.5rem; right: 1.5rem;
-      background: none;
-      border: 1px solid var(--stone);
-      color: var(--stone-dk);
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--transition);
+    .reader-close {
+      position: absolute; inset-block-start: 1.2rem; inset-inline-end: 1.2rem;
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--stone-dk);
+      cursor: pointer; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--T);
     }
-    .article-close:hover {
-      background: var(--charcoal);
-      border-color: var(--charcoal);
-      color: var(--gold-lt);
-    }
-    .article-meta-top {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      margin-bottom: 1.2rem;
-    }
-    .article-category {
-      font-family: var(--ff-display);
-      font-size: 0.55rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--olive);
-      padding: 0.25rem 0.7rem;
-      border: 1px solid var(--olive-lt);
-      border-radius: 20px;
-    }
-    .article-date {
-      font-size: 0.82rem;
-      color: var(--stone-dk);
-      font-style: italic;
-    }
-    #article-title {
-      font-family: var(--ff-display);
-      font-size: clamp(1.6rem, 4vw, 2.5rem);
-      font-weight: 600;
-      color: var(--charcoal);
-      letter-spacing: 0.03em;
-      line-height: 1.2;
-      margin-bottom: 0.8rem;
-    }
-    #article-author {
-      font-size: 0.88rem;
-      color: var(--stone-dk);
-      font-style: italic;
-    }
+    .reader-close:hover { background: var(--primary); color: var(--gold-lt); border-color: var(--primary); }
 
-    .article-body { padding: 2.5rem 3.5rem 3rem; }
-    #article-content {
-      font-family: var(--ff-prose);
-      font-size: 1.13rem;
-      line-height: 1.9;
-      color: var(--ink);
+    .reader-meta-top {
+      display: flex; gap: 0.8rem; align-items: center; margin-bottom: 1.1rem;
+      flex-wrap: wrap;
     }
-    #article-content p { margin-bottom: 1.5rem; }
-    #article-content p:first-child::first-letter {
-      font-family: var(--ff-display);
-      font-size: 4em;
-      font-weight: 600;
-      float: left;
-      line-height: 0.75;
-      margin: 0.05em 0.1em 0 0;
+    .reader-cat {
+      font-family: var(--ff-title);
+      font-size: 0.52rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--olive); padding: 0.22rem 0.65rem;
+      border: 1px solid rgba(107,124,74,0.35); border-radius: 20px;
+    }
+    .reader-date { font-size: 0.82rem; color: var(--stone-dk); font-style: italic; }
+
+    #r-title {
+      font-family: var(--ff-ar);
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 700; color: var(--primary); line-height: 1.3;
+      margin-bottom: 0.6rem;
+    }
+    .lang-en #r-title { font-family: var(--ff-title); font-weight: 500; letter-spacing: 0.03em; }
+    #r-author { font-size: 0.88rem; color: var(--stone-dk); font-style: italic; }
+
+    .reader-body { padding: 2.2rem 3rem 3rem; }
+    #r-content {
+      font-size: 1.08rem; line-height: 2;
+      color: var(--text);
+    }
+    #r-content p { margin-bottom: 1.5rem; }
+    #r-content p:first-child::first-letter {
+      font-family: var(--ff-ar);
+      font-size: 3.8em; font-weight: 700;
+      float: right; /* RTL drop cap */
+      line-height: 0.7;
+      margin: 0.05em 0 0 0.12em;
       color: var(--gold);
     }
+    .lang-en #r-content p:first-child::first-letter {
+      font-family: var(--ff-title);
+      float: left; margin: 0.05em 0.12em 0 0;
+      font-weight: 400;
+    }
 
-    /* ── FOOTER ─────────────────────────────────────────────────────── */
+    /* ════════════════════════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════════════════════════ */
     footer {
       text-align: center;
-      padding: 3rem 2rem;
-      border-top: 1px solid rgba(200,184,154,0.35);
-      background: var(--parchment2);
+      padding: 2.5rem 2rem;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
     }
     .footer-logo {
-      font-family: var(--ff-display);
-      font-size: 1rem;
-      letter-spacing: 0.15em;
-      color: var(--charcoal);
-      margin-bottom: 0.5rem;
+      font-family: var(--ff-ar);
+      font-size: 1rem; font-weight: 600;
+      color: var(--primary); margin-bottom: 0.4rem;
     }
-    .footer-logo span { color: var(--gold); }
-    .footer-copy {
-      font-size: 0.8rem;
-      color: var(--stone-dk);
-      font-style: italic;
-    }
-    .footer-olive {
-      font-size: 1.2rem;
-      margin: 0.8rem 0;
-      opacity: 0.4;
-    }
+    .lang-en .footer-logo { font-family: var(--ff-title); font-size: 0.85rem; letter-spacing: 0.15em; }
+    .footer-copy { font-size: 0.82rem; color: var(--stone-dk); font-style: italic; }
+    .footer-olive { font-size: 1rem; margin: 0.6rem 0; opacity: 0.35; letter-spacing: 0.5em; }
 
-    /* ── LOADING / EMPTY ────────────────────────────────────────────── */
-    .loading-msg, .empty-msg {
-      text-align: center;
-      padding: 4rem 2rem;
-      color: var(--stone-dk);
-      font-style: italic;
-      font-size: 1.1rem;
+    /* ════════════════════════════════════════════════════════════
+       ANIMATIONS
+    ════════════════════════════════════════════════════════════ */
+    @keyframes riseUp {
+      from { opacity:0; transform: translateY(28px); }
+      to   { opacity:1; transform: translateY(0); }
     }
-
-    /* ── ANIMATIONS ─────────────────────────────────────────────────── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
+    @keyframes cardIn {
+      from { opacity:0; transform: translateY(22px); }
+      to   { opacity:1; transform: translateY(0); }
     }
-    @keyframes cardReveal {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes panelSlide {
-      from { opacity: 0; transform: translateY(40px) scale(0.96); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+    @keyframes panelIn {
+      from { opacity:0; transform: translateY(40px) scale(0.96); }
+      to   { opacity:1; transform: translateY(0) scale(1); }
     }
     @keyframes scrollPulse {
-      0%, 100% { opacity: 1; transform: scaleY(1); }
-      50%       { opacity: 0.4; transform: scaleY(0.7); }
+      0%,100% { opacity:1; transform: scaleY(1); }
+      50%      { opacity:0.35; transform: scaleY(0.65); }
     }
 
-    /* ── MOBILE ─────────────────────────────────────────────────────── */
+    /* ════════════════════════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════════════════════════ */
     @media (max-width: 640px) {
-      #site-header { padding: 1rem 1.5rem; }
-      nav { gap: 1.2rem; }
-      .article-header, .article-body { padding-left: 1.5rem; padding-right: 1.5rem; }
-      #article-content p:first-child::first-letter { font-size: 2.5em; }
+      #site-header { padding-inline: 1.2rem; }
+      .reader-header, .reader-body { padding-inline: 1.4rem; }
+      #r-content p:first-child::first-letter { font-size: 2.5em; }
     }
   </style>
 </head>
-<body>
+<body class="lang-ar">
 
-  <!-- ═══ HEADER ════════════════════════════════════════════════════ -->
+  <!-- Dome SVG (hidden, used as background) -->
+  <svg style="display:none" id="dome-tpl">
+    <symbol id="dome-sym" viewBox="0 0 700 240">
+      <g fill="currentColor">
+        <ellipse cx="350" cy="240" rx="350" ry="80"/>
+        <rect x="140" y="155" width="420" height="85"/>
+        <ellipse cx="350" cy="145" rx="210" ry="130"/>
+        <ellipse cx="350" cy="70"  rx="80"  ry="105"/>
+        <rect x="330" y="10" width="40" height="80"/>
+        <circle cx="350" cy="7" r="14"/>
+        <rect x="185" y="130" width="22" height="110"/>
+        <rect x="493" y="130" width="22" height="110"/>
+        <rect x="145" y="130" width="18" height="80"/>
+        <rect x="537" y="130" width="18" height="80"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <!-- ═══ HEADER ════════════════════════════════════════════ -->
   <header id="site-header">
-    <a class="logo" onclick="showHome()">
-      EL<span>G</span>HAZI<span>_</span>BLOG
+    <a class="site-logo" onclick="scrollToTop()">
+      <span class="logo-gem">✦</span>
+      <span id="logo-text">مدوّنة الغازي</span>
     </a>
     <nav>
-      <a href="#articles-section">Articles</a>
-      <a href="admin.html">Admin</a>
+      <button id="lang-toggle" onclick="toggleLang()">EN</button>
     </nav>
   </header>
 
-  <!-- ═══ HERO ══════════════════════════════════════════════════════ -->
+  <!-- ═══ HERO ══════════════════════════════════════════════ -->
   <section id="hero">
-    <div class="hero-eyebrow">Est. 2026 · Reflections & Meditations</div>
-    <h1 class="hero-title">EL<span>G</span>HAZI<br/><span style="font-size:0.55em;letter-spacing:0.18em;color:var(--stone-dk)">BLOG</span></h1>
-    <p class="hero-subtitle">Words written in the light of olive groves &amp; ancient stone</p>
-    <blockquote class="hero-quote">
-      "Verily, with hardship comes ease — and in every fallen stone, a foundation for what endures."
-    </blockquote>
-    <div class="hero-scroll" onclick="document.getElementById('articles-section').scrollIntoView({behavior:'smooth'})">
-      <span>Explore</span>
+    <svg class="hero-dome" viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg">
+      <use href="#dome-sym" color="var(--olive)"/>
+    </svg>
+
+    <span class="hero-label" id="hero-label">منذ ٢٠٢٦ · تأمّلات وشهادات</span>
+    <h1 class="hero-title">
+      <span id="hero-title-main">مدوّنة</span>
+      <span class="hero-title-gem" id="hero-title-gem"> الغازي</span>
+    </h1>
+    <p class="hero-tagline" id="hero-tagline">تأمّلات في الإنسان والأرض والإيمان</p>
+
+    <div class="hero-quote-wrap">
+      <p class="hero-quote-text" id="hero-quote"></p>
+      <p class="hero-quote-source" id="hero-quote-src"></p>
+    </div>
+
+    <div class="hero-scroll-hint"
+         onclick="document.getElementById('articles').scrollIntoView({behavior:'smooth'})">
+      <span id="scroll-hint-text">تصفّح</span>
       <div class="scroll-line"></div>
     </div>
   </section>
 
-  <!-- ═══ ARTICLES ══════════════════════════════════════════════════ -->
-  <main id="articles-section">
-    <span class="section-label">Published Reflections</span>
-    <h2 class="section-heading">Stories of Humanity &amp; Faith</h2>
-    <div class="section-divider"><span class="divider-icon">✦</span></div>
-
-    <div class="filter-bar" id="filter-bar">
-      <button class="filter-btn active" data-cat="all">All</button>
+  <!-- ═══ ARTICLES ══════════════════════════════════════════ -->
+  <main id="articles">
+    <div class="section-header">
+      <span class="section-eyebrow" id="section-eyebrow">المقالات المنشورة</span>
+      <h2 class="section-title" id="section-title">قصص الإنسان والإيمان</h2>
+      <div class="ornament"><span class="ornament-gem">❧</span></div>
     </div>
 
-    <div id="posts-grid">
-      <div class="loading-msg">Loading reflections…</div>
-    </div>
+    <div id="filter-bar"></div>
+    <div id="posts-grid"><div style="text-align:center;padding:3rem;color:var(--stone-dk);font-style:italic">جارٍ التحميل…</div></div>
   </main>
 
-  <!-- ═══ ARTICLE READER ════════════════════════════════════════════ -->
-  <div id="article-overlay" role="dialog" aria-modal="true">
-    <div class="overlay-backdrop" onclick="closeArticle()"></div>
-    <article class="article-panel">
-      <div class="article-header">
-        <button class="article-close" onclick="closeArticle()" aria-label="Close">✕</button>
-        <div class="article-meta-top">
-          <span class="article-category" id="article-category"></span>
-          <span class="article-date" id="article-date"></span>
+  <!-- ═══ READER ════════════════════════════════════════════ -->
+  <div id="reader-overlay" role="dialog" aria-modal="true">
+    <div class="reader-backdrop" onclick="closeReader()"></div>
+    <article class="reader-panel">
+      <div class="reader-header">
+        <button class="reader-close" onclick="closeReader()" aria-label="إغلاق">✕</button>
+        <div class="reader-meta-top">
+          <span class="reader-cat"  id="r-cat"></span>
+          <span class="reader-date" id="r-date"></span>
         </div>
-        <h1 id="article-title"></h1>
-        <p id="article-author"></p>
+        <h1 id="r-title"></h1>
+        <p  id="r-author"></p>
       </div>
-      <div class="article-body">
-        <div id="article-content"></div>
+      <div class="reader-body">
+        <div id="r-content"></div>
       </div>
     </article>
   </div>
 
-  <!-- ═══ FOOTER ════════════════════════════════════════════════════ -->
+  <!-- ═══ FOOTER ════════════════════════════════════════════ -->
   <footer>
-    <div class="footer-olive">🫒</div>
-    <div class="footer-logo">EL<span>G</span>HAZI_BLOG</div>
-    <p class="footer-copy">Written with patience · Read with reflection · Shared with love</p>
+    <div class="footer-olive">🫒 ✦ 🫒</div>
+    <div class="footer-logo" id="footer-logo">مدوّنة الغازي</div>
+    <p  class="footer-copy"  id="footer-copy">كُتبت بصدق · قُرئت بتأمّل · نُشرت بمحبّة</p>
   </footer>
 
-  <!-- ═══ JAVASCRIPT ════════════════════════════════════════════════ -->
   <script>
-    /* ── State ── */
-    let allPosts   = [];
-    let activeCategory = 'all';
+  'use strict';
+  /* ════════════════════════════════════════════════════════════
+     STATE
+  ════════════════════════════════════════════════════════════ */
+  let DATA          = { settings:{}, posts:[] };
+  let currentLang   = 'ar';
+  let activeFilter  = 'all';
 
-    /* ── DOM refs ── */
-    const grid      = document.getElementById('posts-grid');
-    const filterBar = document.getElementById('filter-bar');
-    const overlay   = document.getElementById('article-overlay');
-
-    /* ── Scroll header ── */
-    window.addEventListener('scroll', () => {
-      document.getElementById('site-header').classList.toggle('scrolled', window.scrollY > 60);
-    });
-
-    /* ── Load posts ── */
-    async function loadPosts() {
-      try {
-        const res  = await fetch('data.json?v=' + Date.now());
-        const data = await res.json();
-        allPosts   = data.posts || [];
-        buildFilters();
-        renderGrid(allPosts);
-      } catch (e) {
-        grid.innerHTML = '<div class="empty-msg">Could not load articles. Please ensure data.json is present.</div>';
-      }
+  /* ════════════════════════════════════════════════════════════
+     BOOT — load data.json
+  ════════════════════════════════════════════════════════════ */
+  (async function boot() {
+    try {
+      const res = await fetch('data.json?v=' + Date.now());
+      DATA = await res.json();
+      // Apply saved language preference
+      const savedLang = localStorage.getItem('elghazi_lang') || DATA.settings.lang || 'ar';
+      currentLang = savedLang;
+      applyTheme(DATA.settings.theme);
+      applyLanguage(currentLang, false);
+    } catch(e) {
+      document.getElementById('posts-grid').innerHTML =
+        '<div style="text-align:center;padding:3rem;color:var(--stone-dk);font-style:italic">تعذّر تحميل البيانات. تأكد من وجود ملف data.json</div>';
     }
+  })();
 
-    /* ── Build category filters ── */
-    function buildFilters() {
-      const cats = ['all', ...new Set(allPosts.map(p => p.category))];
-      filterBar.innerHTML = cats.map(c =>
-        `<button class="filter-btn${c==='all'?' active':''}" data-cat="${c}"
-          onclick="filterPosts('${c}')">${c === 'all' ? 'All' : c}</button>`
+  /* ════════════════════════════════════════════════════════════
+     THEME — apply CSS variables from settings
+  ════════════════════════════════════════════════════════════ */
+  function applyTheme(t) {
+    if (!t) return;
+    const root = document.documentElement;
+    if (t.primary) root.style.setProperty('--primary', t.primary);
+    if (t.gold)    root.style.setProperty('--gold',    t.gold);
+    if (t.stone)   root.style.setProperty('--stone',   t.stone);
+    if (t.olive)   root.style.setProperty('--olive',   t.olive);
+    if (t.bg)      root.style.setProperty('--bg',      t.bg);
+    if (t.text)    root.style.setProperty('--text',    t.text);
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     LANGUAGE — switch all UI strings
+  ════════════════════════════════════════════════════════════ */
+  function applyLanguage(lang, animate = true) {
+    currentLang = lang;
+    localStorage.setItem('elghazi_lang', lang);
+    const S  = DATA.settings;
+    const ar = lang === 'ar';
+
+    document.documentElement.lang = lang;
+    document.documentElement.dir  = ar ? 'rtl' : 'ltr';
+    document.body.className        = ar ? 'lang-ar' : 'lang-en';
+
+    // Meta
+    document.title = ar ? (S.siteName||'مدوّنة الغازي') : (S.siteNameEn||'ELGhazi Blog');
+
+    // Header
+    document.getElementById('logo-text').textContent     = ar ? (S.siteName||'مدوّنة الغازي') : (S.siteNameEn||'ELGhazi Blog');
+    document.getElementById('lang-toggle').textContent   = ar ? 'EN' : 'عربي';
+
+    // Hero
+    document.getElementById('hero-label').textContent    = ar ? 'منذ ٢٠٢٦ · تأمّلات وشهادات' : 'Est. 2026 · Reflections & Meditations';
+    document.getElementById('hero-title-main').textContent = ar ? 'مدوّنة' : '';
+    document.getElementById('hero-title-gem').textContent  = ar ? ' الغازي' : (S.siteNameEn||'ELGhazi Blog');
+    document.getElementById('hero-tagline').textContent   = ar ? (S.tagline||'') : (S.taglineEn||'');
+    document.getElementById('hero-quote').textContent     = ar ? (S.heroQuote||'') : (S.heroQuoteEn||'');
+    document.getElementById('hero-quote-src').textContent = ar ? (S.heroQuoteSource||'') : (S.heroQuoteSourceEn||'');
+    document.getElementById('scroll-hint-text').textContent = ar ? 'تصفّح' : 'Explore';
+
+    // Section
+    document.getElementById('section-eyebrow').textContent = ar ? 'المقالات المنشورة' : 'Published Writings';
+    document.getElementById('section-title').textContent   = ar ? 'قصص الإنسان والإيمان' : 'Stories of Humanity & Faith';
+
+    // Footer
+    document.getElementById('footer-logo').textContent = ar ? (S.siteName||'مدوّنة الغازي') : (S.siteNameEn||'ELGhazi Blog');
+    document.getElementById('footer-copy').textContent = ar ? (S.footerText||'') : (S.footerTextEn||'');
+
+    buildFilters();
+    renderGrid(DATA.posts);
+  }
+
+  function toggleLang() {
+    applyLanguage(currentLang === 'ar' ? 'en' : 'ar');
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     FILTERS
+  ════════════════════════════════════════════════════════════ */
+  function buildFilters() {
+    const ar   = currentLang === 'ar';
+    const cats = [...new Set(DATA.posts.map(p => ar ? p.category : p.categoryEn))];
+    const all  = ar ? 'الكل' : 'All';
+    activeFilter = 'all';
+    document.getElementById('filter-bar').innerHTML =
+      [all, ...cats].map((c,i) =>
+        `<button class="filter-btn${i===0?' active':''}" data-cat="${c=== all?'all':c}"
+          onclick="filterBy('${c === all ? 'all' : c}')">${c}</button>`
       ).join('');
-    }
+  }
 
-    /* ── Filter ── */
-    function filterPosts(cat) {
-      activeCategory = cat;
-      document.querySelectorAll('.filter-btn').forEach(b =>
-        b.classList.toggle('active', b.dataset.cat === cat)
-      );
-      const filtered = cat === 'all' ? allPosts : allPosts.filter(p => p.category === cat);
-      renderGrid(filtered);
-    }
+  function filterBy(cat) {
+    activeFilter = cat;
+    document.querySelectorAll('.filter-btn')
+      .forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+    const ar = currentLang === 'ar';
+    const filtered = cat === 'all'
+      ? DATA.posts
+      : DATA.posts.filter(p => (ar ? p.category : p.categoryEn) === cat);
+    renderGrid(filtered);
+  }
 
-    /* ── Render grid ── */
-    function renderGrid(posts) {
-      if (!posts.length) {
-        grid.innerHTML = '<div class="empty-msg">No reflections found in this category.</div>';
-        return;
-      }
-      grid.innerHTML = posts.map((p, i) => cardHTML(p, i)).join('');
-    }
-
-    /* ── Card HTML ── */
-    function cardHTML(post, index) {
-      const delay   = (index % 6) * 0.08;
-      const gradients = [
-        'linear-gradient(135deg, #d4c5a9 0%, #c8b89a 50%, #8a9e5c 100%)',
-        'linear-gradient(135deg, #e8ddd0 0%, #c8b89a 40%, #6b7c4a 100%)',
-        'linear-gradient(135deg, #c8b89a 0%, #8b7355 40%, #4a5934 100%)',
-        'linear-gradient(135deg, #e8c97a 0%, #c9a84c 50%, #8b7355 100%)',
-        'linear-gradient(135deg, #d4c5a9 0%, #6b7c4a 60%, #3d3020 100%)',
-      ];
-      const grad = gradients[post.id % gradients.length];
-      const imagePart = post.image
-        ? `<img class="card-image" src="${post.image}" alt="${post.title}" loading="lazy" />`
-        : `<div class="card-image-placeholder" style="background:${grad}">
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <ellipse cx="50" cy="90" rx="40" ry="12" fill="rgba(255,255,255,0.15)"/>
-              <ellipse cx="50" cy="55" rx="25" ry="40" fill="rgba(255,255,255,0.12)"/>
-              <rect x="35" y="55" width="30" height="35" fill="rgba(255,255,255,0.1)"/>
-              <ellipse cx="50" cy="38" rx="12" ry="20" fill="rgba(255,255,255,0.12)"/>
-              <rect x="47" y="10" width="6" height="30" fill="rgba(255,255,255,0.1)"/>
-              <circle cx="50" cy="8" r="4" fill="rgba(255,255,255,0.15)"/>
-            </svg>
-           </div>`;
-
-      return `
-        <div class="post-card" onclick="openArticle(${post.id})" style="animation-delay:${delay}s">
-          ${imagePart}
-          <div class="card-body">
-            <div class="card-meta">
-              <span class="card-category">${post.category}</span>
-              <span class="card-date">${formatDate(post.date)}</span>
-            </div>
-            <h3 class="card-title">${post.title}</h3>
-            <p class="card-excerpt">${post.excerpt || post.content.substring(0, 130)}…</p>
-            <div class="card-footer">
-              <span class="card-author">— ${post.author}</span>
-              <span class="card-read">Read →</span>
-            </div>
-          </div>
+  /* ════════════════════════════════════════════════════════════
+     RENDER GRID
+  ════════════════════════════════════════════════════════════ */
+  function renderGrid(posts) {
+    if (!posts.length) {
+      document.getElementById('posts-grid').innerHTML =
+        `<div style="text-align:center;padding:3rem;color:var(--stone-dk);font-style:italic">
+          ${currentLang==='ar' ? 'لا توجد مقالات في هذا التصنيف' : 'No articles in this category'}
         </div>`;
+      return;
     }
+    const gradients = [
+      'linear-gradient(135deg,#d4c5a9 0%,#8a9e5c 100%)',
+      'linear-gradient(135deg,#c8b89a 0%,#6b7c4a 100%)',
+      'linear-gradient(135deg,#e8c97a 0%,#8b7355 100%)',
+      'linear-gradient(135deg,#c8b89a 0%,#4a5934 100%)',
+      'linear-gradient(135deg,#e8ddd0 0%,#6b7c4a 100%)',
+    ];
+    document.getElementById('posts-grid').innerHTML =
+      posts.map((p,i) => cardHTML(p, i, gradients)).join('');
+  }
 
-    /* ── Open article ── */
-    function openArticle(id) {
-      const post = allPosts.find(p => p.id === id);
-      if (!post) return;
+  function cardHTML(p, i, grads) {
+    const ar    = currentLang === 'ar';
+    const title   = ar ? p.title   : (p.titleEn   || p.title);
+    const excerpt = ar ? p.excerpt : (p.excerptEn  || p.excerpt);
+    const cat     = ar ? p.category: (p.categoryEn || p.category);
+    const author  = ar ? p.author  : (p.authorEn   || p.author);
+    const delay   = (i % 6) * 0.07;
 
-      document.getElementById('article-title').textContent    = post.title;
-      document.getElementById('article-author').textContent   = `Written by ${post.author}`;
-      document.getElementById('article-date').textContent     = formatDate(post.date);
-      document.getElementById('article-category').textContent = post.category;
+    const thumb = p.image
+      ? `<img src="${p.image}" alt="${title}" loading="lazy"/>`
+      : `<div class="card-thumb-placeholder" style="background:${grads[p.id % grads.length]}">
+           <svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+             <g fill="rgba(255,255,255,0.9)">
+               <circle cx="50" cy="28" r="18"/>
+               <rect x="32" y="44" width="36" height="24"/>
+               <ellipse cx="50" cy="44" rx="18" ry="10"/>
+               <rect x="47" y="10" width="6" height="18"/>
+               <circle cx="50" cy="9" r="4"/>
+             </g>
+           </svg>
+         </div>`;
 
-      const paras = post.content.split('\n\n').filter(Boolean);
-      document.getElementById('article-content').innerHTML =
-        paras.map(p => `<p>${p.trim()}</p>`).join('');
+    const readLabel = ar ? 'اقرأ' : 'Read';
+    const arrow     = ar ? '←' : '→';
 
-      overlay.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      requestAnimationFrame(() => {
-        overlay.classList.add('open');
-        requestAnimationFrame(() => overlay.classList.add('visible'));
-      });
-    }
+    return `
+      <div class="post-card" onclick="openReader(${p.id})" style="animation-delay:${delay}s">
+        <div class="card-thumb">${thumb}</div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-cat">${cat}</span>
+            <span class="card-date">${fmtDate(p.date)}</span>
+          </div>
+          <h3 class="card-title">${title}</h3>
+          <p  class="card-excerpt">${excerpt}</p>
+          <div class="card-footer">
+            <span class="card-author">— ${author}</span>
+            <span class="card-read-more">${readLabel} ${arrow}</span>
+          </div>
+        </div>
+      </div>`;
+  }
 
-    /* ── Close article ── */
-    function closeArticle() {
-      overlay.classList.remove('visible');
-      setTimeout(() => {
-        overlay.classList.remove('open');
-        overlay.style.display = 'none';
-        document.body.style.overflow = '';
-      }, 400);
-    }
+  /* ════════════════════════════════════════════════════════════
+     READER
+  ════════════════════════════════════════════════════════════ */
+  function openReader(id) {
+    const p   = DATA.posts.find(x => x.id === id);
+    if (!p)   return;
+    const ar  = currentLang === 'ar';
 
-    /* ── Show home ── */
-    function showHome() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    document.getElementById('r-title').textContent  = ar ? p.title   : (p.titleEn   || p.title);
+    document.getElementById('r-author').textContent = '— ' + (ar ? p.author  : (p.authorEn  || p.author));
+    document.getElementById('r-date').textContent   = fmtDate(p.date);
+    document.getElementById('r-cat').textContent    = ar ? p.category: (p.categoryEn || p.category);
 
-    /* ── ESC to close ── */
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeArticle();
+    const rawContent = ar ? p.content : (p.contentEn || p.content);
+    document.getElementById('r-content').innerHTML =
+      rawContent.split('\n\n').filter(Boolean)
+        .map(para => `<p>${para.trim()}</p>`).join('');
+
+    const overlay = document.getElementById('reader-overlay');
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => {
+      overlay.classList.add('open');
+      requestAnimationFrame(() => overlay.classList.add('show'));
     });
+  }
 
-    /* ── Format date ── */
-    function formatDate(dateStr) {
-      try {
-        return new Date(dateStr).toLocaleDateString('en-GB', {
-          day: 'numeric', month: 'long', year: 'numeric'
-        });
-      } catch { return dateStr; }
-    }
+  function closeReader() {
+    const overlay = document.getElementById('reader-overlay');
+    overlay.classList.remove('show');
+    setTimeout(() => {
+      overlay.classList.remove('open');
+      overlay.style.display = 'none';
+      document.body.style.overflow = '';
+    }, 400);
+  }
 
-    /* ── Init ── */
-    loadPosts();
+  /* ════════════════════════════════════════════════════════════
+     HELPERS
+  ════════════════════════════════════════════════════════════ */
+  function fmtDate(d) {
+    try {
+      const ar = currentLang === 'ar';
+      return new Date(d).toLocaleDateString(ar ? 'ar-SA' : 'en-GB', {
+        day:'numeric', month:'long', year:'numeric'
+      });
+    } catch { return d; }
+  }
+
+  function scrollToTop() {
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  window.addEventListener('scroll', () => {
+    document.getElementById('site-header').classList.toggle('scrolled', scrollY > 60);
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeReader();
+  });
   </script>
 </body>
 </html>
+
