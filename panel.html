@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>لوحة التحكم العالمية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN DIRECTION: Dark luxury editorial — deep charcoal base,
+   gold accents, subtle grain, professional dashboard energy
+   inspired by high-end Arabic publishing houses
+═══════════════════════════════════════════════════════════════ */
+:root {
+  /* Dark base */
+  --bg:       #0e0c09;
+  --bg2:      #141210;
+  --bg3:      #1a1714;
+  --surface:  #201d19;
+  --surface2: #272320;
+  --border:   rgba(201,168,76,0.12);
+  --border2:  rgba(201,168,76,0.22);
+
+  /* Gold accent system */
+  --gold:     #c9a84c;
+  --gold-lt:  #e8c97a;
+  --gold-dim: rgba(201,168,76,0.08);
+  --gold-glow:rgba(201,168,76,0.18);
+
+  /* Text */
+  --text:     #e8ddd0;
+  --text2:    #a89880;
+  --text3:    #6a5a48;
+
+  /* Status */
+  --green:    #4a9c6a;
+  --green-lt: #6ab882;
+  --red:      #9c4a4a;
+  --red-lt:   #c46a6a;
+  --blue:     #4a6a9c;
+  --blue-lt:  #6a8ab8;
+  --amber:    #9c7a2a;
+  --amber-lt: #c9a84c;
+
+  /* Fonts */
+  --ff-ar:    'Noto Naskh Arabic','Georgia',serif;
+  --ff-en:    'Cormorant Garamond','Georgia',serif;
+  --ff-ttl:   'Cinzel',serif;
+  --ff-mono:  'JetBrains Mono','Courier New',monospace;
+
+  /* Motion */
+  --T:  0.25s cubic-bezier(0.4,0,0.2,1);
+  --T2: 0.4s  cubic-bezier(0.4,0,0.2,1);
+
+  /* Layout */
+  --topbar-h: 56px;
+  --sidebar-w: 260px;
+}
+
+/* ── RESET ───────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;scroll-behavior:smooth}
+body{
+  font-family:var(--ff-ar);
+  background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden;
+  direction:rtl;
+}
+body.ltr{direction:ltr;font-family:var(--ff-en)}
+body.ltr *{direction:ltr}
+
+/* grain overlay */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  opacity:0.6;
+}
+
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--text3);border-radius:4px}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROGRESS BAR
+═══════════════════════════════════════════════════════════════ */
+#pbar{
+  position:fixed;top:0;inset-inline:0;height:2px;width:0%;z-index:9999;
+  background:linear-gradient(to left,var(--gold),var(--green-lt));
+  transition:width 0.3s ease;
+  box-shadow:0 0 12px var(--gold-glow);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════════════════════════ */
+#topbar{
+  position:fixed;top:0;inset-inline:0;
+  height:var(--topbar-h);z-index:500;
+  background:rgba(14,12,9,0.92);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;
+  gap:1rem;
+}
+
+.tb-brand{
+  display:flex;align-items:center;gap:0.7rem;flex-shrink:0;
+}
+.tb-gem{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),#8a6a20);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;color:#0e0c09;font-weight:700;
+  box-shadow:0 0 12px var(--gold-glow);
+  flex-shrink:0;
+}
+.tb-name{
+  font-family:var(--ff-ttl);font-size:0.78rem;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--gold-lt);
+}
+.tb-name small{
+  display:block;font-size:0.52rem;letter-spacing:0.12em;
+  color:var(--text3);font-family:var(--ff-mono);margin-top:1px;
+  text-transform:lowercase;
+}
+
+.tb-center{flex:1;display:flex;justify-content:center}
+
+/* repo pill */
+.repo-pill{
+  display:flex;align-items:center;gap:0.5rem;
+  padding:0.28rem 0.9rem;
+  border:1px solid var(--border2);border-radius:20px;
+  background:var(--surface);cursor:pointer;
+  font-family:var(--ff-mono);font-size:0.7rem;
+  color:var(--text2);transition:var(--T);
+}
+.repo-pill:hover{border-color:var(--gold);color:var(--gold-lt)}
+.repo-pill.connected{border-color:rgba(74,156,106,0.4);color:var(--green-lt)}
+.dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--text3);transition:background var(--T);flex-shrink:0;
+}
+.dot.on  {background:var(--green);box-shadow:0 0 6px rgba(74,156,106,0.6)}
+.dot.spin{background:var(--gold);animation:pulse 1s infinite}
+.dot.err {background:var(--red)}
+
+.tb-right{display:flex;align-items:center;gap:0.5rem}
+
+/* icon buttons in topbar */
+.tb-btn{
+  width:32px;height:32px;border-radius:8px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.85rem;transition:var(--T);
+  font-family:var(--ff-ttl);font-size:0.52rem;letter-spacing:0.12em;
+}
+.tb-btn:hover{background:var(--surface2);border-color:var(--border2);color:var(--gold-lt)}
+.tb-btn.active{background:var(--gold-dim);border-color:var(--border2);color:var(--gold)}
+
+.lang-btn{
+  font-family:var(--ff-ttl);font-size:0.52rem;letter-spacing:0.18em;
+  padding:0 0.8rem;width:auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════════════════════ */
+.app{
+  display:flex;
+  padding-top:var(--topbar-h);
+  min-height:100vh;
+  position:relative;z-index:1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR NAV
+═══════════════════════════════════════════════════════════════ */
+#sidenav{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--bg2);
+  border-inline-end:1px solid var(--border);
+  display:flex;flex-direction:column;
+  height:calc(100vh - var(--topbar-h));
+  position:sticky;top:var(--topbar-h);
+  overflow-y:auto;overflow-x:hidden;
+  transition:width var(--T2);
+}
+#sidenav::-webkit-scrollbar{width:2px}
+
+.nav-section{padding:1.2rem 0.8rem 0.4rem}
+.nav-section-label{
+  font-family:var(--ff-ttl);font-size:0.46rem;letter-spacing:0.28em;
+  text-transform:uppercase;color:var(--text3);
+  padding:0 0.6rem;margin-bottom:0.4rem;
+  display:flex;align-items:center;gap:0.5rem;
+}
+.nav-section-label::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+.nav-item{
+  display:flex;align-items:center;gap:0.65rem;
+  padding:0.6rem 0.8rem;border-radius:6px;
+  cursor:pointer;transition:var(--T);
+  border:1px solid transparent;margin-bottom:2px;
+  font-size:0.82rem;color:var(--text2);
+  position:relative;
+}
+.nav-item:hover{
+  background:var(--surface);color:var(--text);
+  border-color:var(--border);
+}
+.nav-item.active{
+  background:var(--gold-dim);
+  border-color:var(--border2);
+  color:var(--gold-lt);
+}
+.nav-item.active::before{
+  content:'';position:absolute;
+  inset-inline-start:0;top:20%;bottom:20%;
+  width:2px;border-radius:2px;
+  background:var(--gold);
+}
+.nav-icon{font-size:0.9rem;width:18px;text-align:center;flex-shrink:0}
+.nav-label{font-size:0.8rem;letter-spacing:0.02em}
+.nav-badge{
+  margin-inline-start:auto;
+  font-family:var(--ff-mono);font-size:0.6rem;
+  background:var(--surface2);color:var(--text3);
+  padding:0.1rem 0.45rem;border-radius:20px;
+  border:1px solid var(--border);
+}
+.nav-item.active .nav-badge{
+  background:var(--gold-dim);color:var(--gold);border-color:var(--border2);
+}
+
+.nav-divider{height:1px;background:var(--border);margin:0.6rem 0.8rem}
+
+/* sidebar bottom */
+.nav-footer{
+  margin-top:auto;padding:0.8rem;
+  border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.gh-status-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:6px;padding:0.7rem 0.8rem;
+  cursor:pointer;transition:var(--T);
+}
+.gh-status-card:hover{border-color:var(--border2)}
+.gh-status-top{
+  display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;
+}
+.gh-status-name{
+  font-family:var(--ff-mono);font-size:0.68rem;color:var(--text2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;
+}
+.gh-status-label{
+  font-family:var(--ff-ttl);font-size:0.44rem;letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--text3);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════════════════════════ */
+#main{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  min-width:0;
+}
+
+/* page panels */
+.panel{display:none;padding:2rem;animation:fadeIn 0.3s ease both}
+.panel.active{display:block}
+
+/* page header */
+.page-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:2rem;flex-wrap:wrap;gap:1rem;
+}
+.page-title{
+  font-family:var(--ff-ttl);font-size:1.15rem;letter-spacing:0.06em;
+  color:var(--gold-lt);
+}
+.page-subtitle{font-size:0.8rem;color:var(--text3);margin-top:0.2rem}
+.page-acts{display:flex;gap:0.5rem;flex-wrap:wrap}
+
+/* ── STATS ROW ───────────────────────────────────────────────── */
+.stats-row{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:1rem;margin-bottom:2rem;
+}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:1.2rem 1.4rem;
+  transition:var(--T);position:relative;overflow:hidden;
+}
+.stat-card::after{
+  content:'';position:absolute;
+  inset-inline-end:-20px;top:-20px;
+  width:80px;height:80px;border-radius:50%;
+  background:var(--gold-dim);
+  transition:transform var(--T2);
+}
+.stat-card:hover{border-color:var(--border2)}
+.stat-card:hover::after{transform:scale(1.5)}
+.stat-val{
+  font-family:var(--ff-mono);font-size:1.8rem;font-weight:500;
+  color:var(--gold-lt);line-height:1;margin-bottom:0.3rem;
+}
+.stat-lbl{font-size:0.74rem;color:var(--text3);letter-spacing:0.04em}
+
+/* ═══════════════════════════════════════════════════════════════
+   POSTS PANEL
+═══════════════════════════════════════════════════════════════ */
+.posts-toolbar{
+  display:flex;align-items:center;gap:0.6rem;
+  margin-bottom:1.2rem;flex-wrap:wrap;
+}
+.search-box{
+  display:flex;align-items:center;gap:0.5rem;
+  flex:1;min-width:180px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:6px;padding:0 0.8rem;
+  transition:var(--T);
+}
+.search-box:focus-within{border-color:var(--border2)}
+.search-box input{
+  flex:1;background:none;border:none;outline:none;
+  font-family:var(--ff-ar);font-size:0.82rem;color:var(--text);
+  padding:0.55rem 0;
+}
+.ltr .search-box input{font-family:var(--ff-en)}
+.search-box input::placeholder{color:var(--text3)}
+.search-ico{color:var(--text3);font-size:0.8rem;flex-shrink:0}
+
+/* Posts table */
+.posts-table{width:100%;border-collapse:collapse}
+.posts-table th{
+  font-family:var(--ff-ttl);font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--text3);padding:0.7rem 1rem;
+  border-bottom:1px solid var(--border);
+  text-align:start;font-weight:400;
+}
+.posts-table td{
+  padding:0.85rem 1rem;border-bottom:1px solid var(--border);
+  font-size:0.8rem;color:var(--text2);
+  transition:background var(--T);
+}
+.posts-table tr:hover td{background:var(--surface)}
+.posts-table tr:last-child td{border-bottom:none}
+.pt-title{
+  font-family:var(--ff-ar);font-size:0.85rem;font-weight:600;
+  color:var(--text);max-width:260px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.ltr .pt-title{font-family:var(--ff-en)}
+.pt-cat{
+  font-family:var(--ff-ttl);font-size:0.48rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--gold);padding:0.18rem 0.55rem;
+  border:1px solid var(--border2);border-radius:20px;
+  white-space:nowrap;
+}
+.pt-acts{display:flex;gap:0.35rem}
+.pt-btn{
+  width:28px;height:28px;border-radius:5px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text3);cursor:pointer;font-size:0.75rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:var(--T);
+}
+.pt-btn:hover.edit{border-color:var(--blue-lt);color:var(--blue-lt);background:rgba(74,106,156,0.1)}
+.pt-btn:hover.del {border-color:var(--red-lt);color:var(--red-lt);background:rgba(156,74,74,0.1)}
+
+/* ═══════════════════════════════════════════════════════════════
+   EDITOR PANEL — article form
+═══════════════════════════════════════════════════════════════ */
+.editor-wrap{
+  display:grid;grid-template-columns:1fr 320px;gap:1.5rem;
+  align-items:start;
+}
+@media(max-width:900px){.editor-wrap{grid-template-columns:1fr}}
+
+.editor-main{display:flex;flex-direction:column;gap:1rem}
+.editor-side{display:flex;flex-direction:column;gap:1rem}
+
+/* form cards */
+.form-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;overflow:hidden;
+}
+.form-card-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.85rem 1.2rem;border-bottom:1px solid var(--border);
+}
+.form-card-title{
+  font-family:var(--ff-ttl);font-size:0.56rem;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--text2);display:flex;align-items:center;gap:0.5rem;
+}
+.form-card-body{padding:1.2rem}
+
+/* field */
+.field{display:flex;flex-direction:column;gap:0.32rem;margin-bottom:0.85rem}
+.field:last-child{margin-bottom:0}
+.field-label{
+  font-family:var(--ff-ttl);font-size:0.48rem;letter-spacing:0.2em;
+  text-transform:uppercase;color:var(--text3);
+}
+.field input,.field select,.field textarea{
+  font-family:var(--ff-ar);font-size:0.88rem;color:var(--text);
+  background:var(--bg3);border:1px solid var(--border);border-radius:5px;
+  padding:0.6rem 0.85rem;outline:none;transition:var(--T);width:100%;
+}
+.ltr .field input,.ltr .field select,.ltr .field textarea{font-family:var(--ff-en)}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--border2);box-shadow:0 0 0 3px var(--gold-dim);background:var(--bg2);
+}
+.field input::placeholder,.field textarea::placeholder{color:var(--text3)}
+.field textarea{resize:vertical;min-height:200px;line-height:1.8}
+.field select{cursor:pointer}
+.field .en-inp{direction:ltr;text-align:left;font-family:var(--ff-mono);font-size:0.8rem}
+
+/* lang tabs */
+.ltabs{display:flex;gap:0;margin-bottom:0.4rem}
+.ltab{
+  font-family:var(--ff-ttl);font-size:0.48rem;letter-spacing:0.14em;text-transform:uppercase;
+  padding:0.28rem 0.85rem;background:transparent;
+  border:1px solid var(--border);color:var(--text3);cursor:pointer;transition:var(--T);
+}
+.ltab:first-child{border-radius:5px 0 0 5px}
+.ltab:last-child{border-radius:0 5px 5px 0;border-inline-start:none}
+.ltab.on{background:var(--gold-dim);border-color:var(--border2);color:var(--gold)}
+
+/* color grid */
+.color-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem}
+.color-field{display:flex;flex-direction:column;gap:0.28rem}
+.color-field label{
+  font-family:var(--ff-ttl);font-size:0.44rem;letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--text3);
+}
+.color-field input[type=color]{
+  width:100%;height:34px;border:1px solid var(--border);
+  border-radius:4px;padding:2px 3px;cursor:pointer;background:var(--bg3);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AI ASSISTANT PANEL
+═══════════════════════════════════════════════════════════════ */
+.ai-panel{
+  display:flex;flex-direction:column;
+  height:calc(100vh - var(--topbar-h) - 4rem);
+  max-height:780px;
+}
+.ai-messages{
+  flex:1;overflow-y:auto;padding:1rem;
+  display:flex;flex-direction:column;gap:1rem;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px 8px 0 0;
+}
+.ai-messages::-webkit-scrollbar{width:3px}
+.ai-msg{
+  display:flex;gap:0.75rem;animation:fadeIn 0.3s ease both;
+}
+.ai-msg.user{flex-direction:row-reverse}
+.ai-avatar{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:700;
+}
+.ai-avatar.bot{
+  background:linear-gradient(135deg,var(--gold),#8a6a20);
+  color:#0e0c09;
+  box-shadow:0 0 10px var(--gold-glow);
+}
+.ai-avatar.usr{
+  background:var(--surface2);border:1px solid var(--border2);
+  color:var(--text2);font-family:var(--ff-ttl);font-size:0.58rem;letter-spacing:0.1em;
+}
+.ai-bubble{
+  max-width:80%;padding:0.8rem 1rem;border-radius:10px;
+  font-size:0.85rem;line-height:1.75;
+}
+.ai-msg.bot .ai-bubble{
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);border-start-start-radius:2px;
+}
+.ai-msg.user .ai-bubble{
+  background:var(--gold-dim);border:1px solid var(--border2);
+  color:var(--text);border-start-end-radius:2px;
+}
+.ai-bubble.typing{color:var(--text3)}
+.ai-bubble.typing::after{
+  content:'●●●';
+  animation:dots 1.2s infinite;letter-spacing:0.2em;font-size:0.6em;
+}
+
+/* AI quick actions */
+.ai-quick{
+  display:flex;gap:0.4rem;flex-wrap:wrap;padding:0.6rem;
+  background:var(--bg2);border-inline:1px solid var(--border);
+}
+.ai-quick-btn{
+  font-family:var(--ff-ttl);font-size:0.46rem;letter-spacing:0.12em;text-transform:uppercase;
+  padding:0.3rem 0.7rem;border:1px solid var(--border);border-radius:20px;
+  background:transparent;color:var(--text3);cursor:pointer;transition:var(--T);
+}
+.ai-quick-btn:hover{border-color:var(--border2);color:var(--gold);background:var(--gold-dim)}
+
+/* AI input */
+.ai-input-bar{
+  display:flex;gap:0.5rem;
+  background:var(--surface);border:1px solid var(--border);
+  border-top:none;border-radius:0 0 8px 8px;
+  padding:0.75rem;
+}
+.ai-input{
+  flex:1;background:var(--bg3);border:1px solid var(--border);
+  border-radius:6px;padding:0.6rem 0.9rem;
+  font-family:var(--ff-ar);font-size:0.85rem;color:var(--text);
+  outline:none;resize:none;min-height:42px;max-height:120px;
+  transition:var(--T);line-height:1.6;
+}
+.ltr .ai-input{font-family:var(--ff-en)}
+.ai-input:focus{border-color:var(--border2)}
+.ai-input::placeholder{color:var(--text3)}
+.ai-send{
+  width:42px;height:42px;border-radius:8px;flex-shrink:0;
+  background:var(--gold);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:#0e0c09;font-size:1rem;transition:var(--T);
+}
+.ai-send:hover{background:var(--gold-lt)}
+.ai-send:disabled{opacity:0.4;cursor:not-allowed}
+
+/* ═══════════════════════════════════════════════════════════════
+   SETTINGS PANEL
+═══════════════════════════════════════════════════════════════ */
+.settings-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:1.2rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATUS BAR
+═══════════════════════════════════════════════════════════════ */
+.sbar{
+  display:flex;align-items:center;gap:0.6rem;
+  padding:0.65rem 0.9rem;border-radius:6px;
+  margin-bottom:1.2rem;font-size:0.78rem;line-height:1.5;
+}
+.sbar.info {background:rgba(74,106,156,0.1);border:1px solid rgba(74,106,156,0.25);color:var(--blue-lt)}
+.sbar.ok   {background:rgba(74,156,106,0.1);border:1px solid rgba(74,156,106,0.25);color:var(--green-lt)}
+.sbar.warn {background:rgba(156,122,42,0.1);border:1px solid rgba(156,122,42,0.25);color:var(--amber-lt)}
+.sbar.err  {background:rgba(156,74,74,0.1); border:1px solid rgba(156,74,74,0.25); color:var(--red-lt)}
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════════════════ */
+.btn{
+  font-family:var(--ff-ttl);font-size:0.52rem;letter-spacing:0.16em;text-transform:uppercase;
+  padding:0.55rem 1.2rem;border:none;border-radius:6px;cursor:pointer;
+  transition:var(--T);display:inline-flex;align-items:center;gap:0.4rem;white-space:nowrap;
+}
+.btn:disabled{opacity:0.38;cursor:not-allowed}
+.btn-gold {background:var(--gold);color:#0e0c09}
+.btn-gold:hover:not(:disabled){background:var(--gold-lt)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn-ghost:hover:not(:disabled){border-color:var(--border2);color:var(--text)}
+.btn-red  {background:transparent;border:1px solid rgba(156,74,74,0.4);color:var(--red-lt)}
+.btn-red:hover:not(:disabled){background:rgba(156,74,74,0.15)}
+.btn-green{background:rgba(74,156,106,0.15);border:1px solid rgba(74,156,106,0.3);color:var(--green-lt)}
+.btn-green:hover:not(:disabled){background:rgba(74,156,106,0.25)}
+
+.spin{
+  display:inline-block;width:10px;height:10px;
+  border:1.5px solid rgba(255,255,255,0.3);border-top-color:currentColor;
+  border-radius:50%;animation:spin 0.6s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════════════════════════ */
+.modal{
+  display:none;position:fixed;inset:0;z-index:800;
+  align-items:center;justify-content:center;padding:1.5rem;
+}
+.modal.open{display:flex}
+.modal-bd{
+  position:absolute;inset:0;
+  background:rgba(8,6,4,0.75);backdrop-filter:blur(8px);
+}
+.modal-box{
+  position:relative;z-index:1;
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:10px;padding:2rem;width:min(500px,100%);
+  box-shadow:0 32px 80px rgba(0,0,0,0.6);
+  animation:slideUp 0.35s cubic-bezier(0.34,1.36,0.64,1) both;
+}
+.modal-title{
+  font-family:var(--ff-ttl);font-size:0.88rem;letter-spacing:0.08em;
+  color:var(--gold-lt);margin-bottom:0.5rem;
+}
+.modal-sub{font-size:0.8rem;color:var(--text3);margin-bottom:1.4rem;line-height:1.6}
+.modal-acts{display:flex;gap:0.5rem;justify-content:flex-end;align-items:center;margin-top:1.4rem}
+
+/* GH modal fields */
+.gh-fields{display:flex;flex-direction:column;gap:0.85rem}
+.gh-field{display:flex;flex-direction:column;gap:0.3rem}
+.gh-field label{
+  font-family:var(--ff-ttl);font-size:0.48rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--text3);
+}
+.gh-field input{
+  font-family:var(--ff-mono);font-size:0.8rem;color:var(--text);
+  background:var(--bg3);border:1px solid var(--border);border-radius:5px;
+  padding:0.58rem 0.8rem;outline:none;transition:var(--T);
+  direction:ltr;text-align:left;
+}
+.gh-field input:focus{border-color:var(--border2);box-shadow:0 0 0 3px var(--gold-dim)}
+.gh-hint{font-size:0.72rem;color:var(--text3);line-height:1.55;margin-top:0.2rem}
+.gh-hint a{color:var(--gold);text-decoration:none}
+.gh-hint a:hover{text-decoration:underline}
+.secure-note{
+  background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);
+  border-radius:5px;padding:0.65rem 0.8rem;
+  font-size:0.72rem;color:var(--amber-lt);line-height:1.55;margin-top:0.4rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOASTS
+═══════════════════════════════════════════════════════════════ */
+#toasts{
+  position:fixed;bottom:1.5rem;inset-inline-end:1.5rem;
+  z-index:9000;display:flex;flex-direction:column;gap:0.45rem;
+}
+.toast{
+  display:flex;align-items:center;gap:0.55rem;
+  padding:0.75rem 1.1rem;border-radius:6px;
+  font-family:var(--ff-ttl);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;
+  transform:translateX(24px);opacity:0;transition:all 0.3s ease;
+  min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,0.35);
+  border:1px solid transparent;
+}
+.toast.show{transform:translateX(0);opacity:1}
+.toast.ok   {background:rgba(74,156,106,0.15);border-color:rgba(74,156,106,0.3);color:var(--green-lt)}
+.toast.err  {background:rgba(156,74,74,0.15); border-color:rgba(156,74,74,0.3); color:var(--red-lt)}
+.toast.warn {background:rgba(201,168,76,0.1); border-color:rgba(201,168,76,0.25);color:var(--amber-lt)}
+.toast.info {background:rgba(74,106,156,0.15);border-color:rgba(74,106,156,0.3);color:var(--blue-lt)}
+
+/* ═══════════════════════════════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════════════════════════════ */
+.empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:300px;text-align:center;color:var(--text3);gap:0.8rem;
+}
+.empty-icon{font-size:2.5rem;opacity:0.2}
+.empty-txt{font-size:0.85rem;font-style:italic}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════════════════ */
+@keyframes fadeIn  {from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes slideUp {from{opacity:0;transform:translateY(30px) scale(0.97)}to{opacity:1;transform:none}}
+@keyframes pulse   {0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes spin    {to{transform:rotate(360deg)}}
+@keyframes dots    {0%,20%{opacity:0}50%{opacity:1}100%{opacity:0}}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════════ */
+@media(max-width:768px){
+  :root{--sidebar-w:0px}
+  #sidenav{position:fixed;z-index:400;width:260px;
+    transform:translateX(100%);transition:transform var(--T2)}
+  #sidenav.open{transform:translateX(0)}
+  body.ltr #sidenav{transform:translateX(-100%)}
+  body.ltr #sidenav.open{transform:translateX(0)}
+  .panel{padding:1rem}
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="pbar"></div>
+
+<!-- ═══ TOPBAR ══════════════════════════════════════════════════ -->
+<header id="topbar">
+  <div class="tb-brand">
+    <div class="tb-gem">✦</div>
+    <div class="tb-name">
+      <span id="tb-site-name">لوحة التحكم</span>
+      <small id="tb-version">universal panel v2</small>
+    </div>
+  </div>
+
+  <div class="tb-center">
+    <button class="repo-pill" id="repo-pill" onclick="openGHModal()">
+      <span class="dot" id="conn-dot"></span>
+      <span id="conn-txt">اربط المستودع</span>
+    </button>
+  </div>
+
+  <div class="tb-right">
+    <button class="tb-btn lang-btn" id="lang-btn" onclick="toggleLang()">EN</button>
+    <button class="tb-btn" onclick="toggleMobileNav()" id="menu-btn" style="display:none">☰</button>
+  </div>
+</header>
+
+<!-- ═══ APP ═════════════════════════════════════════════════════ -->
+<div class="app">
+
+  <!-- ─── SIDEBAR ────────────────────────────────────────────── -->
+  <nav id="sidenav">
+    <div class="nav-section">
+      <div class="nav-section-label" id="nl-content">المحتوى</div>
+
+      <div class="nav-item active" id="nav-dashboard" onclick="goTo('dashboard')">
+        <span class="nav-icon">◈</span>
+        <span class="nav-label" id="nl-dashboard">لوحة المعلومات</span>
+      </div>
+
+      <div class="nav-item" id="nav-posts" onclick="goTo('posts')">
+        <span class="nav-icon">✦</span>
+        <span class="nav-label" id="nl-posts">المقالات</span>
+        <span class="nav-badge" id="posts-badge">0</span>
+      </div>
+
+      <div class="nav-item" id="nav-new-post" onclick="goTo('editor');newPost()">
+        <span class="nav-icon">＋</span>
+        <span class="nav-label" id="nl-new">مقال جديد</span>
+      </div>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-section">
+      <div class="nav-section-label" id="nl-tools">الأدوات</div>
+
+      <div class="nav-item" id="nav-ai" onclick="goTo('ai')">
+        <span class="nav-icon">◉</span>
+        <span class="nav-label" id="nl-ai">مساعد الذكاء الاصطناعي</span>
+      </div>
+
+      <div class="nav-item" id="nav-settings" onclick="goTo('settings')">
+        <span class="nav-icon">⚙</span>
+        <span class="nav-label" id="nl-settings">الإعدادات</span>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <div class="gh-status-card" onclick="openGHModal()">
+        <div class="gh-status-top">
+          <span class="dot" id="conn-dot2"></span>
+          <span class="gh-status-name" id="conn-repo-name">غير متصل</span>
+        </div>
+        <div class="gh-status-label" id="gh-status-lbl">GitHub · انقر للإعداد</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ─── MAIN ─────────────────────────────────────────────── -->
+  <div id="main">
+
+    <!-- ══ DASHBOARD ══════════════════════════════════════════ -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="page-hd">
+        <div>
+          <div class="page-title" id="dash-title">لوحة المعلومات</div>
+          <div class="page-subtitle" id="dash-sub">نظرة عامة على المدوّنة</div>
+        </div>
+        <div class="page-acts">
+          <button class="btn btn-ghost" onclick="fetchData()" id="refresh-btn">↻ <span id="refresh-lbl">تحديث</span></button>
+          <button class="btn btn-gold"  onclick="goTo('editor');newPost()">＋ <span id="new-post-lbl">مقال جديد</span></button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-val" id="stat-posts">0</div>
+          <div class="stat-lbl" id="stat-posts-lbl">مقال منشور</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-cats">0</div>
+          <div class="stat-lbl" id="stat-cats-lbl">تصنيف</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-langs">٢</div>
+          <div class="stat-lbl" id="stat-langs-lbl">لغة مدعومة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-conn">—</div>
+          <div class="stat-lbl" id="stat-conn-lbl">حالة الاتصال</div>
+        </div>
+      </div>
+
+      <!-- recent posts -->
+      <div class="form-card">
+        <div class="form-card-hd">
+          <span class="form-card-title">✦ <span id="recent-lbl">آخر المقالات</span></span>
+          <button class="btn btn-ghost" onclick="goTo('posts')" style="font-size:0.46rem;padding:0.3rem 0.7rem">
+            <span id="view-all-lbl">عرض الكل</span>
+          </button>
+        </div>
+        <div id="recent-list" style="padding:0.5rem">
+          <div class="empty"><span class="empty-icon">✦</span><span class="empty-txt" id="no-posts-lbl">لا توجد مقالات بعد</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ POSTS LIST ══════════════════════════════════════════ -->
+    <div class="panel" id="panel-posts">
+      <div class="page-hd">
+        <div>
+          <div class="page-title" id="posts-title">المقالات</div>
+          <div class="page-subtitle" id="posts-sub">إدارة كل المحتوى</div>
+        </div>
+        <div class="page-acts">
+          <button class="btn btn-gold" onclick="goTo('editor');newPost()">＋ <span id="add-post-lbl">إضافة مقال</span></button>
+        </div>
+      </div>
+
+      <div class="posts-toolbar">
+        <div class="search-box">
+          <span class="search-ico">🔍</span>
+          <input type="text" id="search-inp" placeholder="بحث في المقالات…" oninput="filterPosts(this.value)"/>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <table class="posts-table" id="posts-table">
+          <thead>
+            <tr>
+              <th id="th-title">العنوان</th>
+              <th id="th-cat">التصنيف</th>
+              <th id="th-date">التاريخ</th>
+              <th id="th-acts">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="posts-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ EDITOR ══════════════════════════════════════════════ -->
+    <div class="panel" id="panel-editor">
+      <div class="page-hd">
+        <div>
+          <div class="page-title" id="editor-title-lbl">مقال جديد</div>
+          <div class="page-subtitle" id="editor-sub-lbl">أضف محتوى باللغتين</div>
+        </div>
+        <div class="page-acts">
+          <button class="btn btn-red"   id="del-btn"  onclick="confirmDel()" style="display:none"><span id="del-lbl">حذف</span></button>
+          <button class="btn btn-ghost" onclick="goTo('posts')"><span id="cancel-lbl">إلغاء</span></button>
+          <button class="btn btn-gold"  id="pub-btn"  onclick="savePost()">⬆ <span id="pub-lbl">نشر</span></button>
+        </div>
+      </div>
+
+      <div class="sbar info" id="ed-sbar">
+        <span>ℹ️</span>
+        <span id="ed-sbar-txt">سيتم نشر المقال مباشرةً في data.json عبر GitHub API.</span>
+      </div>
+
+      <div class="editor-wrap">
+        <!-- main fields -->
+        <div class="editor-main">
+          <div class="form-card">
+            <div class="form-card-hd">
+              <span class="form-card-title">✦ <span id="fc-content">المحتوى</span></span>
+              <!-- AI assist button -->
+              <button class="btn btn-ghost" onclick="aiAssistEditor()" style="font-size:0.46rem;padding:0.3rem 0.8rem">
+                ◉ <span id="ai-assist-lbl">مساعدة الذكاء الاصطناعي</span>
+              </button>
+            </div>
+            <div class="form-card-body">
+              <!-- Title -->
+              <div class="field">
+                <div class="ltabs">
+                  <button class="ltab on" onclick="fieldLang('title','ar',this)"><span id="ar-lbl">عربي</span></button>
+                  <button class="ltab"    onclick="fieldLang('title','en',this)">EN</button>
+                </div>
+                <input type="text" id="f-title-ar" placeholder="عنوان المقال…"/>
+                <input type="text" id="f-title-en" placeholder="Article title…" class="en-inp" style="display:none;margin-top:0.4rem"/>
+              </div>
+              <!-- Excerpt -->
+              <div class="field">
+                <div class="ltabs">
+                  <button class="ltab on" onclick="fieldLang('exc','ar',this)"><span id="exc-ar-lbl">مقتطف عربي</span></button>
+                  <button class="ltab"    onclick="fieldLang('exc','en',this)">EN Excerpt</button>
+                </div>
+                <input type="text" id="f-exc-ar" placeholder="جملة قصيرة تظهر في بطاقة المقال…"/>
+                <input type="text" id="f-exc-en" placeholder="Short excerpt shown on the card…" class="en-inp" style="display:none;margin-top:0.4rem"/>
+              </div>
+              <!-- Content -->
+              <div class="field">
+                <div class="ltabs">
+                  <button class="ltab on" onclick="fieldLang('body','ar',this)"><span id="body-ar-lbl">المحتوى الكامل</span></button>
+                  <button class="ltab"    onclick="fieldLang('body','en',this)">Full Content EN</button>
+                </div>
+                <textarea id="f-body-ar" placeholder="اكتب هنا… سطر فارغ = فقرة جديدة"></textarea>
+                <textarea id="f-body-en" placeholder="Write here… blank line = new paragraph" class="en-inp" style="display:none;margin-top:0.4rem"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- side fields -->
+        <div class="editor-side">
+          <div class="form-card">
+            <div class="form-card-hd">
+              <span class="form-card-title">⚙ <span id="fc-meta">البيانات</span></span>
+            </div>
+            <div class="form-card-body">
+              <div class="field">
+                <label class="field-label" id="fl-author">الكاتب</label>
+                <input type="text" id="f-author-ar" placeholder="الغازي"/>
+                <input type="text" id="f-author-en" placeholder="ELGhazi" class="en-inp" style="margin-top:0.4rem"/>
+              </div>
+              <div class="field">
+                <label class="field-label" id="fl-date">التاريخ</label>
+                <input type="date" id="f-date" class="en-inp"/>
+              </div>
+              <div class="field">
+                <label class="field-label" id="fl-cat-ar">التصنيف (عربي)</label>
+                <input type="text" id="f-cat-ar" placeholder="تأمّلات"/>
+              </div>
+              <div class="field">
+                <label class="field-label" id="fl-cat-en">Category (EN)</label>
+                <input type="text" id="f-cat-en" placeholder="Reflection" class="en-inp"/>
+              </div>
+              <div class="field">
+                <label class="field-label" id="fl-img">رابط الصورة</label>
+                <input type="text" id="f-img" placeholder="https://…" class="en-inp"/>
+              </div>
+              <span id="last-saved" style="font-size:0.68rem;color:var(--text3);font-style:italic;display:block;margin-top:0.4rem"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ AI ASSISTANT ════════════════════════════════════════ -->
+    <div class="panel" id="panel-ai">
+      <div class="page-hd">
+        <div>
+          <div class="page-title" id="ai-title">مساعد الذكاء الاصطناعي</div>
+          <div class="page-subtitle" id="ai-sub">مدعوم بـ Claude · اكتب، ترجم، حسّن</div>
+        </div>
+        <div class="page-acts">
+          <button class="btn btn-ghost" onclick="clearChat()" id="clear-chat-btn">✕ <span id="clear-lbl">مسح المحادثة</span></button>
+        </div>
+      </div>
+
+      <!-- API key notice -->
+      <div class="sbar warn" id="ai-key-notice">
+        <span>⚠️</span>
+        <span id="ai-key-txt">أدخل Claude API Key في الإعدادات لتفعيل المساعد.</span>
+      </div>
+
+      <div class="ai-panel">
+        <div class="ai-messages" id="ai-messages">
+          <div class="ai-msg bot">
+            <div class="ai-avatar bot">✦</div>
+            <div class="ai-bubble" id="ai-welcome">
+              مرحباً! أنا مساعدك الذكي. يمكنني مساعدتك في كتابة مقالات، ترجمة محتوى، تحسين النصوص، اقتراح عناوين، وأكثر من ذلك. كيف يمكنني مساعدتك اليوم؟
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="ai-quick">
+          <button class="ai-quick-btn" onclick="aiQuick('write')"     id="aq-write">✍ اكتب مقالاً</button>
+          <button class="ai-quick-btn" onclick="aiQuick('translate')" id="aq-trans">🌐 ترجم</button>
+          <button class="ai-quick-btn" onclick="aiQuick('improve')"   id="aq-imp">✨ حسّن النص</button>
+          <button class="ai-quick-btn" onclick="aiQuick('title')"     id="aq-ttl">💡 اقترح عنواناً</button>
+          <button class="ai-quick-btn" onclick="aiQuick('seo')"       id="aq-seo">📈 تحسين SEO</button>
+        </div>
+
+        <!-- Input -->
+        <div class="ai-input-bar">
+          <textarea class="ai-input" id="ai-input"
+            placeholder="اسألني أي شيء…"
+            rows="1"
+            onkeydown="aiKeyDown(event)"
+            oninput="autoResize(this)"></textarea>
+          <button class="ai-send" id="ai-send-btn" onclick="sendAI()">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SETTINGS ════════════════════════════════════════════ -->
+    <div class="panel" id="panel-settings">
+      <div class="page-hd">
+        <div>
+          <div class="page-title" id="settings-title">الإعدادات</div>
+          <div class="page-subtitle" id="settings-sub">تخصيص المدوّنة بالكامل</div>
+        </div>
+        <div class="page-acts">
+          <button class="btn btn-gold" id="save-settings-btn" onclick="saveSettings()">
+            ⬆ <span id="save-settings-lbl">حفظ ونشر</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-grid">
+
+        <!-- API Keys -->
+        <div class="form-card">
+          <div class="form-card-hd">
+            <span class="form-card-title">🔑 <span id="sc-api">مفاتيح API</span></span>
+          </div>
+          <div class="form-card-body">
+            <div class="field">
+              <label class="field-label">Claude API Key</label>
+              <input type="password" id="s-claude-key" class="en-inp" placeholder="sk-ant-…" autocomplete="off"/>
+            </div>
+            <div style="font-size:0.7rem;color:var(--text3);margin-top:0.3rem;line-height:1.5">
+              احصل على مفتاحك من
+              <a href="https://console.anthropic.com" target="_blank" style="color:var(--gold)">console.anthropic.com</a>
+              · يُحفظ في المتصفح فقط
+            </div>
+          </div>
+        </div>
+
+        <!-- Site identity -->
+        <div class="form-card">
+          <div class="form-card-hd">
+            <span class="form-card-title">◈ <span id="sc-identity">هوية الموقع</span></span>
+          </div>
+          <div class="form-card-body">
+            <div class="field"><label class="field-label" id="sl-name-ar">الاسم (عربي)</label><input type="text" id="s-name-ar"/></div>
+            <div class="field"><label class="field-label">Name (EN)</label><input type="text" id="s-name-en" class="en-inp"/></div>
+            <div class="field"><label class="field-label" id="sl-tag-ar">الوسم (عربي)</label><input type="text" id="s-tag-ar"/></div>
+            <div class="field"><label class="field-label">Tagline (EN)</label><input type="text" id="s-tag-en" class="en-inp"/></div>
+          </div>
+        </div>
+
+        <!-- Hero quote -->
+        <div class="form-card">
+          <div class="form-card-hd">
+            <span class="form-card-title">❝ <span id="sc-quote">اقتباس الرئيسية</span></span>
+          </div>
+          <div class="form-card-body">
+            <div class="field"><label class="field-label" id="sl-q-ar">النص (عربي)</label><textarea id="s-quote-ar" style="min-height:70px"></textarea></div>
+            <div class="field"><label class="field-label" id="sl-q-src">المصدر</label><input type="text" id="s-quote-src-ar"/></div>
+            <div class="field"><label class="field-label">Quote (EN)</label><textarea id="s-quote-en" class="en-inp" style="min-height:70px"></textarea></div>
+            <div class="field"><label class="field-label">Source (EN)</label><input type="text" id="s-quote-src-en" class="en-inp"/></div>
+          </div>
+        </div>
+
+        <!-- Language & footer -->
+        <div class="form-card">
+          <div class="form-card-hd">
+            <span class="form-card-title">🌐 <span id="sc-lang">اللغة والتذييل</span></span>
+          </div>
+          <div class="form-card-body">
+            <div class="field">
+              <label class="field-label" id="sl-default-lang">اللغة الافتراضية</label>
+              <select id="s-lang">
+                <option value="ar">عربي — RTL</option>
+                <option value="en">English — LTR</option>
+              </select>
+            </div>
+            <div class="field"><label class="field-label" id="sl-footer-ar">التذييل (عربي)</label><input type="text" id="s-footer-ar"/></div>
+            <div class="field"><label class="field-label">Footer (EN)</label><input type="text" id="s-footer-en" class="en-inp"/></div>
+          </div>
+        </div>
+
+        <!-- Colors -->
+        <div class="form-card">
+          <div class="form-card-hd">
+            <span class="form-card-title">🎨 <span id="sc-colors">الألوان</span></span>
+          </div>
+          <div class="form-card-body">
+            <div class="color-grid">
+              <div class="color-field"><label id="cl-primary">الرئيسي</label><input type="color" id="c-primary" value="#2c1810"/></div>
+              <div class="color-field"><label id="cl-gold">الذهبي</label>   <input type="color" id="c-gold"    value="#c9a84c"/></div>
+              <div class="color-field"><label id="cl-stone">الحجري</label>  <input type="color" id="c-stone"   value="#c8b89a"/></div>
+              <div class="color-field"><label id="cl-olive">الزيتوني</label><input type="color" id="c-olive"   value="#6b7c4a"/></div>
+              <div class="color-field"><label id="cl-bg">الخلفية</label>    <input type="color" id="c-bg"      value="#f5f0e8"/></div>
+              <div class="color-field"><label id="cl-text">النص</label>     <input type="color" id="c-text"    value="#1a0f08"/></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /settings-grid -->
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ═══ GITHUB MODAL ════════════════════════════════════════════ -->
+<div class="modal" id="gh-modal">
+  <div class="modal-bd" onclick="closeGHModal()"></div>
+  <div class="modal-box">
+    <div class="modal-title" id="gh-modal-title">🔗 ربط GitHub</div>
+    <div class="modal-sub" id="gh-modal-sub">
+      أدخل بيانات المستودع — تُحفظ في متصفحك فقط ولا تُرسل لأي خادم خارجي.
+    </div>
+    <div class="gh-fields">
+      <div class="gh-field">
+        <label>Personal Access Token</label>
+        <input type="password" id="gi-token" autocomplete="off" spellcheck="false" placeholder="ghp_… أو github_pat_…"/>
+        <div class="gh-hint">
+          أنشئ Token في
+          <a href="https://github.com/settings/tokens/new" target="_blank">GitHub → Settings → Developer Settings → Fine-grained tokens</a><br/>
+          الصلاحية المطلوبة: <strong>Contents → Read and Write</strong>
+        </div>
+      </div>
+      <div class="gh-field"><label>GitHub Username</label><input type="text" id="gi-owner" placeholder="your-username"/></div>
+      <div class="gh-field"><label>Repository Name</label><input type="text" id="gi-repo"  placeholder="ELGhazi_Blog"/></div>
+      <div class="gh-field"><label>Branch</label>          <input type="text" id="gi-branch" value="main"/></div>
+      <div class="gh-field"><label>Path to data.json</label><input type="text" id="gi-path" value="data.json"/></div>
+      <div class="secure-note">🔒 يُحفظ الـ Token في localStorage — لا يُرسل إلا لـ <code>api.github.com</code> عبر HTTPS.</div>
+    </div>
+    <div class="modal-acts">
+      <button class="btn btn-red" onclick="disconnectGH()" style="margin-inline-end:auto;font-size:0.46rem;padding:0.42rem 0.8rem" id="disconnect-btn">قطع الاتصال</button>
+      <button class="btn btn-ghost" onclick="closeGHModal()" id="cancel-gh-btn">إلغاء</button>
+      <button class="btn btn-gold"  onclick="connectGH()"   id="connect-gh-btn">اتصال</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DELETE CONFIRM ══════════════════════════════════════════ -->
+<div class="modal" id="del-modal">
+  <div class="modal-bd" onclick="closeDelModal()"></div>
+  <div class="modal-box">
+    <div class="modal-title" id="del-modal-title">حذف المقال؟</div>
+    <div class="modal-sub" id="del-modal-sub">سيُحذف المقال نهائياً من data.json في مستودع GitHub. لا يمكن التراجع.</div>
+    <div class="modal-acts">
+      <button class="btn btn-ghost" onclick="closeDelModal()" id="cancel-del-btn">إلغاء</button>
+      <button class="btn btn-red"   onclick="execDel()"       id="confirm-del-btn">حذف</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<!-- ════════════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════════ */
+let DATA      = { settings:{}, posts:[] };
+let fileSHA   = '';
+let ghCfg     = null;
+let editingId = null;
+let nextId    = 1;
+let uiLang    = 'ar';  // panel UI language
+let chatHistory = [];
+
+const CFG_KEY     = 'elghazi_gh_v3';
+const AI_KEY_KEY  = 'elghazi_claude_key';
+
+/* ══════════════════════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════════════════════ */
+(async function boot(){
+  ghCfg = loadCfg();
+  checkAIKey();
+
+  if(ghCfg){
+    setConn('spin','جارٍ الاتصال…');
+    await fetchData();
+  } else {
+    await loadLocal();
+  }
+  populateSettings();
+  renderDashboard();
+  renderPostsTable();
+})();
+
+/* ══════════════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════════════ */
+const PANELS = ['dashboard','posts','editor','ai','settings'];
+
+function goTo(page){
+  PANELS.forEach(p=>{
+    document.getElementById('panel-'+p).classList.toggle('active', p===page);
+    const nav = document.getElementById('nav-'+p);
+    if(nav) nav.classList.toggle('active', p===page);
+  });
+  // close mobile nav
+  document.getElementById('sidenav').classList.remove('open');
+}
+
+function toggleMobileNav(){
+  document.getElementById('sidenav').classList.toggle('open');
+}
+
+/* ══════════════════════════════════════════════════════════
+   LANGUAGE — panel UI
+══════════════════════════════════════════════════════════ */
+const UI = {
+  ar:{
+    dashboard:'لوحة المعلومات', posts:'المقالات', newPost:'مقال جديد',
+    ai:'مساعد AI', settings:'الإعدادات',
+    content:'المحتوى', tools:'الأدوات',
+    refresh:'تحديث', addPost:'إضافة مقال',
+    pub:'نشر', del:'حذف', cancel:'إلغاء',
+    recentPosts:'آخر المقالات', viewAll:'عرض الكل',
+    noPosts:'لا توجد مقالات بعد',
+    published:'مقال منشور', cats:'تصنيف', langs:'لغة مدعومة', conn:'الاتصال',
+    thTitle:'العنوان', thCat:'التصنيف', thDate:'التاريخ', thActs:'إجراءات',
+    edTitle:'مقال جديد', edSub:'أضف محتوى باللغتين',
+    edSbarTxt:'سيتم نشر المقال مباشرةً في data.json عبر GitHub API.',
+    aiWelcome:'مرحباً! أنا مساعدك الذكي. يمكنني مساعدتك في كتابة مقالات، ترجمة محتوى، تحسين النصوص. كيف يمكنني مساعدتك؟',
+    aiPlaceholder:'اسألني أي شيء…',
+    aiKeyTxt:'أدخل Claude API Key في الإعدادات لتفعيل المساعد.',
+    clearChat:'مسح المحادثة',
+    saveSettings:'حفظ ونشر', settingsTitle:'الإعدادات', settingsSub:'تخصيص المدوّنة بالكامل',
+    ghTitle:'ربط GitHub', ghSub:'أدخل بيانات المستودع — تُحفظ في متصفحك فقط.',
+    disconnect:'قطع الاتصال', connect:'اتصال',
+    delTitle:'حذف المقال؟', delSub:'سيُحذف المقال نهائياً من data.json. لا يمكن التراجع.',
+    connected:'متصل', notConn:'غير متصل', ghSetup:'GitHub · انقر للإعداد',
+    langBtn:'EN', aiAssist:'مساعدة AI',
+    aqWrite:'✍ اكتب مقالاً', aqTrans:'🌐 ترجم', aqImp:'✨ حسّن', aqTtl:'💡 عنوان', aqSeo:'📈 SEO',
+  },
+  en:{
+    dashboard:'Dashboard', posts:'Articles', newPost:'New Article',
+    ai:'AI Assistant', settings:'Settings',
+    content:'Content', tools:'Tools',
+    refresh:'Refresh', addPost:'New Article',
+    pub:'Publish', del:'Delete', cancel:'Cancel',
+    recentPosts:'Recent Articles', viewAll:'View All',
+    noPosts:'No articles yet',
+    published:'Published', cats:'Categories', langs:'Languages', conn:'Connection',
+    thTitle:'Title', thCat:'Category', thDate:'Date', thActs:'Actions',
+    edTitle:'New Article', edSub:'Add bilingual content',
+    edSbarTxt:'The article will be committed directly to data.json via GitHub API.',
+    aiWelcome:"Hello! I'm your AI assistant. I can help you write articles, translate content, improve texts, and more. How can I help you today?",
+    aiPlaceholder:'Ask me anything…',
+    aiKeyTxt:'Enter your Claude API Key in Settings to activate the assistant.',
+    clearChat:'Clear Chat',
+    saveSettings:'Save & Publish', settingsTitle:'Settings', settingsSub:'Customize everything',
+    ghTitle:'Connect GitHub', ghSub:'Enter repository details — stored in your browser only.',
+    disconnect:'Disconnect', connect:'Connect',
+    delTitle:'Delete Article?', delSub:'This will permanently remove the article from data.json. Cannot be undone.',
+    connected:'Connected', notConn:'Not Connected', ghSetup:'GitHub · Click to setup',
+    langBtn:'عربي', aiAssist:'AI Assist',
+    aqWrite:'✍ Write Article', aqTrans:'🌐 Translate', aqImp:'✨ Improve', aqTtl:'💡 Title', aqSeo:'📈 SEO',
+  }
+};
+
+function applyUI(lang){
+  uiLang = lang;
+  const t = UI[lang];
+  const ar = lang==='ar';
+
+  document.documentElement.lang = lang;
+  document.documentElement.dir  = ar?'rtl':'ltr';
+  document.body.classList.toggle('ltr', !ar);
+  document.getElementById('lang-btn').textContent = t.langBtn;
+
+  // Nav
+  document.getElementById('nl-content').textContent   = t.content;
+  document.getElementById('nl-tools').textContent     = t.tools;
+  document.getElementById('nl-dashboard').textContent = t.dashboard;
+  document.getElementById('nl-posts').textContent     = t.posts;
+  document.getElementById('nl-new').textContent       = t.newPost;
+  document.getElementById('nl-ai').textContent        = t.ai;
+  document.getElementById('nl-settings').textContent  = t.settings;
+
+  // Dashboard
+  document.getElementById('dash-title').textContent     = t.dashboard;
+  document.getElementById('stat-posts-lbl').textContent = t.published;
+  document.getElementById('stat-cats-lbl').textContent  = t.cats;
+  document.getElementById('stat-langs-lbl').textContent = t.langs;
+  document.getElementById('stat-conn-lbl').textContent  = t.conn;
+  document.getElementById('recent-lbl').textContent     = t.recentPosts;
+  document.getElementById('view-all-lbl').textContent   = t.viewAll;
+  document.getElementById('no-posts-lbl').textContent   = t.noPosts;
+  document.getElementById('refresh-lbl').textContent    = t.refresh;
+  document.getElementById('new-post-lbl').textContent   = t.newPost;
+
+  // Posts panel
+  document.getElementById('posts-title').textContent    = t.posts;
+  document.getElementById('add-post-lbl').textContent   = t.addPost;
+  document.getElementById('th-title').textContent       = t.thTitle;
+  document.getElementById('th-cat').textContent         = t.thCat;
+  document.getElementById('th-date').textContent        = t.thDate;
+  document.getElementById('th-acts').textContent        = t.thActs;
+  document.getElementById('search-inp').placeholder     = ar?'بحث في المقالات…':'Search articles…';
+
+  // Editor
+  document.getElementById('editor-title-lbl').textContent = t.edTitle;
+  document.getElementById('editor-sub-lbl').textContent   = t.edSub;
+  document.getElementById('ed-sbar-txt').textContent      = t.edSbarTxt;
+  document.getElementById('pub-lbl').textContent          = t.pub;
+  document.getElementById('del-lbl').textContent          = t.del;
+  document.getElementById('cancel-lbl').textContent       = t.cancel;
+  document.getElementById('ai-assist-lbl').textContent    = t.aiAssist;
+
+  // AI
+  document.getElementById('ai-title').textContent         = t.ai;
+  document.getElementById('ai-key-txt').textContent       = t.aiKeyTxt;
+  document.getElementById('clear-lbl').textContent        = t.clearChat;
+  document.getElementById('ai-input').placeholder         = t.aiPlaceholder;
+  document.getElementById('ai-welcome').textContent       = t.aiWelcome;
+  document.getElementById('aq-write').textContent         = t.aqWrite;
+  document.getElementById('aq-trans').textContent         = t.aqTrans;
+  document.getElementById('aq-imp').textContent           = t.aqImp;
+  document.getElementById('aq-ttl').textContent           = t.aqTtl;
+  document.getElementById('aq-seo').textContent           = t.aqSeo;
+
+  // Settings
+  document.getElementById('settings-title').textContent   = t.settingsTitle;
+  document.getElementById('settings-sub').textContent     = t.settingsSub;
+  document.getElementById('save-settings-lbl').textContent= t.saveSettings;
+
+  // GH modal
+  document.getElementById('gh-modal-title').textContent   = t.ghTitle;
+  document.getElementById('gh-modal-sub').textContent     = t.ghSub;
+  document.getElementById('disconnect-btn').textContent   = t.disconnect;
+  document.getElementById('cancel-gh-btn').textContent    = t.cancel;
+  document.getElementById('connect-gh-btn').textContent   = t.connect;
+
+  // Del modal
+  document.getElementById('del-modal-title').textContent  = t.delTitle;
+  document.getElementById('del-modal-sub').textContent    = t.delSub;
+  document.getElementById('cancel-del-btn').textContent   = t.cancel;
+  document.getElementById('confirm-del-btn').textContent  = t.del;
+
+  // GH status
+  document.getElementById('gh-status-lbl').textContent = ghCfg
+    ? `${ghCfg.owner}/${ghCfg.repo}`
+    : t.ghSetup;
+
+  // Re-render tables
+  renderDashboard();
+  renderPostsTable();
+}
+
+function toggleLang(){
+  applyUI(uiLang==='ar'?'en':'ar');
+}
+
+/* ══════════════════════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════════════════ */
+function loadCfg(){
+  try{const c=JSON.parse(localStorage.getItem(CFG_KEY));return(c&&c.token&&c.owner&&c.repo)?c:null;}
+  catch{return null;}
+}
+function saveCfg(c){localStorage.setItem(CFG_KEY,JSON.stringify(c))}
+function wipeCfg() {localStorage.removeItem(CFG_KEY)}
+
+/* ══════════════════════════════════════════════════════════
+   GITHUB API
+══════════════════════════════════════════════════════════ */
+function ghURL(){
+  return`https://api.github.com/repos/${ghCfg.owner}/${ghCfg.repo}/contents/${ghCfg.path}`;
+}
+function ghHdrs(){
+  return{
+    'Authorization':`Bearer ${ghCfg.token}`,
+    'Accept':'application/vnd.github.v3+json',
+    'Content-Type':'application/json',
+    'X-GitHub-Api-Version':'2022-11-28',
+  };
+}
+function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
+function b64d(s){return decodeURIComponent(escape(atob(s.replace(/\n/g,''))))}
+
+async function fetchData(){
+  setConn('spin',uiLang==='ar'?'جارٍ التحميل…':'Loading…');
+  progress(25);
+  try{
+    const res  = await fetch(`${ghURL()}?ref=${ghCfg.branch}&_=${Date.now()}`,{headers:ghHdrs()});
+    progress(65);
+    if(res.status===401) throw new Error(uiLang==='ar'?'Token غير صالح':'Invalid token');
+    if(res.status===404) throw new Error(uiLang==='ar'?'ملف أو مستودع غير موجود':'File or repo not found');
+    if(!res.ok)          throw new Error(`GitHub ${res.status}`);
+    const d = await res.json();
+    absorb(d);
+    setConn('on',`${ghCfg.owner}/${ghCfg.repo}`);
+    document.getElementById('stat-conn').textContent = '✓';
+    progress(100);setTimeout(()=>progress(0),500);
+  }catch(e){
+    setConn('err',uiLang==='ar'?'خطأ بالاتصال':'Connection error');
+    toast(e.message,'err');
+    await loadLocal();
+    progress(0);
+  }
+}
+
+function absorb(d){
+  fileSHA=d.sha;
+  DATA=JSON.parse(b64d(d.content));
+  nextId=DATA.posts.length?Math.max(...DATA.posts.map(p=>p.id))+1:1;
+  renderDashboard();
+  renderPostsTable();
+}
+
+async function pushData(msg){
+  if(!ghCfg){toast(uiLang==='ar'?'غير متصل بـ GitHub':'Not connected to GitHub','warn');return false;}
+  setPubBtn(true); progress(30);
+  setSbar('info',uiLang==='ar'?'⏳ جارٍ النشر في GitHub…':'⏳ Publishing to GitHub…');
+  try{
+    const res  = await fetch(ghURL(),{
+      method:'PUT',headers:ghHdrs(),
+      body:JSON.stringify({message:msg,content:b64e(JSON.stringify(DATA,null,2)),sha:fileSHA,branch:ghCfg.branch})
+    });
+    const json = await res.json();
+    progress(80);
+    if(res.status===409){await fetchData();return await pushData(msg);}
+    if(!res.ok) throw new Error(json.message||`GitHub ${res.status}`);
+    fileSHA=json.content.sha;
+    progress(100);setTimeout(()=>progress(0),600);
+    setSbar('ok',uiLang==='ar'?`✓ نُشر في الفرع ${ghCfg.branch}`:`✓ Published to ${ghCfg.branch}`);
+    document.getElementById('last-saved').textContent=(uiLang==='ar'?'نُشر: ':'Published: ')+new Date().toLocaleTimeString();
+    toast(uiLang==='ar'?'نُشر بنجاح ✓':'Published ✓','ok');
+    renderDashboard();renderPostsTable();
+    return true;
+  }catch(e){
+    progress(0);setSbar('err','✗ '+e.message);
+    toast(e.message,'err');return false;
+  }finally{setPubBtn(false);}
+}
+
+/* ══════════════════════════════════════════════════════════
+   LOCAL FALLBACK
+══════════════════════════════════════════════════════════ */
+async function loadLocal(){
+  try{const r=await fetch('data.json?v='+Date.now());DATA=await r.json();}
+  catch{DATA={settings:{lang:'ar'},posts:[]};}
+  nextId=DATA.posts.length?Math.max(...DATA.posts.map(p=>p.id))+1:1;
+  renderDashboard();renderPostsTable();
+}
+
+/* ══════════════════════════════════════════════════════════
+   GH MODAL
+══════════════════════════════════════════════════════════ */
+function openGHModal(){
+  if(ghCfg){
+    document.getElementById('gi-owner').value  = ghCfg.owner||'';
+    document.getElementById('gi-repo').value   = ghCfg.repo||'';
+    document.getElementById('gi-branch').value = ghCfg.branch||'main';
+    document.getElementById('gi-path').value   = ghCfg.path||'data.json';
+  }
+  document.getElementById('gh-modal').classList.add('open');
+}
+function closeGHModal(){document.getElementById('gh-modal').classList.remove('open')}
+
+async function connectGH(){
+  const token  = gv('gi-token');
+  const owner  = gv('gi-owner');
+  const repo   = gv('gi-repo');
+  const branch = gv('gi-branch')||'main';
+  const path   = gv('gi-path')||'data.json';
+  if(!owner||!repo){toast(uiLang==='ar'?'أدخل اسم المستخدم والمستودع':'Enter username and repo','err');return;}
+  if(!token&&!ghCfg?.token){toast(uiLang==='ar'?'أدخل الـ Token':'Enter Token','err');return;}
+  ghCfg={token:token||ghCfg.token,owner,repo,branch,path};
+  saveCfg(ghCfg);closeGHModal();
+  setConn('spin',uiLang==='ar'?'جارٍ الاتصال…':'Connecting…');
+  await fetchData();
+}
+
+function disconnectGH(){
+  if(!confirm(uiLang==='ar'?'قطع الاتصال بـ GitHub؟':'Disconnect from GitHub?')) return;
+  wipeCfg();ghCfg=null;fileSHA='';closeGHModal();
+  setConn('off',uiLang==='ar'?'غير متصل':'Not connected');
+  toast(uiLang==='ar'?'تم قطع الاتصال':'Disconnected','warn');
+}
+
+/* ══════════════════════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════════════════════ */
+function renderDashboard(){
+  const ar = uiLang==='ar';
+  document.getElementById('stat-posts').textContent = DATA.posts.length;
+  document.getElementById('stat-cats').textContent  = [...new Set(DATA.posts.map(p=>p.category))].length;
+  document.getElementById('posts-badge').textContent= DATA.posts.length;
+
+  const recent = [...DATA.posts].reverse().slice(0,5);
+  const list   = document.getElementById('recent-list');
+  if(!recent.length){
+    list.innerHTML=`<div class="empty"><span class="empty-icon">✦</span><span class="empty-txt">${UI[uiLang].noPosts}</span></div>`;
+    return;
+  }
+  list.innerHTML = recent.map(p=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;
+      padding:0.75rem 1rem;border-bottom:1px solid var(--border);cursor:pointer;
+      transition:background var(--T)" onmouseover="this.style.background='var(--surface2)'"
+      onmouseout="this.style.background=''"
+      onclick="goTo('editor');editPost(${p.id})">
+      <div>
+        <div style="font-size:0.82rem;color:var(--text);font-family:var(--ff-ar);margin-bottom:0.15rem">${esc(ar?p.title:(p.titleEn||p.title))}</div>
+        <div style="font-size:0.68rem;color:var(--text3);font-family:var(--ff-mono)">${p.date||''}</div>
+      </div>
+      <span style="font-family:var(--ff-ttl);font-size:0.46rem;letter-spacing:0.14em;
+        color:var(--gold);border:1px solid var(--border2);padding:0.15rem 0.5rem;border-radius:20px">
+        ${esc(ar?p.category:(p.categoryEn||p.category))}
+      </span>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════════════
+   POSTS TABLE
+══════════════════════════════════════════════════════════ */
+function renderPostsTable(filter=''){
+  const ar   = uiLang==='ar';
+  const rows = DATA.posts.filter(p=>{
+    if(!filter) return true;
+    const t = (ar?p.title:(p.titleEn||p.title)||'').toLowerCase();
+    return t.includes(filter.toLowerCase());
+  });
+  const tbody = document.getElementById('posts-tbody');
+  if(!rows.length){
+    tbody.innerHTML=`<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--text3);font-style:italic">${UI[uiLang].noPosts}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(p=>`
+    <tr>
+      <td><div class="pt-title">${esc(ar?p.title:(p.titleEn||p.title))}</div></td>
+      <td><span class="pt-cat">${esc(ar?p.category:(p.categoryEn||p.category))}</span></td>
+      <td style="font-family:var(--ff-mono);font-size:0.72rem;color:var(--text3)">${p.date||''}</td>
+      <td>
+        <div class="pt-acts">
+          <button class="pt-btn edit" onclick="goTo('editor');editPost(${p.id})" title="تعديل">✎</button>
+          <button class="pt-btn del"  onclick="setDelId(${p.id})" title="حذف">✕</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function filterPosts(v){renderPostsTable(v)}
+
+/* ══════════════════════════════════════════════════════════
+   EDITOR — NEW / EDIT
+══════════════════════════════════════════════════════════ */
+function newPost(){
+  editingId=null;
+  document.getElementById('editor-title-lbl').textContent = UI[uiLang].edTitle;
+  document.getElementById('del-btn').style.display='none';
+  clearEditorFields();
+  document.getElementById('f-date').value          = todayISO();
+  document.getElementById('f-author-ar').value     = DATA.settings.authorName||'الغازي';
+  document.getElementById('f-author-en').value     = DATA.settings.authorNameEn||'ELGhazi';
+  document.getElementById('last-saved').textContent='';
+  setSbar('info',UI[uiLang].edSbarTxt);
+}
+
+function editPost(id){
+  const p = DATA.posts.find(x=>x.id===id);
+  if(!p) return;
+  editingId=id;
+  document.getElementById('editor-title-lbl').textContent = uiLang==='ar'?'تعديل مقال':'Edit Article';
+  document.getElementById('del-btn').style.display='inline-flex';
+  sv('f-title-ar',  p.title);     sv('f-title-en',  p.titleEn||'');
+  sv('f-exc-ar',    p.excerpt);   sv('f-exc-en',    p.excerptEn||'');
+  sv('f-body-ar',   p.content);   sv('f-body-en',   p.contentEn||'');
+  sv('f-author-ar', p.author);    sv('f-author-en', p.authorEn||'');
+  sv('f-cat-ar',    p.category);  sv('f-cat-en',    p.categoryEn||'');
+  sv('f-date',      p.date);      sv('f-img',       p.image||'');
+  document.getElementById('last-saved').textContent='';
+  setSbar('info',uiLang==='ar'?`تعديل "${p.title}"…`:`Editing "${p.titleEn||p.title}"…`);
+}
+
+function clearEditorFields(){
+  ['f-title-ar','f-title-en','f-exc-ar','f-exc-en','f-body-ar','f-body-en',
+   'f-author-ar','f-author-en','f-cat-ar','f-cat-en','f-date','f-img']
+  .forEach(id=>sv(id,''));
+}
+
+async function savePost(){
+  const titleAr = gv('f-title-ar');
+  const bodyAr  = gv('f-body-ar');
+  if(!titleAr||!bodyAr){
+    toast(uiLang==='ar'?'العنوان والمحتوى العربي إلزاميان':'Arabic title & content required','err');
+    return;
+  }
+  const post={
+    title:      titleAr,         titleEn:    gv('f-title-en'),
+    author:     gv('f-author-ar'),authorEn:  gv('f-author-en'),
+    date:       gv('f-date')||todayISO(),
+    category:   gv('f-cat-ar'),  categoryEn: gv('f-cat-en'),
+    image:      gv('f-img'),
+    excerpt:    gv('f-exc-ar'),  excerptEn:  gv('f-exc-en'),
+    content:    bodyAr,          contentEn:  gv('f-body-en'),
+  };
+  let msg='';
+  if(editingId!==null){
+    const i=DATA.posts.findIndex(p=>p.id===editingId);
+    if(i!==-1){DATA.posts[i]={id:editingId,...post};msg=`edit: "${titleAr}"`;}
+  }else{
+    const id=nextId++;editingId=id;
+    DATA.posts.push({id,...post});
+    msg=`feat: add "${titleAr}"`;
+    document.getElementById('del-btn').style.display='inline-flex';
+  }
+  localStorage.setItem('elghazi_data_local',JSON.stringify(DATA));
+  await pushData(msg);
+}
+
+/* ══════════════════════════════════════════════════════════
+   DELETE
+══════════════════════════════════════════════════════════ */
+let delTargetId=null;
+function setDelId(id){delTargetId=id;document.getElementById('del-modal').classList.add('open')}
+function confirmDel(){setDelId(editingId)}
+function closeDelModal(){document.getElementById('del-modal').classList.remove('open')}
+
+async function execDel(){
+  const id = delTargetId??editingId;
+  if(id===null) return;
+  const p    = DATA.posts.find(x=>x.id===id);
+  const title= p?(uiLang==='ar'?p.title:(p.titleEn||p.title)):'';
+  DATA.posts = DATA.posts.filter(x=>x.id!==id);
+  closeDelModal();
+  if(editingId===id){editingId=null;newPost();}
+  localStorage.setItem('elghazi_data_local',JSON.stringify(DATA));
+  await pushData(`delete: "${title}"`);
+  delTargetId=null;
+}
+
+/* ══════════════════════════════════════════════════════════
+   FIELD LANG TABS
+══════════════════════════════════════════════════════════ */
+function fieldLang(field,lang,btn){
+  const map={
+    title:['f-title-ar','f-title-en'],
+    exc:  ['f-exc-ar',  'f-exc-en'],
+    body: ['f-body-ar', 'f-body-en'],
+  };
+  const [arId,enId]=map[field];
+  document.getElementById(arId).style.display=lang==='ar'?'':'none';
+  document.getElementById(enId).style.display=lang==='en'?'':'none';
+  btn.parentElement.querySelectorAll('.ltab')
+    .forEach(b=>b.classList.toggle('on',b===btn));
+}
+
+/* ══════════════════════════════════════════════════════════
+   SETTINGS
+══════════════════════════════════════════════════════════ */
+function populateSettings(){
+  const S=DATA.settings||{};
+  sv('s-name-ar',      S.siteName||'');
+  sv('s-name-en',      S.siteNameEn||'');
+  sv('s-tag-ar',       S.tagline||'');
+  sv('s-tag-en',       S.taglineEn||'');
+  sv('s-quote-ar',     S.heroQuote||'');
+  sv('s-quote-src-ar', S.heroQuoteSource||'');
+  sv('s-quote-en',     S.heroQuoteEn||'');
+  sv('s-quote-src-en', S.heroQuoteSourceEn||'');
+  sv('s-footer-ar',    S.footerText||'');
+  sv('s-footer-en',    S.footerTextEn||'');
+  sv('s-lang',         S.lang||'ar');
+  const T=S.theme||{};
+  sv('c-primary',T.primary||'#2c1810');
+  sv('c-gold',   T.gold   ||'#c9a84c');
+  sv('c-stone',  T.stone  ||'#c8b89a');
+  sv('c-olive',  T.olive  ||'#6b7c4a');
+  sv('c-bg',     T.bg     ||'#f5f0e8');
+  sv('c-text',   T.text   ||'#1a0f08');
+  // Claude key
+  const key=localStorage.getItem(AI_KEY_KEY)||'';
+  sv('s-claude-key',key);
+}
+
+async function saveSettings(){
+  // Save Claude key separately
+  const claudeKey=gv('s-claude-key');
+  if(claudeKey) localStorage.setItem(AI_KEY_KEY,claudeKey);
+  checkAIKey();
+
+  DATA.settings={
+    lang:              gv('s-lang'),
+    siteName:          gv('s-name-ar'),
+    siteNameEn:        gv('s-name-en'),
+    tagline:           gv('s-tag-ar'),
+    taglineEn:         gv('s-tag-en'),
+    heroQuote:         gv('s-quote-ar'),
+    heroQuoteSource:   gv('s-quote-src-ar'),
+    heroQuoteEn:       gv('s-quote-en'),
+    heroQuoteSourceEn: gv('s-quote-src-en'),
+    footerText:        gv('s-footer-ar'),
+    footerTextEn:      gv('s-footer-en'),
+    authorName:        DATA.settings.authorName||'الغازي',
+    authorNameEn:      DATA.settings.authorNameEn||'ELGhazi',
+    theme:{
+      primary:gv('c-primary'),gold:gv('c-gold'),
+      stone:gv('c-stone'),olive:gv('c-olive'),
+      bg:gv('c-bg'),text:gv('c-text'),
+    }
+  };
+  const btn=document.getElementById('save-settings-btn');
+  btn.disabled=true;
+  btn.innerHTML=`<span class="spin"></span> ${uiLang==='ar'?'جارٍ النشر…':'Publishing…'}`;
+  const ok=await pushData('settings: update configuration');
+  btn.disabled=false;
+  btn.innerHTML=`⬆ <span>${UI[uiLang].saveSettings}</span>`;
+  if(!ok) toast(uiLang==='ar'?'الإعدادات محفوظة محلياً فقط — اربط GitHub للنشر':'Settings saved locally — connect GitHub to publish','warn');
+}
+
+/* ══════════════════════════════════════════════════════════
+   AI ASSISTANT — Claude API
+══════════════════════════════════════════════════════════ */
+function checkAIKey(){
+  const key = localStorage.getItem(AI_KEY_KEY);
+  const notice = document.getElementById('ai-key-notice');
+  if(notice) notice.style.display = key ? 'none' : 'flex';
+}
+
+async function sendAI(){
+  const inp = document.getElementById('ai-input');
+  const msg = inp.value.trim();
+  if(!msg) return;
+
+  const key = localStorage.getItem(AI_KEY_KEY);
+  if(!key){
+    toast(uiLang==='ar'?'أدخل Claude API Key في الإعدادات':'Enter Claude API Key in Settings','warn');
+    goTo('settings');
+    return;
+  }
+
+  inp.value='';
+  inp.style.height='42px';
+
+  appendMsg('user', msg);
+  chatHistory.push({role:'user',content:msg});
+
+  const typingId = appendMsg('bot','',true);
+  document.getElementById('ai-send-btn').disabled=true;
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true',
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:`أنت مساعد ذكي متخصص في إنشاء وتحرير محتوى المدونات العربية. تساعد في كتابة المقالات، الترجمة بين العربية والإنجليزية، تحسين النصوص، اقتراح العناوين، وتحسين SEO. أجب بإيجاز واحترافية. اللغة الحالية للمستخدم: ${uiLang==='ar'?'العربية':'الإنجليزية'}.`,
+        messages: chatHistory.slice(-10),
+      })
+    });
+
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || (uiLang==='ar'?'لم أتلقَّ رداً':'No response received');
+
+    updateMsg(typingId, reply);
+    chatHistory.push({role:'assistant',content:reply});
+  }catch(e){
+    updateMsg(typingId, uiLang==='ar'?`خطأ: ${e.message}`:`Error: ${e.message}`);
+  }finally{
+    document.getElementById('ai-send-btn').disabled=false;
+  }
+}
+
+function appendMsg(role,text,typing=false){
+  const id   = 'msg_'+Date.now();
+  const msgs = document.getElementById('ai-messages');
+  const ar   = uiLang==='ar';
+  const avatar = role==='bot'
+    ? '<div class="ai-avatar bot">✦</div>'
+    : `<div class="ai-avatar usr">${ar?'أنا':'Me'}</div>`;
+  const bubble = `<div class="ai-bubble${typing?' typing':''}" id="${id}">${typing?'':esc(text).replace(/\n/g,'<br/>')}</div>`;
+  const div = document.createElement('div');
+  div.className=`ai-msg ${role}`;
+  div.innerHTML = role==='bot' ? avatar+bubble : bubble+avatar;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  return id;
+}
+
+function updateMsg(id,text){
+  const el=document.getElementById(id);
+  if(el){
+    el.classList.remove('typing');
+    el.innerHTML=esc(text).replace(/\n/g,'<br/>');
+    el.closest('.ai-messages').scrollTop=99999;
+  }
+}
+
+function clearChat(){
+  chatHistory=[];
+  const msgs=document.getElementById('ai-messages');
+  msgs.innerHTML='';
+  appendMsg('bot',UI[uiLang].aiWelcome);
+}
+
+function aiQuick(type){
+  const ar=uiLang==='ar';
+  const prompts={
+    write:  ar?'اكتب مقالاً قصيراً عن الصبر والأمل في الأوقات الصعبة.':'Write a short article about patience and hope in difficult times.',
+    translate: ar?'ترجم هذا النص للإنجليزية:\n[ضع النص هنا]':'Translate this text to Arabic:\n[paste text here]',
+    improve: ar?'حسّن هذا النص وأجعله أكثر تأثيراً:\n[ضع النص هنا]':'Improve this text and make it more impactful:\n[paste text here]',
+    title:   ar?'اقترح ١٠ عناوين لمقال عن الكرامة الإنسانية.':'Suggest 10 titles for an article about human dignity.',
+    seo:     ar?'اقترح وصف SEO لمقال بعنوان "الزيتون لا يكذب".':'Suggest SEO description for an article titled "The Olive Never Lies".',
+  };
+  document.getElementById('ai-input').value=prompts[type]||'';
+  document.getElementById('ai-input').focus();
+}
+
+function aiAssistEditor(){
+  const title = gv('f-title-ar')||gv('f-title-en');
+  const ar    = uiLang==='ar';
+  if(title){
+    document.getElementById('ai-input').value =
+      ar ? `اكتب محتوى مقال كامل بعنوان: "${title}"`
+         : `Write full article content for the title: "${title}"`;
+  }
+  goTo('ai');
+}
+
+function aiKeyDown(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAI();}
+}
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,120)+'px';
+}
+
+/* ══════════════════════════════════════════════════════════
+   UI HELPERS
+══════════════════════════════════════════════════════════ */
+function setConn(state,label){
+  ['conn-dot','conn-dot2'].forEach(id=>{
+    const d=document.getElementById(id);
+    if(d) d.className='dot'+(state==='on'?' on':state==='spin'?' spin':state==='err'?' err':'');
+  });
+  document.getElementById('conn-txt').textContent = label;
+  document.getElementById('conn-repo-name').textContent = label;
+  document.getElementById('repo-pill').classList.toggle('connected',state==='on');
+  document.getElementById('gh-pill')?.classList?.toggle('ok',state==='on');
+}
+
+function setSbar(type,html){
+  const b=document.getElementById('ed-sbar');
+  if(!b) return;
+  const icons={info:'ℹ️',ok:'✅',warn:'⚠️',err:'❌'};
+  b.className=`sbar ${type}`;
+  b.innerHTML=`<span>${icons[type]}</span><span>${html}</span>`;
+}
+
+function setPubBtn(on){
+  ['pub-btn'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){
+      el.disabled=on;
+      const lbl=on?`<span class="spin"></span> ${uiLang==='ar'?'جارٍ النشر…':'Publishing…'}`:`⬆ <span>${UI[uiLang].pub}</span>`;
+      el.innerHTML=lbl;
+    }
+  });
+}
+
+function progress(p){document.getElementById('pbar').style.width=p+'%'}
+
+function toast(msg,type='ok'){
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  const icons={ok:'✓',err:'✗',warn:'⚠',info:'i'};
+  el.innerHTML=`<span>${icons[type]||''}</span>${esc(msg)}`;
+  document.getElementById('toasts').appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),400);},4000);
+}
+
+function gv(id){return(document.getElementById(id)?.value||'').trim()}
+function sv(id,v){const el=document.getElementById(id);if(el)el.value=v||''}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function todayISO(){return new Date().toISOString().split('T')[0]}
+
+/* ══════════════════════════════════════════════════════════
+   KEYBOARD
+══════════════════════════════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.getElementById('gh-modal').classList.remove('open');
+    document.getElementById('del-modal').classList.remove('open');
+  }
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){
+    e.preventDefault();
+    if(document.getElementById('panel-editor').classList.contains('active')) savePost();
+    if(document.getElementById('panel-settings').classList.contains('active')) saveSettings();
+  }
+});
+
+/* mobile menu button */
+window.addEventListener('resize',()=>{
+  document.getElementById('menu-btn').style.display=window.innerWidth<=768?'flex':'none';
+});
+if(window.innerWidth<=768) document.getElementById('menu-btn').style.display='flex';
+</script>
+</body>
+</html>
