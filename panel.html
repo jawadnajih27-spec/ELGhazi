@@ -1439,19 +1439,34 @@ function wipeCfg(){localStorage.removeItem(CFG_KEY)}
 /* ══════════════════════════════════════════════════════
    GITHUB API
 ══════════════════════════════════════════════════════ */
-function ghBase(path=''){
-  return`https://api.github.com/repos/${ghCfg.owner}/${ghCfg.repo}/contents/${path}`;
+function ghBase(path){
+  const base = `https://api.github.com/repos/${ghCfg.owner}/${ghCfg.repo}/contents`;
+  return path ? `${base}/${path}` : base;
 }
 function ghHdrs(){
   return{
-    'Authorization':`Bearer ${ghCfg.token}`,
+    'Authorization':`token ${ghCfg.token}`,
     'Accept':'application/vnd.github.v3+json',
     'Content-Type':'application/json',
-    'X-GitHub-Api-Version':'2022-11-28',
   };
 }
 function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
 function b64d(s){return decodeURIComponent(escape(atob(s.replace(/\n/g,''))))}
+
+/* fetch with timeout */
+async function ghFetch(url, opts={}, timeoutMs=15000){
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), timeoutMs);
+  try{
+    const res = await fetch(url, {...opts, signal:ctrl.signal});
+    clearTimeout(timer);
+    return res;
+  }catch(e){
+    clearTimeout(timer);
+    if(e.name==='AbortError') throw new Error(uiLang==='ar'?'انتهت مهلة الاتصال — تحقق من الـ Token والمستودع':'Connection timeout — check Token and repo name');
+    throw e;
+  }
+}
 
 /* list repo files */
 async function loadFiles(){
@@ -1459,9 +1474,13 @@ async function loadFiles(){
   progress(20);
   setDot('spin', uiLang==='ar'?'جارٍ التحميل…':'Loading…');
   try{
-    const res = await fetch(ghBase()+'?ref='+ghCfg.branch+'&_='+Date.now(),{headers:ghHdrs()});
+    const url = `${ghBase()}?ref=${ghCfg.branch}&_=${Date.now()}`;
+    const res = await ghFetch(url, {headers:ghHdrs()});
     progress(65);
-    if(!res.ok) throw new Error('HTTP '+res.status);
+    if(res.status===401) throw new Error(uiLang==='ar'?'Token غير صالح أو منتهي الصلاحية':'Invalid or expired Token');
+    if(res.status===404) throw new Error(uiLang==='ar'?'المستودع غير موجود — تحقق من الاسم':'Repo not found — check the name');
+    if(res.status===403) throw new Error(uiLang==='ar'?'ليس لديك صلاحية الوصول':'Access denied — check Token permissions');
+    if(!res.ok) throw new Error(`GitHub error ${res.status}`);
     const data = await res.json();
     repoFiles  = Array.isArray(data)?data:[];
     renderFilesGrid();
@@ -1469,7 +1488,7 @@ async function loadFiles(){
     setDot('on',`${ghCfg.owner}/${ghCfg.repo}`);
     progress(100);setTimeout(()=>progress(0),500);
   }catch(e){
-    setDot('err',uiLang==='ar'?'خطأ':'Error');
+    setDot('err', e.message);
     toast(e.message,'err');
     progress(0);
   }
@@ -1477,8 +1496,9 @@ async function loadFiles(){
 
 /* get file content */
 async function getFile(path){
-  const res = await fetch(ghBase(path)+'?ref='+ghCfg.branch+'&_='+Date.now(),{headers:ghHdrs()});
-  if(!res.ok) throw new Error('HTTP '+res.status);
+  const url = `${ghBase(path)}?ref=${ghCfg.branch}&_=${Date.now()}`;
+  const res = await ghFetch(url,{headers:ghHdrs()});
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
 
@@ -1486,19 +1506,19 @@ async function getFile(path){
 async function putFile(path, content, message, sha=null){
   const body = {message, content:b64e(content), branch:ghCfg.branch};
   if(sha) body.sha = sha;
-  const res  = await fetch(ghBase(path),{method:'PUT',headers:ghHdrs(),body:JSON.stringify(body)});
+  const res  = await ghFetch(ghBase(path),{method:'PUT',headers:ghHdrs(),body:JSON.stringify(body)});
   const json = await res.json();
-  if(!res.ok) throw new Error(json.message||'HTTP '+res.status);
+  if(!res.ok) throw new Error(json.message||`HTTP ${res.status}`);
   return json;
 }
 
 /* delete file */
 async function deleteFile(path, sha, message){
-  const res  = await fetch(ghBase(path),{
+  const res = await ghFetch(ghBase(path),{
     method:'DELETE',headers:ghHdrs(),
     body:JSON.stringify({message, sha, branch:ghCfg.branch})
   });
-  if(!res.ok){const j=await res.json();throw new Error(j.message||'HTTP '+res.status);}
+  if(!res.ok){const j=await res.json();throw new Error(j.message||`HTTP ${res.status}`);}
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1519,12 +1539,48 @@ async function connectGH(){
   const owner  = gv('gi-owner');
   const repo   = gv('gi-repo');
   const branch = gv('gi-branch')||'main';
-  if(!owner||!repo){toast(uiLang==='ar'?'أدخل اسم المستخدم والمستودع':'Enter username and repo','err');return;}
-  if(!token&&!ghCfg?.token){toast(uiLang==='ar'?'أدخل الـ Token':'Enter Token','err');return;}
-  ghCfg={token:token||ghCfg.token, owner, repo, branch};
-  saveCfg(ghCfg);closeGH();
-  setDot('spin',uiLang==='ar'?'جارٍ الاتصال…':'Connecting…');
-  await loadFiles();
+
+  if(!owner||!repo){
+    toast(uiLang==='ar'?'أدخل اسم المستخدم والمستودع':'Enter username and repo','err');
+    return;
+  }
+  if(!token&&!ghCfg?.token){
+    toast(uiLang==='ar'?'أدخل الـ Token':'Enter Token','err');
+    return;
+  }
+
+  const finalToken = token||ghCfg.token;
+  const btn = document.getElementById('ghm-connect');
+  btn.disabled=true;
+  btn.innerHTML=`<span class="spin"></span>`;
+
+  /* test connection first */
+  try{
+    const testUrl = `https://api.github.com/repos/${owner}/${repo}`;
+    const testRes = await ghFetch(testUrl,{
+      headers:{
+        'Authorization':`token ${finalToken}`,
+        'Accept':'application/vnd.github.v3+json',
+      }
+    },10000);
+
+    if(testRes.status===401) throw new Error(uiLang==='ar'?'Token غير صالح — أنشئ token جديد':'Invalid Token — create a new one');
+    if(testRes.status===404) throw new Error(uiLang==='ar'?`المستودع "${repo}" غير موجود`:`Repo "${repo}" not found`);
+    if(!testRes.ok)          throw new Error(`GitHub ${testRes.status}`);
+
+    ghCfg = {token:finalToken, owner, repo, branch};
+    saveCfg(ghCfg);
+    closeGH();
+    setDot('spin', uiLang==='ar'?'جارٍ تحميل الملفات…':'Loading files…');
+    await loadFiles();
+
+  }catch(e){
+    toast(e.message,'err');
+    setDot('err', e.message);
+  }finally{
+    btn.disabled=false;
+    btn.textContent = T[uiLang].ghmConnect;
+  }
 }
 
 function disconnectGH(){
