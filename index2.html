@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="description" content="Landing Factory v3 — منشئ صفحات الهبوط الاحترافية">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<title>Landing Factory v3 — NJSERVICES</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Noto+Kufi+Arabic:wght@100;400;700;900&display=swap" rel="stylesheet">
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+:root {
+  --bg: #050508;
+  --bg2: #0d0d18;
+  --surface: rgba(255,255,255,0.04);
+  --surface2: rgba(255,255,255,0.08);
+  --border: rgba(255,255,255,0.08);
+  --gold: #c9a84c;
+  --gold2: #f0d080;
+  --gold-dim: rgba(201,168,76,0.15);
+  --accent: #7c6ef5;
+  --accent2: #a594ff;
+  --text: #f0ece0;
+  --text2: #9e9880;
+  --danger: #e05c5c;
+  --success: #5ce0a0;
+  --radius: 16px;
+  --radius2: 24px;
+  --font: 'Tajawal', sans-serif;
+  --font2: 'Noto Kufi Arabic', sans-serif;
+  --shadow: 0 8px 40px rgba(0,0,0,0.6);
+  --glow: 0 0 40px rgba(201,168,76,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  direction: rtl;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+/* ── HEADER ── */
+#header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  background: rgba(5,5,8,0.7);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-family: var(--font2);
+  font-weight: 900;
+  font-size: 18px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.05em;
+}
+
+.logo span {
+  font-weight: 300;
+  color: var(--text2);
+  -webkit-text-fill-color: var(--text2);
+  font-size: 12px;
+  display: block;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+#header-actions { display: flex; gap: 10px; align-items: center; }
+
+.btn {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.btn-ghost {
+  background: var(--surface);
+  color: var(--text2);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: var(--surface2); color: var(--text); }
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), #a87c30);
+  color: #0a0a0f;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.3);
+}
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,0.45); }
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(124,110,245,0.3);
+}
+.btn-accent:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,110,245,0.45); }
+
+.btn-danger { background: rgba(224,92,92,0.15); color: var(--danger); border: 1px solid rgba(224,92,92,0.3); }
+.btn-danger:hover { background: rgba(224,92,92,0.25); }
+
+.btn-sm { font-size: 12px; padding: 7px 14px; border-radius: 9px; }
+
+/* ── SCREENS ── */
+.screen { display: none; padding-top: 80px; min-height: 100vh; }
+.screen.active { display: block; }
+
+/* ── HOME ── */
+#screen-home {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding-top: 0;
+  position: relative;
+  overflow: hidden;
+}
+#screen-home.active { display: flex; min-height: 100vh; }
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  animation: float 8s ease-in-out infinite;
+}
+.orb1 { width: 500px; height: 500px; background: radial-gradient(circle, var(--gold), transparent 70%); top: -100px; right: -100px; animation-delay: 0s; }
+.orb2 { width: 400px; height: 400px; background: radial-gradient(circle, var(--accent), transparent 70%); bottom: -50px; left: -80px; animation-delay: -3s; }
+.orb3 { width: 300px; height: 300px; background: radial-gradient(circle, #5c8ae0, transparent 70%); top: 40%; left: 40%; animation-delay: -6s; }
+
+@keyframes float {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(30px,-20px) scale(1.05); }
+  66% { transform: translate(-20px,30px) scale(0.95); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 720px;
+  padding: 40px 20px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gold-dim);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
+}
+
+.hero-title {
+  font-family: var(--font2);
+  font-size: clamp(36px, 7vw, 72px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #fff 0%, var(--gold) 50%, var(--gold2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: clamp(15px, 2vw, 18px);
+  color: var(--text2);
+  line-height: 1.7;
+  margin-bottom: 48px;
+  max-width: 500px;
+  margin-left: auto; margin-right: auto;
+}
+
+.hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  margin-top: 64px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  text-align: center;
+}
+.stat-num {
+  font-family: var(--font2);
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--gold);
+  display: block;
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--text2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── TEMPLATES GRID ── */
+#screen-templates { padding: 100px 24px 60px; }
+
+.page-title {
+  font-family: var(--font2);
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.page-sub { color: var(--text2); font-size: 15px; margin-bottom: 40px; }
+
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.template-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.template-card:hover {
+  border-color: rgba(201,168,76,0.4);
+  transform: translateY(-4px);
+  box-shadow: var(--glow);
+}
+
+.template-card:hover .card-overlay { opacity: 1; }
+
+.card-preview {
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(4px);
+}
+
+.card-info { padding: 20px; }
+.card-name {
+  font-family: var(--font2);
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.card-desc { font-size: 13px; color: var(--text2); line-height: 1.5; margin-bottom: 14px; }
+.card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  background: var(--surface);
+}
+.tag.gold { border-color: rgba(201,168,76,0.4); color: var(--gold2); background: var(--gold-dim); }
+
+/* Template Preview Boxes */
+.preview-luxury {
+  background: linear-gradient(135deg, #0a080f 0%, #1a1220 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-luxury::before {
+  content: 'LUXE';
+  font-family: var(--font2);
+  font-size: 32px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #c9a84c, #f0d080);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.4em;
+}
+
+.preview-neon {
+  background: linear-gradient(135deg, #020a1a 0%, #060d20 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.preview-neon::before {
+  content: 'NEON';
+  font-family: var(--font2);
+  font-size: 36px;
+  font-weight: 900;
+  color: #0ff;
+  text-shadow: 0 0 20px #0ff, 0 0 40px #0ff;
+  letter-spacing: 0.3em;
+  animation: flicker 3s ease-in-out infinite;
+}
+@keyframes flicker {
+  0%,100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.7; }
+  94% { opacity: 1; }
+  95% { opacity: 0.8; }
+}
+
+.preview-glass {
+  background: linear-gradient(135deg, #1a1040 0%, #0f2040 50%, #102030 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-glass::before {
+  content: '';
+  width: 80px; height: 80px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.preview-arabic {
+  background: linear-gradient(135deg, #0f1a0a 0%, #1a2810 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-arabic::before {
+  content: 'عربي';
+  font-family: var(--font2);
+  font-size: 48px;
+  font-weight: 900;
+  color: #5ce08a;
+  text-shadow: 0 0 30px rgba(92,224,138,0.5);
+}
+
+.preview-minimal {
+  background: linear-gradient(135deg, #f8f4ef 0%, #eee8df 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-minimal::before {
+  content: 'MINIMAL';
+  font-size: 18px;
+  font-weight: 300;
+  color: #333;
+  letter-spacing: 0.5em;
+}
+
+/* ── BUILDER ── */
+#screen-builder { padding: 80px 0 0; }
+
+.builder-layout {
+  display: flex;
+  height: calc(100vh - 80px);
+}
+
+.builder-sidebar {
+  width: 340px;
+  min-width: 280px;
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-title {
+  font-family: var(--font2);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sidebar-body { padding: 20px; flex: 1; }
+
+.field-group { margin-bottom: 24px; }
+.field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+.field-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  direction: rtl;
+}
+.field-input:focus { border-color: rgba(201,168,76,0.5); }
+.field-input::placeholder { color: var(--text2); }
+
+textarea.field-input { resize: vertical; min-height: 80px; }
+
+.color-row { display: flex; gap: 8px; align-items: center; }
+.color-input {
+  width: 40px; height: 38px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  padding: 2px;
+}
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Builder Preview */
+.builder-preview {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  background: #1a1a2e;
+}
+
+.preview-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(0,0,0,0.3);
+  border-bottom: 1px solid var(--border);
+}
+
+.preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-r { background: #e05c5c; }
+.dot-y { background: #e0c05c; }
+.dot-g { background: #5ce08a; }
+
+.preview-url {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: var(--text2);
+  text-align: center;
+  font-family: monospace;
+}
+
+.preview-frame {
+  width: 100%;
+  height: calc(100% - 45px);
+  border: none;
+  background: #fff;
+}
+
+/* ── DEPLOY MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  max-width: 520px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+}
+
+.modal-header {
+  padding: 24px 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.modal-title {
+  font-family: var(--font2);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.modal-close {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.modal-close:hover { background: var(--surface2); color: var(--text); }
+
+.modal-body { padding: 0 24px 24px; }
+
+/* ── STEP WIZARD ── */
+.steps {
+  display: flex;
+  gap: 0;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+
+.step-tab {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  text-align: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  font-family: var(--font);
+}
+
+.step-tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+.step-pane { display: none; }
+.step-pane.active { display: block; }
+
+/* ── LOG ── */
+.deploy-log {
+  background: #0a0a0f;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  height: 200px;
+  overflow-y: auto;
+  color: #5ce08a;
+}
+.log-line { display: flex; gap: 8px; }
+.log-time { color: var(--text2); }
+.log-ok { color: var(--success); }
+.log-err { color: var(--danger); }
+.log-info { color: var(--gold2); }
+.log-pending { color: var(--accent2); }
+
+/* ── TOAST ── */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 14px;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: toastIn 0.3s ease;
+  max-width: 320px;
+}
+.toast.success { border-color: rgba(92,224,160,0.4); }
+.toast.error { border-color: rgba(224,92,92,0.4); }
+.toast.info { border-color: rgba(201,168,76,0.4); }
+
+@keyframes toastIn {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* ── MY PAGES ── */
+#screen-pages { padding: 100px 24px 60px; }
+
+.pages-list { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+
+.page-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transition: border-color 0.2s;
+}
+.page-item:hover { border-color: rgba(201,168,76,0.3); }
+
+.page-item-info { flex: 1; }
+.page-item-name {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.page-item-meta {
+  font-size: 12px;
+  color: var(--text2);
+  display: flex;
+  gap: 16px;
+}
+.page-item-actions { display: flex; gap: 8px; }
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text2);
+}
+.empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+.empty-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+.empty-desc { font-size: 14px; line-height: 1.6; }
+
+/* ── SETTINGS ── */
+#screen-settings { padding: 100px 24px 60px; max-width: 600px; margin: 0 auto; }
+
+.settings-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.settings-card-title {
+  font-family: var(--font2);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── PROGRESS BAR ── */
+.progress-bar {
+  height: 4px;
+  background: var(--surface2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold2));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+/* ── MOBILE NAV ── */
+#mobile-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(5,5,8,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  z-index: 100;
+  padding: 8px 0 env(safe-area-inset-bottom, 0);
+}
+
+.mobile-nav-inner {
+  display: flex;
+  justify-content: space-around;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.05em;
+}
+
+.nav-item.active { color: var(--gold); }
+.nav-item svg { width: 22px; height: 22px; }
+
+/* ── PWA BANNER ── */
+#pwa-banner {
+  display: none;
+  position: fixed;
+  bottom: 70px;
+  left: 16px; right: 16px;
+  background: var(--bg2);
+  border: 1px solid rgba(201,168,76,0.4);
+  border-radius: 16px;
+  padding: 16px 20px;
+  z-index: 150;
+  box-shadow: var(--shadow), var(--glow);
+  flex-direction: column;
+  gap: 12px;
+}
+.pwa-banner-text {
+  font-size: 14px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pwa-banner-actions { display: flex; gap: 8px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  #mobile-nav { display: block; }
+  #header { padding: 12px 16px; }
+  #header .btn span { display: none; }
+  .builder-layout { flex-direction: column; }
+  .builder-sidebar { width: 100%; height: 50vh; overflow-y: auto; border-left: none; border-bottom: 1px solid var(--border); }
+  .builder-preview { height: 50vh; }
+  body { padding-bottom: 70px; }
+}
+
+@media (max-width: 480px) {
+  .templates-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 24px; }
+  .stat-num { font-size: 24px; }
+}
+
+/* ── SECTION DIVIDER ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 24px 0;
+}
+
+/* ── SELECT ── */
+select.field-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%239e9880'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+.toggle-label { font-size: 14px; color: var(--text); }
+.toggle {
+  width: 44px; height: 24px;
+  background: var(--surface2);
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: background 0.3s;
+}
+.toggle.on { background: var(--gold); border-color: var(--gold); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  top: 2px; right: 2px;
+  transition: right 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.toggle.on::after { right: calc(100% - 20px); }
+
+/* ── GRADIENT TEXT ── */
+.text-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ══ HEADER ══ -->
+<header id="header">
+  <div class="logo">
+    Landing Factory
+    <span>v3 PWA · NJSERVICES</span>
+  </div>
+  <div id="header-actions">
+    <button class="btn btn-ghost btn-sm" onclick="goto('pages')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      <span>صفحاتي</span>
+    </button>
+    <button class="btn btn-gold btn-sm" onclick="goto('templates')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 4v16m-8-8h16"/></svg>
+      إنشاء صفحة
+    </button>
+  </div>
+</header>
+
+<!-- ══ SCREEN: HOME ══ -->
+<section id="screen-home" class="screen active">
+  <div class="hero-bg">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+  <div class="hero-content" id="hero">
+    <div class="hero-badge">الإصدار الثالث · النسخة PWA</div>
+    <h1 class="hero-title">أنشئ صفحات<br>احترافية في دقائق</h1>
+    <p class="hero-sub">5 قوالب متقدمة بتأثيرات GSAP و Glassmorphism و3D. انشر مباشرة على GitHub Pages بنقرة واحدة. بدون كود. بدون سيرفر.</p>
+    <div class="hero-cta">
+      <button class="btn btn-gold" onclick="goto('templates')" style="font-size:16px;padding:14px 32px;">
+        ابدأ الآن
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <button class="btn btn-ghost" onclick="goto('pages')" style="font-size:16px;padding:14px 32px;">
+        صفحاتي
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num" id="count-templates">5</span>
+        <span class="stat-label">قالب احترافي</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="count-pages">0</span>
+        <span class="stat-label">صفحة تم إنشاؤها</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">PWA</span>
+        <span class="stat-label">قابل للتثبيت</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCREEN: TEMPLATES ══ -->
+<section id="screen-templates" class="screen">
+  <div class="page-title">اختر قالباً</div>
+  <div class="page-sub">5 قوالب متقدمة بتصاميم استثنائية</div>
+  <div class="templates-grid" id="templates-grid"></div>
+</section>
+
+<!-- ══ SCREEN: BUILDER ══ -->
+<section id="screen-builder" class="screen">
+  <div class="builder-layout">
+    <!-- Sidebar -->
+    <aside class="builder-sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">تخصيص الصفحة</span>
+        <button class="btn btn-ghost btn-sm" onclick="goto('templates')">← رجوع</button>
+      </div>
+      <div class="sidebar-body">
+
+        <div class="field-group">
+          <label class="field-label">اسم الصفحة (slug)</label>
+          <input class="field-input" id="f-slug" placeholder="my-page" dir="ltr" oninput="previewUpdate()">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">العنوان الرئيسي</label>
+          <input class="field-input" id="f-title" placeholder="عنوان صفحتك" oninput="previewUpdate()">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">النص التعريفي</label>
+          <textarea class="field-input" id="f-desc" placeholder="وصف مميز لمنتجك أو خدمتك" oninput="previewUpdate()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">نص زر الواتساب</label>
+          <input class="field-input" id="f-cta" placeholder="تواصل معنا الآن" oninput="previewUpdate()">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">رقم واتساب</label>
+          <input class="field-input" id="f-phone" placeholder="0703652247" dir="ltr" oninput="previewUpdate()">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">اللون الأساسي</label>
+          <div class="color-row">
+            <input type="color" class="color-input" id="f-color" value="#c9a84c" oninput="previewUpdate()">
+            <input class="field-input" id="f-color-hex" placeholder="#c9a84c" dir="ltr" oninput="syncColorHex()">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">شعار النص</label>
+          <input class="field-input" id="f-brand" placeholder="شركتك" oninput="previewUpdate()">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">ميزة 1</label>
+          <input class="field-input" id="f-feat1" placeholder="جودة عالية" oninput="previewUpdate()">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">ميزة 2</label>
+          <input class="field-input" id="f-feat2" placeholder="توصيل سريع" oninput="previewUpdate()">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">ميزة 3</label>
+          <input class="field-input" id="f-feat3" placeholder="دعم 24/7" oninput="previewUpdate()">
+        </div>
+
+      </div>
+      <div class="sidebar-footer">
+        <button class="btn btn-accent" onclick="openDeploy()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+          نشر على GitHub Pages
+        </button>
+        <button class="btn btn-ghost" onclick="downloadHTML()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          تحميل HTML
+        </button>
+      </div>
+    </aside>
+
+    <!-- Preview -->
+    <div class="builder-preview">
+      <div class="preview-toolbar">
+        <div class="preview-dot dot-r"></div>
+        <div class="preview-dot dot-y"></div>
+        <div class="preview-dot dot-g"></div>
+        <div class="preview-url" id="preview-url-bar">معاينة مباشرة</div>
+      </div>
+      <iframe class="preview-frame" id="preview-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCREEN: MY PAGES ══ -->
+<section id="screen-pages" class="screen">
+  <div class="page-title">صفحاتي</div>
+  <div class="page-sub">جميع الصفحات التي تم إنشاؤها</div>
+  <div id="pages-list-container"></div>
+</section>
+
+<!-- ══ SCREEN: SETTINGS ══ -->
+<section id="screen-settings" class="screen">
+  <div class="page-title">الإعدادات</div>
+  <div class="page-sub">إعداد حساب GitHub وتفضيلات النشر</div>
+
+  <div class="settings-card">
+    <div class="settings-card-title">🔑 بيانات GitHub</div>
+
+    <div class="field-group">
+      <label class="field-label">GitHub Personal Access Token</label>
+      <input class="field-input" id="s-token" type="password" placeholder="ghp_..." dir="ltr" oninput="saveSettings()">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">اسم المستودع (Repository)</label>
+      <input class="field-input" id="s-repo" placeholder="ELGhazi" dir="ltr" oninput="saveSettings()">
+      <div style="font-size:11px;color:var(--text2);margin-top:6px;">سيتم النشر في: jawadnajih27-spec.github.io/<span id="s-repo-preview">ELGhazi</span></div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">مجلد النشر</label>
+      <input class="field-input" id="s-folder" placeholder="pages" dir="ltr" oninput="saveSettings()">
+    </div>
+
+  </div>
+
+  <div class="settings-card">
+    <div class="settings-card-title">📱 الواتساب الافتراضي</div>
+    <div class="field-group">
+      <label class="field-label">رقم الواتساب</label>
+      <input class="field-input" id="s-phone" placeholder="0703652247" dir="ltr" oninput="saveSettings()">
+    </div>
+  </div>
+
+  <div class="settings-card">
+    <div class="settings-card-title">⚙️ تفضيلات</div>
+    <div class="toggle-row">
+      <span class="toggle-label">حفظ تلقائي للمسودات</span>
+      <div class="toggle on" id="tog-autosave" onclick="toggleSetting('autosave')"></div>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-label">فتح الصفحة بعد النشر</span>
+      <div class="toggle on" id="tog-open" onclick="toggleSetting('open')"></div>
+    </div>
+  </div>
+
+  <button class="btn btn-danger" onclick="clearAllData()" style="margin-top:8px;">
+    مسح جميع البيانات
+  </button>
+</section>
+
+<!-- ══ MOBILE NAV ══ -->
+<nav id="mobile-nav">
+  <div class="mobile-nav-inner">
+    <div class="nav-item active" data-screen="home" onclick="goto('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      الرئيسية
+    </div>
+    <div class="nav-item" data-screen="templates" onclick="goto('templates')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      القوالب
+    </div>
+    <div class="nav-item" data-screen="pages" onclick="goto('pages')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      صفحاتي
+    </div>
+    <div class="nav-item" data-screen="settings" onclick="goto('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      الإعدادات
+    </div>
+  </div>
+</nav>
+
+<!-- ══ DEPLOY MODAL ══ -->
+<div class="modal-overlay" id="deploy-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🚀 نشر الصفحة</span>
+      <button class="modal-close" onclick="closeDeploy()">×</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="steps">
+        <div class="step-tab active" data-step="1" onclick="goStep(1)">١ · التحقق</div>
+        <div class="step-tab" data-step="2" onclick="goStep(2)">٢ · النشر</div>
+        <div class="step-tab" data-step="3" onclick="goStep(3)">٣ · مكتمل</div>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="step-pane active" id="step-1">
+        <div class="field-group">
+          <label class="field-label">GitHub Token</label>
+          <input class="field-input" id="d-token" type="password" placeholder="ghp_..." dir="ltr">
+        </div>
+        <div class="field-group">
+          <label class="field-label">المستودع</label>
+          <input class="field-input" id="d-repo" placeholder="ELGhazi" dir="ltr">
+        </div>
+        <div class="field-group">
+          <label class="field-label">المجلد</label>
+          <input class="field-input" id="d-folder" placeholder="pages" dir="ltr" value="pages">
+        </div>
+        <div style="margin-top:8px;">
+          <div class="field-label" style="margin-bottom:8px;">رابط النشر المتوقع:</div>
+          <div style="font-size:13px;color:var(--gold2);background:var(--surface);padding:10px 14px;border-radius:10px;font-family:monospace;direction:ltr;" id="deploy-url-preview">—</div>
+        </div>
+        <div class="divider"></div>
+        <button class="btn btn-gold" style="width:100%;" onclick="startDeploy()">
+          تأكيد النشر
+        </button>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-pane" id="step-2">
+        <div style="margin-bottom:12px;font-size:14px;color:var(--text2);">جاري رفع الملفات إلى GitHub...</div>
+        <div class="progress-bar"><div class="progress-fill" id="deploy-progress"></div></div>
+        <div style="margin-top:16px;">
+          <div class="deploy-log" id="deploy-log"></div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-pane" id="step-3">
+        <div style="text-align:center;padding:32px 0;">
+          <div style="font-size:56px;margin-bottom:16px;">🎉</div>
+          <div style="font-family:var(--font2);font-size:20px;font-weight:800;margin-bottom:8px;color:var(--text);">تم النشر بنجاح!</div>
+          <div style="font-size:14px;color:var(--text2);margin-bottom:24px;">صفحتك الآن مباشرة على الإنترنت</div>
+          <div style="font-size:13px;background:var(--surface);padding:12px;border-radius:12px;font-family:monospace;color:var(--gold2);direction:ltr;margin-bottom:20px;word-break:break-all;" id="final-url"></div>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+            <button class="btn btn-gold" id="btn-open-page" onclick="openDeployedPage()">فتح الصفحة</button>
+            <button class="btn btn-ghost" onclick="copyFinalUrl()">نسخ الرابط</button>
+            <button class="btn btn-ghost" onclick="closeDeploy()">إغلاق</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST CONTAINER ══ -->
+<div id="toast-container"></div>
+
+<!-- ══ PWA BANNER ══ -->
+<div id="pwa-banner">
+  <div class="pwa-banner-text">
+    <span style="font-size:24px;">📲</span>
+    <div>
+      <div style="font-weight:700;margin-bottom:2px;">ثبّت التطبيق</div>
+      <div style="font-size:12px;color:var(--text2);">استخدمه بدون إنترنت وبشكل أسرع</div>
+    </div>
+  </div>
+  <div class="pwa-banner-actions">
+    <button class="btn btn-gold btn-sm" id="pwa-install-btn">تثبيت</button>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('pwa-banner').style.display='none'">لاحقاً</button>
+  </div>
+</div>
+
+<!-- ══ SERVICE WORKER REGISTRATION ══ -->
+<script>
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+const STORE_KEY = 'lf3_data';
+let state = {
+  pages: [],
+  settings: {
+    token: '',
+    repo: 'ELGhazi',
+    folder: 'pages',
+    phone: '0703652247',
+    autosave: true,
+    openAfterDeploy: true
+  },
+  currentTemplate: null,
+  currentSlug: '',
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem(STORE_KEY);
+    if (s) Object.assign(state, JSON.parse(s));
+  } catch(e) {}
+}
+
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+// ─────────────────────────────────────────────
+//  TEMPLATES
+// ─────────────────────────────────────────────
+const TEMPLATES = [
+  {
+    id: 'luxury',
+    name: 'Luxury Dark',
+    desc: 'تصميم فاخر بخلفية داكنة، ذهبي، Glassmorphism وتأثيرات GSAP',
+    tags: ['فاخر','GSAP','ذهبي'],
+    preview: 'preview-luxury',
+    vars: { TITLE:'المنتج الفاخر', DESC:'جودة استثنائية لذوق رفيع', CTA:'اطلب الآن', PHONE:'0703652247', COLOR:'#c9a84c', BRAND:'LUXE', FEAT1:'جودة فاخرة', FEAT2:'ضمان أصالة', FEAT3:'توصيل VIP' }
+  },
+  {
+    id: 'neon',
+    name: 'Neon Cyber',
+    desc: 'أسلوب Cyberpunk مع توهج نيون وتأثيرات مستقبلية',
+    tags: ['Cyberpunk','Neon','3D'],
+    preview: 'preview-neon',
+    vars: { TITLE:'منتجك المستقبلي', DESC:'تقنية الغد، اليوم', CTA:'احصل عليه الآن', PHONE:'0703652247', COLOR:'#00ffcc', BRAND:'CYBER', FEAT1:'تقنية متقدمة', FEAT2:'أداء لا مثيل له', FEAT3:'ضمان 2 سنة' }
+  },
+  {
+    id: 'glass',
+    name: 'Glassmorphism',
+    desc: 'تأثير الزجاج الشفاف مع تدرجات عميقة وبوكيه ضبابي',
+    tags: ['Glass','Blur','عصري'],
+    preview: 'preview-glass',
+    vars: { TITLE:'الأناقة الشفافة', DESC:'تصميم يتجاوز الحدود', CTA:'استكشف الآن', PHONE:'0703652247', COLOR:'#7c6ef5', BRAND:'GLASS', FEAT1:'تصميم عصري', FEAT2:'تجربة فريدة', FEAT3:'دعم مستمر' }
+  },
+  {
+    id: 'arabic',
+    name: 'Arabic Green',
+    desc: 'هوية عربية أصيلة بلون أخضر زمردي وخطوط عربية فاخرة',
+    tags: ['عربي','RTL','زمردي'],
+    preview: 'preview-arabic',
+    vars: { TITLE:'منتجك العربي', DESC:'أصالة وجودة في كل تفصيل', CTA:'تواصل معنا', PHONE:'0703652247', COLOR:'#2ecc71', BRAND:'عربي', FEAT1:'هوية أصيلة', FEAT2:'جودة مضمونة', FEAT3:'خدمة متميزة' }
+  },
+  {
+    id: 'minimal',
+    name: 'Minimal White',
+    desc: 'بساطة راقية، أبيض نقي مع لمسات مدروسة وطباعة حديثة',
+    tags: ['أبيض','بسيط','أنيق'],
+    preview: 'preview-minimal',
+    vars: { TITLE:'البساطة فن', DESC:'أقل هو أكثر، والجودة تتكلم', CTA:'تواصل معنا الآن', PHONE:'0703652247', COLOR:'#1a1a2e', BRAND:'MINIMAL', FEAT1:'تصميم نظيف', FEAT2:'وضوح كامل', FEAT3:'أداء ممتاز' }
+  }
+];
+
+// ─────────────────────────────────────────────
+//  NAVIGATION
+// ─────────────────────────────────────────────
+let currentScreen = 'home';
+
+function goto(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screen).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.screen === screen);
+  });
+  currentScreen = screen;
+  if (screen === 'pages') renderPages();
+  if (screen === 'settings') loadSettingsUI();
+  if (screen === 'templates') renderTemplates();
+}
+
+// ─────────────────────────────────────────────
+//  TEMPLATES RENDER
+// ─────────────────────────────────────────────
+function renderTemplates() {
+  const grid = document.getElementById('templates-grid');
+  grid.innerHTML = TEMPLATES.map(t => `
+    <div class="template-card" onclick="selectTemplate('${t.id}')">
+      <div class="card-preview ${t.preview}">
+        <div class="card-overlay">
+          <button class="btn btn-gold">استخدم هذا القالب</button>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-name">${t.name}</div>
+        <div class="card-desc">${t.desc}</div>
+        <div class="card-tags">
+          ${t.tags.map(tag => `<span class="tag gold">${tag}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectTemplate(id) {
+  state.currentTemplate = TEMPLATES.find(t => t.id === id);
+  const v = state.currentTemplate.vars;
+  document.getElementById('f-title').value = v.TITLE;
+  document.getElementById('f-desc').value = v.DESC;
+  document.getElementById('f-cta').value = v.CTA;
+  document.getElementById('f-phone').value = state.settings.phone || v.PHONE;
+  document.getElementById('f-color').value = v.COLOR;
+  document.getElementById('f-color-hex').value = v.COLOR;
+  document.getElementById('f-brand').value = v.BRAND;
+  document.getElementById('f-feat1').value = v.FEAT1;
+  document.getElementById('f-feat2').value = v.FEAT2;
+  document.getElementById('f-feat3').value = v.FEAT3;
+  document.getElementById('f-slug').value = id + '-' + Date.now().toString(36);
+  goto('builder');
+  setTimeout(previewUpdate, 100);
+}
+
+// ─────────────────────────────────────────────
+//  GET FORM VALUES
+// ─────────────────────────────────────────────
+function getVars() {
+  return {
+    TITLE: document.getElementById('f-title').value || 'عنوان الصفحة',
+    DESC:  document.getElementById('f-desc').value  || 'وصف الصفحة',
+    CTA:   document.getElementById('f-cta').value   || 'تواصل معنا',
+    PHONE: document.getElementById('f-phone').value || '0703652247',
+    COLOR: document.getElementById('f-color').value || '#c9a84c',
+    BRAND: document.getElementById('f-brand').value || 'Brand',
+    FEAT1: document.getElementById('f-feat1').value || 'ميزة 1',
+    FEAT2: document.getElementById('f-feat2').value || 'ميزة 2',
+    FEAT3: document.getElementById('f-feat3').value || 'ميزة 3',
+    SLUG:  document.getElementById('f-slug').value  || 'page',
+    YEAR:  new Date().getFullYear(),
+    WA_LINK: `https://wa.me/212${(document.getElementById('f-phone').value||'0703652247').replace(/^0/,'')}?text=${encodeURIComponent('مرحباً، أريد الاستفسار عن منتجاتكم')}`
+  };
+}
+
+// ─────────────────────────────────────────────
+//  TEMPLATE HTML GENERATORS
+// ─────────────────────────────────────────────
+function generateHTML(templateId, vars) {
+  const generators = {
+    luxury: genLuxury,
+    neon:   genNeon,
+    glass:  genGlass,
+    arabic: genArabic,
+    minimal: genMinimal
+  };
+  return (generators[templateId] || genLuxury)(vars);
+}
+
+function genLuxury(v) { return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${v.TITLE} — ${v.BRAND}</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@100;400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"><\/script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Kufi Arabic',sans-serif;background:#050508;color:#f0ece0;min-height:100vh;overflow-x:hidden;direction:rtl}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 80% 0%,rgba(${hexToRgb(v.COLOR)},0.15) 0%,transparent 60%),radial-gradient(ellipse at 20% 100%,rgba(${hexToRgb(v.COLOR)},0.1) 0%,transparent 60%);pointer-events:none;z-index:0}
+nav{position:fixed;top:0;left:0;right:0;padding:16px 32px;display:flex;justify-content:space-between;align-items:center;background:rgba(5,5,8,0.6);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);z-index:100}
+.logo{font-weight:900;font-size:20px;background:linear-gradient(135deg,${v.COLOR},#f0d080);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-cta{background:linear-gradient(135deg,${v.COLOR},${darken(v.COLOR,20)});color:#050508;font-weight:700;padding:10px 24px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;font-size:14px;text-decoration:none;display:inline-block}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:80px 24px 60px;text-align:center;position:relative}
+.hero-content{position:relative;z-index:1;max-width:700px}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(${hexToRgb(v.COLOR)},0.1);border:1px solid rgba(${hexToRgb(v.COLOR)},0.3);border-radius:100px;padding:6px 18px;font-size:12px;color:${v.COLOR};letter-spacing:.1em;margin-bottom:28px}
+h1{font-size:clamp(36px,7vw,68px);font-weight:900;line-height:1.1;margin-bottom:20px;background:linear-gradient(135deg,#fff,${v.COLOR},#f0d080);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.desc{font-size:clamp(15px,2vw,18px);color:rgba(240,236,224,0.6);line-height:1.7;margin-bottom:44px;max-width:500px;margin-left:auto;margin-right:auto}
+.wa-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;padding:16px 36px;border-radius:14px;font-size:18px;font-weight:700;text-decoration:none;transition:all .3s;box-shadow:0 8px 30px rgba(37,211,102,0.3)}
+.wa-btn:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(37,211,102,0.45)}
+.features{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:60px}
+.feat{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:28px 24px;flex:1;min-width:180px;max-width:220px;text-align:center;transition:all .3s}
+.feat:hover{border-color:rgba(${hexToRgb(v.COLOR)},0.4);transform:translateY(-4px)}
+.feat-icon{font-size:36px;margin-bottom:14px}
+.feat-name{font-weight:700;font-size:15px;margin-bottom:6px}
+.feat-desc{font-size:12px;color:rgba(240,236,224,0.5)}
+footer{text-align:center;padding:40px 24px;border-top:1px solid rgba(255,255,255,0.06);color:rgba(240,236,224,0.3);font-size:12px}
+.star{color:${v.COLOR}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">${v.BRAND}</div>
+  <a href="${v.WA_LINK}" class="nav-cta" target="_blank">${v.CTA}</a>
+</nav>
+<section class="hero">
+  <div class="hero-content" id="hero-content">
+    <div class="badge"><span>✦</span> ${v.BRAND}</div>
+    <h1>${v.TITLE}</h1>
+    <p class="desc">${v.DESC}</p>
+    <a href="${v.WA_LINK}" class="wa-btn" target="_blank">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      ${v.CTA}
+    </a>
+    <div class="features">
+      <div class="feat"><div class="feat-icon">⭐</div><div class="feat-name">${v.FEAT1}</div><div class="feat-desc">تجربة لا مثيل لها</div></div>
+      <div class="feat"><div class="feat-icon">🚀</div><div class="feat-name">${v.FEAT2}</div><div class="feat-desc">سرعة ودقة في التنفيذ</div></div>
+      <div class="feat"><div class="feat-icon">💎</div><div class="feat-name">${v.FEAT3}</div><div class="feat-desc">رضاك هو أولويتنا</div></div>
+    </div>
+  </div>
+</section>
+<footer>© ${v.YEAR} ${v.BRAND} · جميع الحقوق محفوظة · <span class="star">NJSERVICES</span></footer>
+<script>
+gsap.from("#hero-content > *",{y:40,opacity:0,stagger:.15,duration:.9,ease:"power3.out",delay:.2});
+<\/script>
+</body>
+</html>`; }
+
+function genNeon(v) { return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${v.TITLE}</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"><\/script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Kufi Arabic',sans-serif;background:#020a1a;color:#e0f0ff;min-height:100vh;overflow-x:hidden;direction:rtl}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,255,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none}
+nav{position:fixed;top:0;left:0;right:0;padding:14px 32px;display:flex;justify-content:space-between;align-items:center;background:rgba(2,10,26,0.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,255,255,0.1);z-index:100}
+.logo{font-weight:900;font-size:20px;color:${v.COLOR};text-shadow:0 0 20px ${v.COLOR},0 0 40px ${v.COLOR}}
+.nav-cta{background:transparent;border:1px solid ${v.COLOR};color:${v.COLOR};font-weight:700;padding:10px 24px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:14px;text-decoration:none;transition:all .3s;text-shadow:0 0 10px ${v.COLOR};box-shadow:0 0 10px rgba(${hexToRgb(v.COLOR)},0.2),inset 0 0 10px rgba(${hexToRgb(v.COLOR)},0.05)}
+.nav-cta:hover{background:rgba(${hexToRgb(v.COLOR)},0.1);box-shadow:0 0 30px rgba(${hexToRgb(v.COLOR)},0.5)}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 24px 60px;text-align:center;position:relative}
+.glitch{font-size:clamp(40px,8vw,80px);font-weight:900;color:${v.COLOR};text-shadow:0 0 20px ${v.COLOR},0 0 50px ${v.COLOR},0 0 80px ${v.COLOR};line-height:1.1;margin-bottom:20px;animation:glitch-anim 4s infinite}
+@keyframes glitch-anim{0%,100%{text-shadow:0 0 20px ${v.COLOR},0 0 50px ${v.COLOR}}10%{text-shadow:-2px 0 #ff0,2px 0 #f0f,0 0 40px ${v.COLOR}}11%{text-shadow:2px 0 #ff0,-2px 0 #f0f,0 0 20px ${v.COLOR}}}
+.sub{font-size:clamp(15px,2vw,18px);color:rgba(224,240,255,0.6);line-height:1.7;margin-bottom:44px;max-width:500px;margin-left:auto;margin-right:auto}
+.wa-btn{display:inline-flex;align-items:center;gap:10px;background:transparent;color:${v.COLOR};padding:16px 40px;border-radius:12px;font-size:18px;font-weight:700;text-decoration:none;transition:all .3s;border:2px solid ${v.COLOR};text-shadow:0 0 10px ${v.COLOR};box-shadow:0 0 20px rgba(${hexToRgb(v.COLOR)},0.2),inset 0 0 20px rgba(${hexToRgb(v.COLOR)},0.05)}
+.wa-btn:hover{background:rgba(${hexToRgb(v.COLOR)},0.1);box-shadow:0 0 40px rgba(${hexToRgb(v.COLOR)},0.5),0 0 80px rgba(${hexToRgb(v.COLOR)},0.2);transform:translateY(-3px)}
+.feats{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:64px}
+.feat{border:1px solid rgba(${hexToRgb(v.COLOR)},0.2);border-radius:16px;padding:24px;min-width:160px;max-width:200px;text-align:center;background:rgba(${hexToRgb(v.COLOR)},0.03);transition:all .3s}
+.feat:hover{border-color:${v.COLOR};box-shadow:0 0 20px rgba(${hexToRgb(v.COLOR)},0.2);transform:translateY(-4px)}
+.feat-i{font-size:32px;margin-bottom:10px}
+.feat-n{font-weight:700;font-size:14px;color:${v.COLOR};margin-bottom:4px}
+footer{text-align:center;padding:32px;border-top:1px solid rgba(${hexToRgb(v.COLOR)},0.1);color:rgba(224,240,255,0.3);font-size:12px}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<nav>
+  <div class="logo">${v.BRAND}</div>
+  <a href="${v.WA_LINK}" class="nav-cta" target="_blank">${v.CTA}</a>
+</nav>
+<section class="hero">
+  <div id="content">
+    <div class="glitch">${v.TITLE}</div>
+    <p class="sub">${v.DESC}</p>
+    <a href="${v.WA_LINK}" class="wa-btn" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      ${v.CTA}
+    </a>
+    <div class="feats">
+      <div class="feat"><div class="feat-i">⚡</div><div class="feat-n">${v.FEAT1}</div></div>
+      <div class="feat"><div class="feat-i">🔮</div><div class="feat-n">${v.FEAT2}</div></div>
+      <div class="feat"><div class="feat-i">🛡️</div><div class="feat-n">${v.FEAT3}</div></div>
+    </div>
+  </div>
+</section>
+<footer>© ${v.YEAR} ${v.BRAND} · NJSERVICES</footer>
+<script>gsap.from("#content > *",{y:50,opacity:0,stagger:.2,duration:1,ease:"power3.out"});<\/script>
+</body>
+</html>`; }
+
+function genGlass(v) { return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${v.TITLE}</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"><\/script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',sans-serif;background:linear-gradient(135deg,#0f0828 0%,#0a1428 40%,#041428 100%);color:#e8e4ff;min-height:100vh;overflow-x:hidden;direction:rtl}
+.orbs{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.4}
+.o1{width:600px;height:600px;background:radial-gradient(circle,${v.COLOR},transparent 70%);top:-200px;right:-100px}
+.o2{width:400px;height:400px;background:radial-gradient(circle,#5c8ae0,transparent 70%);bottom:-100px;left:-100px}
+.glass{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);backdrop-filter:blur(20px);border-radius:24px;box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.15)}
+nav{position:fixed;top:0;left:0;right:0;padding:14px 32px;display:flex;justify-content:space-between;align-items:center;background:rgba(15,8,40,0.5);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.08);z-index:100}
+.logo{font-weight:900;font-size:20px;color:#fff}
+.nav-cta{background:linear-gradient(135deg,${v.COLOR},rgba(${hexToRgb(v.COLOR)},0.7));color:#fff;font-weight:700;padding:10px 24px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;font-size:14px;text-decoration:none;transition:all .3s;box-shadow:0 4px 20px rgba(${hexToRgb(v.COLOR)},0.3)}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 24px 60px;position:relative}
+.card-hero{class:glass;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(30px);border-radius:32px;padding:60px 48px;text-align:center;max-width:680px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.15);position:relative;z-index:1}
+h1{font-size:clamp(32px,6vw,60px);font-weight:900;line-height:1.15;margin-bottom:16px;color:#fff}
+h1 span{background:linear-gradient(135deg,${v.COLOR},#a594ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+p{font-size:16px;color:rgba(232,228,255,0.65);line-height:1.7;margin-bottom:40px}
+.wa-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;padding:16px 40px;border-radius:14px;font-size:17px;font-weight:700;text-decoration:none;transition:all .3s;box-shadow:0 8px 24px rgba(37,211,102,0.3)}
+.wa-btn:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(37,211,102,0.45)}
+.feats{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:48px}
+.feat{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;min-width:150px;max-width:190px;text-align:center;backdrop-filter:blur(10px)}
+.feat-n{font-weight:700;font-size:13px;margin-top:8px;color:rgba(232,228,255,0.9)}
+footer{text-align:center;padding:32px;border-top:1px solid rgba(255,255,255,0.06);color:rgba(232,228,255,0.3);font-size:12px;position:relative;z-index:1}
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb o1"></div><div class="orb o2"></div></div>
+<nav>
+  <div class="logo">${v.BRAND}</div>
+  <a href="${v.WA_LINK}" class="nav-cta" target="_blank">${v.CTA}</a>
+</nav>
+<section class="hero">
+  <div class="card-hero" id="card">
+    <h1>${v.TITLE} <span>✦</span></h1>
+    <p>${v.DESC}</p>
+    <a href="${v.WA_LINK}" class="wa-btn" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      ${v.CTA}
+    </a>
+    <div class="feats">
+      <div class="feat"><span style="font-size:28px">✨</span><div class="feat-n">${v.FEAT1}</div></div>
+      <div class="feat"><span style="font-size:28px">🎯</span><div class="feat-n">${v.FEAT2}</div></div>
+      <div class="feat"><span style="font-size:28px">💫</span><div class="feat-n">${v.FEAT3}</div></div>
+    </div>
+  </div>
+</section>
+<footer>© ${v.YEAR} ${v.BRAND} · NJSERVICES</footer>
+<script>gsap.from("#card",{y:60,opacity:0,duration:1.2,ease:"power4.out"});gsap.from("#card > *",{y:30,opacity:0,stagger:.15,duration:.8,ease:"power3.out",delay:.3});<\/script>
+</body>
+</html>`; }
+
+function genArabic(v) { return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${v.TITLE}</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"><\/script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',sans-serif;background:linear-gradient(160deg,#060f04 0%,#0a1a08 100%);color:#e8f5e8;min-height:100vh;overflow-x:hidden;direction:rtl}
+.pattern{position:fixed;inset:0;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23${v.COLOR.replace('#','')}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+nav{position:fixed;top:0;left:0;right:0;padding:14px 32px;display:flex;justify-content:space-between;align-items:center;background:rgba(6,15,4,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(${hexToRgb(v.COLOR)},0.15);z-index:100}
+.logo{font-family:'Amiri',serif;font-size:24px;font-weight:700;color:${v.COLOR};text-shadow:0 0 20px rgba(${hexToRgb(v.COLOR)},0.4)}
+.nav-cta{background:linear-gradient(135deg,${v.COLOR},${darken(v.COLOR,30)});color:#060f04;font-weight:700;padding:10px 24px;border-radius:10px;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;text-decoration:none;transition:all .3s}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 24px 60px;text-align:center;position:relative}
+.divider{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:24px}
+.divider-line{height:1px;width:60px;background:linear-gradient(90deg,transparent,${v.COLOR})}
+.divider-star{color:${v.COLOR};font-size:20px}
+h1{font-family:'Amiri',serif;font-size:clamp(38px,7vw,72px);font-weight:700;line-height:1.2;margin-bottom:16px;color:${v.COLOR};text-shadow:0 0 40px rgba(${hexToRgb(v.COLOR)},0.3)}
+p{font-size:18px;color:rgba(232,245,232,0.6);line-height:1.8;margin-bottom:44px;max-width:500px;margin-left:auto;margin-right:auto}
+.wa-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;padding:16px 40px;border-radius:14px;font-size:17px;font-weight:700;text-decoration:none;transition:all .3s;box-shadow:0 8px 24px rgba(37,211,102,.3)}
+.wa-btn:hover{transform:translateY(-3px)}
+.feats{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:60px}
+.feat{border:1px solid rgba(${hexToRgb(v.COLOR)},0.2);border-radius:16px;padding:28px 20px;min-width:160px;max-width:200px;text-align:center;background:rgba(${hexToRgb(v.COLOR)},0.04);transition:all .3s}
+.feat:hover{border-color:${v.COLOR};transform:translateY(-4px)}
+.feat-i{font-size:36px;margin-bottom:10px}
+.feat-n{font-weight:700;font-size:14px;color:${v.COLOR}}
+footer{text-align:center;padding:40px 24px;border-top:1px solid rgba(${hexToRgb(v.COLOR)},0.1);color:rgba(232,245,232,0.3);font-size:13px}
+footer span{color:${v.COLOR}}
+</style>
+</head>
+<body>
+<div class="pattern"></div>
+<nav>
+  <div class="logo">${v.BRAND}</div>
+  <a href="${v.WA_LINK}" class="nav-cta" target="_blank">${v.CTA}</a>
+</nav>
+<section class="hero">
+  <div id="content">
+    <div class="divider"><div class="divider-line"></div><div class="divider-star">❋</div><div class="divider-line"></div></div>
+    <h1>${v.TITLE}</h1>
+    <p>${v.DESC}</p>
+    <a href="${v.WA_LINK}" class="wa-btn" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      ${v.CTA}
+    </a>
+    <div class="feats">
+      <div class="feat"><div class="feat-i">🌿</div><div class="feat-n">${v.FEAT1}</div></div>
+      <div class="feat"><div class="feat-i">✅</div><div class="feat-n">${v.FEAT2}</div></div>
+      <div class="feat"><div class="feat-i">🤝</div><div class="feat-n">${v.FEAT3}</div></div>
+    </div>
+  </div>
+</section>
+<footer>© ${v.YEAR} <span>${v.BRAND}</span> · بفخر من <span>NJSERVICES</span></footer>
+<script>gsap.from("#content > *",{y:40,opacity:0,stagger:.15,duration:1,ease:"power3.out",delay:.2});<\/script>
+</body>
+</html>`; }
+
+function genMinimal(v) { return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${v.TITLE}</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"><\/script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',sans-serif;background:#f8f4ef;color:#1a1a2e;min-height:100vh;overflow-x:hidden;direction:rtl}
+nav{position:fixed;top:0;left:0;right:0;padding:18px 40px;display:flex;justify-content:space-between;align-items:center;background:rgba(248,244,239,0.95);backdrop-filter:blur(10px);border-bottom:1px solid rgba(26,26,46,0.08);z-index:100}
+.logo{font-weight:900;font-size:18px;color:${v.COLOR};letter-spacing:.1em;text-transform:uppercase}
+.nav-cta{background:${v.COLOR};color:#fff;font-weight:700;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:14px;text-decoration:none;transition:all .3s}
+.nav-cta:hover{opacity:.85;transform:translateY(-1px)}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 24px 60px}
+.hero-inner{max-width:800px;width:100%}
+.eyebrow{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:rgba(26,26,46,0.4);margin-bottom:24px;font-weight:600}
+h1{font-size:clamp(40px,8vw,80px);font-weight:900;line-height:1.05;margin-bottom:24px;color:${v.COLOR}}
+.accent-line{width:60px;height:3px;background:${v.COLOR};margin-bottom:28px}
+p{font-size:18px;color:rgba(26,26,46,0.6);line-height:1.8;margin-bottom:48px;max-width:520px;font-weight:300}
+.wa-btn{display:inline-flex;align-items:center;gap:10px;background:${v.COLOR};color:#fff;padding:16px 40px;border-radius:8px;font-size:16px;font-weight:700;text-decoration:none;transition:all .3s}
+.wa-btn:hover{transform:translateY(-2px);opacity:.9}
+.feats{display:flex;gap:0;margin-top:80px;border-top:1px solid rgba(26,26,46,0.1)}
+.feat{flex:1;padding:32px 24px;border-left:1px solid rgba(26,26,46,0.08);position:relative}
+.feat:last-child{border-left:none}
+.feat::before{content:counter(feat-count);counter-increment:feat-count;font-size:40px;font-weight:900;color:rgba(26,26,46,0.05);position:absolute;top:20px;left:20px;font-family:monospace}
+.feats{counter-reset:feat-count}
+.feat-n{font-weight:700;font-size:15px;color:${v.COLOR};margin-bottom:4px}
+.feat-d{font-size:13px;color:rgba(26,26,46,0.5)}
+footer{text-align:center;padding:40px 24px;border-top:1px solid rgba(26,26,46,0.08);color:rgba(26,26,46,0.3);font-size:12px;letter-spacing:.1em}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">${v.BRAND}</div>
+  <a href="${v.WA_LINK}" class="nav-cta" target="_blank">${v.CTA}</a>
+</nav>
+<section class="hero">
+  <div class="hero-inner" id="content">
+    <div class="eyebrow">${v.BRAND} — خدمات احترافية</div>
+    <h1>${v.TITLE}</h1>
+    <div class="accent-line"></div>
+    <p>${v.DESC}</p>
+    <a href="${v.WA_LINK}" class="wa-btn" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      ${v.CTA}
+    </a>
+  </div>
+</section>
+<div style="max-width:800px;margin:0 auto;padding:0 24px">
+  <div class="feats">
+    <div class="feat"><div class="feat-n">${v.FEAT1}</div><div class="feat-d">معيار الجودة العالي</div></div>
+    <div class="feat"><div class="feat-n">${v.FEAT2}</div><div class="feat-d">سرعة التنفيذ</div></div>
+    <div class="feat"><div class="feat-n">${v.FEAT3}</div><div class="feat-d">رضا العميل أولاً</div></div>
+  </div>
+</div>
+<footer>© ${v.YEAR} ${v.BRAND} · NJSERVICES · جميع الحقوق محفوظة</footer>
+<script>gsap.from("#content > *",{y:30,opacity:0,stagger:.12,duration:.9,ease:"power3.out",delay:.1});<\/script>
+</body>
+</html>`; }
+
+// ─────────────────────────────────────────────
+//  COLOR UTILS
+// ─────────────────────────────────────────────
+function hexToRgb(hex) {
+  const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return r ? `${parseInt(r[1],16)},${parseInt(r[2],16)},${parseInt(r[3],16)}` : '201,168,76';
+}
+
+function darken(hex, amount) {
+  const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!r) return hex;
+  const d = (c) => Math.max(0, parseInt(c,16) - amount).toString(16).padStart(2,'0');
+  return `#${d(r[1])}${d(r[2])}${d(r[3])}`;
+}
+
+// ─────────────────────────────────────────────
+//  PREVIEW
+// ─────────────────────────────────────────────
+let previewDebounce;
+function previewUpdate() {
+  clearTimeout(previewDebounce);
+  previewDebounce = setTimeout(() => {
+    if (!state.currentTemplate) return;
+    const vars = getVars();
+    const html = generateHTML(state.currentTemplate.id, vars);
+    const iframe = document.getElementById('preview-iframe');
+    iframe.srcdoc = html;
+    document.getElementById('preview-url-bar').textContent =
+      `jawadnajih27-spec.github.io/${document.getElementById('d-repo')?.value || state.settings.repo || 'ELGhazi'}/${document.getElementById('d-folder')?.value || state.settings.folder || 'pages'}/${vars.SLUG}.html`;
+    updateDeployPreview();
+  }, 300);
+}
+
+function syncColorHex() {
+  const hex = document.getElementById('f-color-hex').value;
+  if (/^#[0-9a-f]{6}$/i.test(hex)) {
+    document.getElementById('f-color').value = hex;
+    previewUpdate();
+  }
+}
+
+// ─────────────────────────────────────────────
+//  DEPLOY
+// ─────────────────────────────────────────────
+let deployedUrl = '';
+
+function openDeploy() {
+  const settings = state.settings;
+  document.getElementById('d-token').value = settings.token || '';
+  document.getElementById('d-repo').value  = settings.repo  || 'ELGhazi';
+  document.getElementById('d-folder').value = settings.folder || 'pages';
+  goStep(1);
+  updateDeployPreview();
+  document.getElementById('deploy-modal').classList.add('open');
+}
+
+function closeDeploy() {
+  document.getElementById('deploy-modal').classList.remove('open');
+}
+
+function updateDeployPreview() {
+  const repo   = document.getElementById('d-repo')?.value   || state.settings.repo   || 'ELGhazi';
+  const folder = document.getElementById('d-folder')?.value || state.settings.folder || 'pages';
+  const slug   = document.getElementById('f-slug')?.value   || 'page';
+  const url    = `https://jawadnajih27-spec.github.io/${repo}/${folder}/${slug}.html`;
+  const el = document.getElementById('deploy-url-preview');
+  if (el) el.textContent = url;
+}
+
+document.addEventListener('input', function(e) {
+  if (e.target.id === 'd-repo' || e.target.id === 'd-folder') updateDeployPreview();
+});
+
+function goStep(n) {
+  document.querySelectorAll('.step-tab').forEach(t => t.classList.toggle('active', +t.dataset.step === n));
+  document.querySelectorAll('.step-pane').forEach(p => p.classList.toggle('active', p.id === 'step-' + n));
+}
+
+function addLog(msg, type='ok') {
+  const log = document.getElementById('deploy-log');
+  if (!log) return;
+  const now = new Date().toLocaleTimeString('ar');
+  const line = document.createElement('div');
+  line.className = 'log-line';
+  line.innerHTML = `<span class="log-time">[${now}]</span> <span class="log-${type}">${msg}</span>`;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
+
+function setProgress(pct) {
+  const bar = document.getElementById('deploy-progress');
+  if (bar) bar.style.width = pct + '%';
+}
+
+async function startDeploy() {
+  const token  = document.getElementById('d-token').value.trim();
+  const repo   = document.getElementById('d-repo').value.trim();
+  const folder = document.getElementById('d-folder').value.trim() || 'pages';
+
+  if (!token) { toast('يرجى إدخال GitHub Token', 'error'); return; }
+  if (!repo)  { toast('يرجى إدخال اسم المستودع', 'error'); return; }
+  if (!state.currentTemplate) { toast('يرجى اختيار قالب أولاً', 'error'); return; }
+
+  // Save settings
+  state.settings.token  = token;
+  state.settings.repo   = repo;
+  state.settings.folder = folder;
+  saveState();
+
+  goStep(2);
+  document.getElementById('deploy-log').innerHTML = '';
+  setProgress(0);
+
+  const vars = getVars();
+  const slug = vars.SLUG;
+  const html = generateHTML(state.currentTemplate.id, vars);
+  const filePath = `${folder}/${slug}.html`;
+  const owner = 'jawadnajih27-spec';
+
+  addLog('جاري التحقق من المستودع...', 'pending');
+  setProgress(20);
+
+  try {
+    // Check if file exists (get SHA)
+    let sha = null;
+    try {
+      const checkRes = await fetchGitHub(token, `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`);
+      if (checkRes.ok) {
+        const checkData = await checkRes.json();
+        sha = checkData.sha;
+        addLog('الملف موجود — سيتم تحديثه', 'info');
+      }
+    } catch(e) {}
+
+    setProgress(50);
+    addLog(`رفع الملف: ${filePath}`, 'pending');
+
+    const body = {
+      message: `✨ Landing Factory v3 — ${slug}`,
+      content: btoa(unescape(encodeURIComponent(html))),
+    };
+    if (sha) body.sha = sha;
+
+    const res = await fetchGitHub(token, `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, 'PUT', body);
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'فشل الرفع');
+    }
+
+    setProgress(100);
+    addLog('تم الرفع بنجاح! ✓', 'ok');
+
+    deployedUrl = `https://${owner}.github.io/${repo}/${filePath}`;
+    document.getElementById('final-url').textContent = deployedUrl;
+
+    // Save to pages list
+    const page = {
+      id: slug,
+      name: vars.TITLE,
+      template: state.currentTemplate.id,
+      url: deployedUrl,
+      slug: slug,
+      repo: repo,
+      folder: folder,
+      createdAt: new Date().toISOString()
+    };
+    state.pages = state.pages.filter(p => p.id !== slug);
+    state.pages.unshift(page);
+    document.getElementById('count-pages').textContent = state.pages.length;
+    saveState();
+
+    setTimeout(() => goStep(3), 600);
+    toast('تم النشر بنجاح! 🎉', 'success');
+
+  } catch(err) {
+    addLog('خطأ: ' + err.message, 'err');
+    toast('فشل النشر: ' + err.message, 'error');
+  }
+}
+
+async function fetchGitHub(token, url, method='GET', body=null) {
+  const opts = {
+    method,
+    headers: {
+      'Authorization': `token ${token}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/vnd.github.v3+json'
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(url, opts);
+}
+
+function openDeployedPage() {
+  if (deployedUrl) window.open(deployedUrl, '_blank');
+}
+
+function copyFinalUrl() {
+  navigator.clipboard?.writeText(deployedUrl).then(() => toast('تم نسخ الرابط', 'info'));
+}
+
+// ─────────────────────────────────────────────
+//  DOWNLOAD HTML
+// ─────────────────────────────────────────────
+function downloadHTML() {
+  if (!state.currentTemplate) { toast('اختر قالباً أولاً', 'error'); return; }
+  const vars = getVars();
+  const html = generateHTML(state.currentTemplate.id, vars);
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (vars.SLUG || 'page') + '.html';
+  a.click();
+  toast('تم تحميل الملف', 'success');
+}
+
+// ─────────────────────────────────────────────
+//  PAGES LIST
+// ─────────────────────────────────────────────
+function renderPages() {
+  const container = document.getElementById('pages-list-container');
+  if (!state.pages.length) {
+    container.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">📄</div>
+      <div class="empty-title">لا توجد صفحات بعد</div>
+      <div class="empty-desc">أنشئ صفحتك الأولى باختيار قالب من المكتبة</div>
+      <br>
+      <button class="btn btn-gold" onclick="goto('templates')" style="margin-top:16px">إنشاء صفحة جديدة</button>
+    </div>`;
+    return;
+  }
+  container.innerHTML = `<div class="pages-list">` +
+    state.pages.map(p => `
+      <div class="page-item">
+        <div class="page-item-info">
+          <div class="page-item-name">${p.name}</div>
+          <div class="page-item-meta">
+            <span>📁 ${p.template}</span>
+            <span>🗓 ${new Date(p.createdAt).toLocaleDateString('ar')}</span>
+            <span style="color:var(--gold2);font-family:monospace;font-size:11px">${p.slug}</span>
+          </div>
+        </div>
+        <div class="page-item-actions">
+          <a href="${p.url}" target="_blank" class="btn btn-ghost btn-sm">🔗 فتح</a>
+          <button class="btn btn-danger btn-sm" onclick="deletePage('${p.id}')">🗑</button>
+        </div>
+      </div>
+    `).join('') + `</div>`;
+}
+
+function deletePage(id) {
+  if (!confirm('حذف هذه الصفحة من القائمة؟')) return;
+  state.pages = state.pages.filter(p => p.id !== id);
+  saveState();
+  renderPages();
+  document.getElementById('count-pages').textContent = state.pages.length;
+  toast('تم حذف الصفحة من القائمة', 'info');
+}
+
+// ─────────────────────────────────────────────
+//  SETTINGS
+// ─────────────────────────────────────────────
+function loadSettingsUI() {
+  const s = state.settings;
+  document.getElementById('s-token').value  = s.token  || '';
+  document.getElementById('s-repo').value   = s.repo   || 'ELGhazi';
+  document.getElementById('s-folder').value = s.folder || 'pages';
+  document.getElementById('s-phone').value  = s.phone  || '0703652247';
+  document.getElementById('s-repo-preview').textContent = s.repo || 'ELGhazi';
+  document.getElementById('tog-autosave').className = 'toggle' + (s.autosave !== false ? ' on' : '');
+  document.getElementById('tog-open').className     = 'toggle' + (s.openAfterDeploy !== false ? ' on' : '');
+}
+
+function saveSettings() {
+  state.settings.token  = document.getElementById('s-token').value;
+  state.settings.repo   = document.getElementById('s-repo').value;
+  state.settings.folder = document.getElementById('s-folder').value;
+  state.settings.phone  = document.getElementById('s-phone').value;
+  const rp = document.getElementById('s-repo-preview');
+  if (rp) rp.textContent = state.settings.repo || 'ELGhazi';
+  saveState();
+}
+
+function toggleSetting(key) {
+  const keyMap = { autosave: 'autosave', open: 'openAfterDeploy' };
+  const stateKey = keyMap[key];
+  state.settings[stateKey] = !state.settings[stateKey];
+  const togEl = document.getElementById('tog-' + key);
+  if (togEl) togEl.className = 'toggle' + (state.settings[stateKey] ? ' on' : '');
+  saveState();
+}
+
+function clearAllData() {
+  if (!confirm('مسح جميع البيانات؟ لا يمكن التراجع!')) return;
+  localStorage.removeItem(STORE_KEY);
+  location.reload();
+}
+
+// ─────────────────────────────────────────────
+//  TOAST
+// ─────────────────────────────────────────────
+function toast(msg, type='info') {
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${icons[type]||'💬'}</span><span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(-20px)'; t.style.transition='all .3s'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+// ─────────────────────────────────────────────
+//  PWA
+// ─────────────────────────────────────────────
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('pwa-banner').style.display = 'flex';
+});
+
+document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('pwa-banner').style.display = 'none';
+  if (outcome === 'accepted') toast('تم تثبيت التطبيق! 🎉', 'success');
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('pwa-banner').style.display = 'none';
+  toast('التطبيق مثبت بنجاح!', 'success');
+});
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  const swCode = `
+const CACHE='lf3-v1';
+const ASSETS=['./','/index.html'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match('./')))));
+  `;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+
+// ─────────────────────────────────────────────
+//  GSAP HERO ANIMATION
+// ─────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  loadState();
+
+  // Restore settings defaults
+  if (!state.settings.repo)  state.settings.repo  = 'ELGhazi';
+  if (!state.settings.phone) state.settings.phone = '0703652247';
+
+  document.getElementById('count-pages').textContent = state.pages.length;
+
+  if (typeof gsap !== 'undefined') {
+    gsap.from('.hero-badge', { y: -20, opacity: 0, duration: .7, ease: 'power3.out', delay: .3 });
+    gsap.from('.hero-title', { y: 40, opacity: 0, duration: .9, ease: 'power3.out', delay: .5 });
+    gsap.from('.hero-sub',   { y: 30, opacity: 0, duration: .8, ease: 'power3.out', delay: .7 });
+    gsap.from('.hero-cta',   { y: 20, opacity: 0, duration: .7, ease: 'power3.out', delay: .9 });
+    gsap.from('.hero-stats', { y: 20, opacity: 0, duration: .7, ease: 'power3.out', delay: 1.1 });
+  }
+
+  renderTemplates();
+});
+</script>
+</body>
+</html>
