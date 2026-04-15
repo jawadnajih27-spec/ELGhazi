@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#5D8AA8">
+    <meta name="description" content="تطبيق أنيق لإدارة الوقت والمهام اليومية">
     <title>أجندتي - إدارة الوقت والمهام</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#5D8AA8">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%235D8AA8' width='192' height='192' rx='40'/%3E%3Ctext x='96' y='125' font-size='90' text-anchor='middle'%3E📅%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%235D8AA8' width='192' height='192' rx='40'/%3E%3Ctext x='96' y='125' font-size='90' text-anchor='middle'%3E📅%3C/text%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -21,13 +24,7 @@
             --shadow: 0 4px 20px rgba(0,0,0,0.08);
             --radius: 16px;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Tajawal', sans-serif;
             background: linear-gradient(135deg, #E8F4F8 0%, #F8F9FA 100%);
@@ -35,37 +32,11 @@
             min-height: 100vh;
             line-height: 1.6;
         }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            text-align: center;
-            padding: 40px 0 30px;
-        }
-
-        h1 {
-            color: var(--primary);
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .date-display {
-            color: var(--text-light);
-            font-size: 1.1rem;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 40px 0 30px; }
+        h1 { color: var(--primary); font-size: 2.5rem; margin-bottom: 10px; font-weight: 700; }
+        .date-display { color: var(--text-light); font-size: 1.1rem; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
         .stat-card {
             background: var(--surface);
             padding: 20px;
@@ -74,23 +45,9 @@
             text-align: center;
             transition: transform 0.3s;
         }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .stat-label {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-number { font-size: 2rem; font-weight: 700; color: var(--primary); }
+        .stat-label { color: var(--text-light); font-size: 0.9rem; margin-top: 5px; }
         .input-section {
             background: var(--surface);
             padding: 25px;
@@ -98,13 +55,7 @@
             box-shadow: var(--shadow);
             margin-bottom: 25px;
         }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
         input[type="text"], input[type="time"], select {
             flex: 1;
             padding: 14px 18px;
@@ -115,13 +66,11 @@
             transition: all 0.3s;
             background: var(--bg);
         }
-
         input[type="text"]:focus, input[type="time"]:focus, select:focus {
             outline: none;
             border-color: var(--primary);
             background: var(--surface);
         }
-
         button {
             padding: 14px 28px;
             background: var(--primary);
@@ -134,12 +83,7 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-
-        button:hover {
-            background: var(--primary-light);
-            transform: scale(1.02);
-        }
-
+        button:hover { background: var(--primary-light); transform: scale(1.02); }
         .tabs {
             display: flex;
             gap: 10px;
@@ -149,7 +93,6 @@
             border-radius: var(--radius);
             box-shadow: var(--shadow);
         }
-
         .tab {
             flex: 1;
             padding: 12px;
@@ -158,12 +101,7 @@
             border-radius: 10px;
             font-weight: 500;
         }
-
-        .tab.active {
-            background: var(--primary);
-            color: white;
-        }
-
+        .tab.active { background: var(--primary); color: white; }
         .content-section {
             background: var(--surface);
             border-radius: var(--radius);
@@ -171,7 +109,6 @@
             padding: 25px;
             min-height: 300px;
         }
-
         .task-item, .note-item {
             display: flex;
             align-items: center;
@@ -182,18 +119,15 @@
             transition: all 0.3s;
             border-right: 4px solid transparent;
         }
-
         .task-item:hover, .note-item:hover {
             border-right-color: var(--primary);
             transform: translateX(-5px);
         }
-
         .task-item.completed {
             opacity: 0.6;
             text-decoration: line-through;
             border-right-color: var(--success);
         }
-
         .task-checkbox {
             width: 24px;
             height: 24px;
@@ -201,53 +135,26 @@
             cursor: pointer;
             accent-color: var(--primary);
         }
-
-        .task-content {
-            flex: 1;
-        }
-
-        .task-time {
-            font-size: 0.85rem;
-            color: var(--secondary);
-            font-weight: 600;
-            margin-top: 4px;
-        }
-
+        .task-content { flex: 1; }
+        .task-time { font-size: 0.85rem; color: var(--secondary); font-weight: 600; margin-top: 4px; }
         .priority-high { border-right-color: var(--danger) !important; }
         .priority-medium { border-right-color: var(--secondary) !important; }
         .priority-low { border-right-color: var(--success) !important; }
-
         .delete-btn {
             background: transparent;
             color: var(--danger);
             padding: 8px 12px;
             font-size: 1.2rem;
         }
-
-        .delete-btn:hover {
-            background: #FED7D7;
-        }
-
+        .delete-btn:hover { background: #FED7D7; }
         .empty-state {
             text-align: center;
             padding: 60px 20px;
             color: var(--text-light);
         }
-
-        .empty-state svg {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
+        .empty-state svg { width: 80px; height: 80px; margin-bottom: 20px; opacity: 0.3; }
         .hidden { display: none; }
-
-        .pomodoro-section {
-            text-align: center;
-            padding: 40px;
-        }
-
+        .pomodoro-section { text-align: center; padding: 40px; }
         .timer-display {
             font-size: 5rem;
             font-weight: 700;
@@ -255,23 +162,19 @@
             margin: 30px 0;
             font-variant-numeric: tabular-nums;
         }
-
-        .timer-controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .timer-btn {
-            padding: 15px 30px;
+        .timer-controls { display: flex; gap: 15px; justify-content: center; }
+        .timer-btn { padding: 15px 30px; border-radius: 50px; }
+        .timer-btn.secondary { background: var(--bg); color: var(--text); }
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--secondary);
+            padding: 12px 24px;
             border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(244, 162, 97, 0.4);
+            display: none;
         }
-
-        .timer-btn.secondary {
-            background: var(--bg);
-            color: var(--text);
-        }
-
         @media (max-width: 600px) {
             h1 { font-size: 1.8rem; }
             .stats { grid-template-columns: 1fr; }
@@ -343,13 +246,13 @@
                         <button class="timer-btn secondary" onclick="pauseTimer()">⏸️ إيقاف</button>
                         <button class="timer-btn secondary" onclick="resetTimer()">🔄 إعادة</button>
                     </div>
-                    <p style="margin-top: 30px; color: var(--text-light);">
-                        25 دقيقة عمل | 5 دقيقة راحة
-                    </p>
+                    <p style="margin-top: 30px; color: var(--text-light);">25 دقيقة عمل | 5 دقيقة راحة</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <button class="install-btn" id="installBtn" onclick="installApp()">📲 تثبيت التطبيق</button>
 
     <script>
         // البيانات
@@ -358,6 +261,7 @@
         let timerInterval;
         let timeLeft = 25 * 60;
         let isRunning = false;
+        let deferredPrompt;
 
         // تهيئة التطبيق
         document.addEventListener('DOMContentLoaded', () => {
@@ -365,8 +269,8 @@
             renderTasks();
             renderNotes();
             updateStats();
+            checkShortcuts();
 
-            // Enter key support
             document.getElementById('taskInput').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') addTask();
             });
@@ -375,43 +279,83 @@
             });
         });
 
-        // تحديث التاريخ
+        // تسجيل Service Worker
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'agenda-v1';
+                const urlsToCache = ['/', '/manifest.json'];
+                self.addEventListener('install', e => {
+                    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
+                });
+                self.addEventListener('fetch', e => {
+                    e.respondWith(caches.match(e.request).then(response => response || fetch(e.request)));
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl).catch(() => {});
+        }
+
+        // تثبيت التطبيق
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').style.display = 'block';
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    document.getElementById('installBtn').style.display = 'none';
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        // التحقق من الاختصارات
+        function checkShortcuts() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+            if (action === 'add-task') {
+                switchTab('tasks');
+                document.getElementById('taskInput').focus();
+            } else if (action === 'add-note') {
+                switchTab('notes');
+                document.getElementById('noteInput').focus();
+            }
+        }
+
         function updateDate() {
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ar-SA', options);
         }
 
-        // تبديل التبويبات
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-
             event.target.classList.add('active');
             document.getElementById(tab + 'Tab').classList.remove('hidden');
         }
 
-        // إدارة المهام
+        // المهام
         function addTask() {
             const input = document.getElementById('taskInput');
             const time = document.getElementById('taskTime');
             const priority = document.getElementById('taskPriority');
-
             if (!input.value.trim()) return;
 
-            const task = {
+            tasks.push({
                 id: Date.now(),
                 text: input.value,
                 time: time.value,
                 priority: priority.value,
                 completed: false,
                 date: new Date().toISOString().split('T')[0]
-            };
-
-            tasks.push(task);
+            });
             saveTasks();
             renderTasks();
             updateStats();
-
             input.value = '';
             time.value = '';
         }
@@ -439,15 +383,7 @@
             const todayTasks = tasks.filter(t => t.date === today);
 
             if (todayTasks.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
-                        <p>لا توجد مهام لهذا اليوم</p>
-                        <p style="font-size: 0.9rem; margin-top: 10px;">أضف مهمة جديدة للبدء!</p>
-                    </div>
-                `;
+                list.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><p>لا توجد مهام لهذا اليوم</p><p style="font-size: 0.9rem; margin-top: 10px;">أضف مهمة جديدة للبدء!</p></div>';
                 return;
             }
 
@@ -455,24 +391,10 @@
                 if (a.completed !== b.completed) return a.completed ? 1 : -1;
                 if (a.time && b.time) return a.time.localeCompare(b.time);
                 return b.id - a.id;
-            }).map(task => `
-                <div class="task-item ${task.completed ? 'completed' : ''} priority-${task.priority}">
-                    <input type="checkbox" class="task-checkbox" 
-                           ${task.completed ? 'checked' : ''} 
-                           onchange="toggleTask(${task.id})">
-                    <div class="task-content">
-                        <div>${task.text}</div>
-                        ${task.time ? `<div class="task-time">🕐 ${task.time}</div>` : ''}
-                    </div>
-                    <button class="delete-btn" onclick="deleteTask(${task.id})">🗑️</button>
-                </div>
-            `).join('');
+            }).map(task => `<div class="task-item ${task.completed ? 'completed' : ''} priority-${task.priority}"><input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})"><div class="task-content"><div>${task.text}</div>${task.time ? `<div class="task-time">🕐 ${task.time}</div>` : ''}</div><button class="delete-btn" onclick="deleteTask(${task.id})">🗑️</button></div>`).join('');
         }
 
-        function saveTasks() {
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        }
-
+        function saveTasks() { localStorage.setItem('tasks', JSON.stringify(tasks)); }
         function updateStats() {
             const today = new Date().toISOString().split('T')[0];
             const todayTasks = tasks.filter(t => t.date === today);
@@ -481,18 +403,11 @@
             document.getElementById('pendingTasks').textContent = todayTasks.filter(t => !t.completed).length;
         }
 
-        // إدارة الملاحظات
+        // الملاحظات
         function addNote() {
             const input = document.getElementById('noteInput');
             if (!input.value.trim()) return;
-
-            const note = {
-                id: Date.now(),
-                text: input.value,
-                date: new Date().toLocaleString('ar-SA')
-            };
-
-            notes.unshift(note);
+            notes.unshift({ id: Date.now(), text: input.value, date: new Date().toLocaleString('ar-SA') });
             localStorage.setItem('notes', JSON.stringify(notes));
             renderNotes();
             input.value = '';
@@ -507,34 +422,17 @@
         function renderNotes() {
             const list = document.getElementById('notesList');
             if (notes.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        <p>لا توجد ملاحظات</p>
-                    </div>
-                `;
+                list.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg><p>لا توجد ملاحظات</p></div>';
                 return;
             }
-
-            list.innerHTML = notes.map(note => `
-                <div class="note-item">
-                    <div class="task-content">
-                        <div>${note.text}</div>
-                        <div style="font-size: 0.8rem; color: var(--text-light); margin-top: 5px;">${note.date}</div>
-                    </div>
-                    <button class="delete-btn" onclick="deleteNote(${note.id})">🗑️</button>
-                </div>
-            `).join('');
+            list.innerHTML = notes.map(note => `<div class="note-item"><div class="task-content"><div>${note.text}</div><div style="font-size: 0.8rem; color: var(--text-light); margin-top: 5px;">${note.date}</div></div><button class="delete-btn" onclick="deleteNote(${note.id})">🗑️</button></div>`).join('');
         }
 
-        // مؤقت بومودورو
+        // بومودورو
         function updateTimerDisplay() {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
-            document.getElementById('timer').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
         function startTimer() {
@@ -546,26 +444,14 @@
                     updateTimerDisplay();
                 } else {
                     pauseTimer();
+                    if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
                     alert('انتهى الوقت! خذ استراحة قصيرة.');
                 }
             }, 1000);
         }
 
-        function pauseTimer() {
-            isRunning = false;
-            clearInterval(timerInterval);
-        }
-
-        function resetTimer() {
-            pauseTimer();
-            timeLeft = 25 * 60;
-            updateTimerDisplay();
-        }
-
-        // تسجيل Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript,').catch(() => {});
-        }
+        function pauseTimer() { isRunning = false; clearInterval(timerInterval); }
+        function resetTimer() { pauseTimer(); timeLeft = 25 * 60; updateTimerDisplay(); }
     </script>
 </body>
-</html>
+    </html>
