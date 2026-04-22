@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    { "source": "/",                        "destination": "/public/index.html" },
+    { "source": "/super-admin",             "destination": "/public/super-admin.html" },
+    { "source": "/store/:slug/admin",       "destination": "/public/store-admin.html" },
+    { "source": "/store/:slug",             "destination": "/public/store.html" },
+    { "source": "/api/stores/:path*",       "destination": "/api/stores.js" },
+    { "source": "/api/products/:path*",     "destination": "/api/products.js" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin",  "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PUT,DELETE,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type,X-Admin-Key,X-Store-Password" }
+      ]
+    }
+  ]
+}
