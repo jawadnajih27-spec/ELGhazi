@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Digital Store Factory v3 — NJSERVICES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & ROOT ── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:          #0f1623;
+  --bg-soft:     #161f2e;
+  --surface:     #1e2a3d;
+  --surface-2:   #243247;
+  --border:      rgba(99,102,241,0.18);
+  --border-soft: rgba(255,255,255,0.06);
+  --primary:     #6366f1;
+  --primary-s:   rgba(99,102,241,0.12);
+  --accent:      #22d3ee;
+  --accent-s:    rgba(34,211,238,0.12);
+  --text:        #e2e8f0;
+  --muted:       #94a3b8;
+  --success:     #4ade80;
+  --success-s:   rgba(74,222,128,0.12);
+  --danger:      #f87171;
+  --danger-s:    rgba(248,113,113,0.12);
+  --warning:     #fbbf24;
+  --shadow:      0 24px 60px rgba(0,0,0,0.45);
+  --radius-xl:   20px;
+  --radius-lg:   14px;
+  --radius-md:   10px;
+}
+
+html,body{height:100%;font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+
+/* ── LOCK SCREEN ── */
+#lockScreen{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 30% 40%, rgba(99,102,241,0.12), transparent 50%),
+             radial-gradient(circle at 80% 70%, rgba(34,211,238,0.08), transparent 40%),
+             var(--bg);
+}
+#lockScreen::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(rgba(99,102,241,0.03) 1px,transparent 1px),
+             linear-gradient(90deg,rgba(99,102,241,0.03) 1px,transparent 1px);
+  background-size:44px 44px;opacity:.5;
+}
+.lock-card{
+  position:relative;width:min(420px,calc(100% - 40px));
+  background:linear-gradient(160deg,rgba(30,42,61,0.95),rgba(22,31,46,0.98));
+  border:1px solid var(--border);border-radius:24px;
+  padding:48px 40px;
+  box-shadow:var(--shadow),0 0 0 1px rgba(99,102,241,0.06) inset;
+  backdrop-filter:blur(20px);text-align:center;
+}
+.lock-logo{
+  width:72px;height:72px;border-radius:20px;margin:0 auto 24px;
+  background:linear-gradient(135deg,rgba(99,102,241,0.25),rgba(34,211,238,0.15));
+  border:1px solid rgba(99,102,241,0.3);
+  display:grid;place-items:center;
+  box-shadow:0 0 40px rgba(99,102,241,0.2);
+}
+.lock-title{font-family:'Playfair Display',serif;font-size:1.9rem;margin-bottom:6px;letter-spacing:-.02em}
+.lock-sub{color:var(--muted);font-size:.92rem;margin-bottom:32px;line-height:1.7}
+.lock-input{
+  width:100%;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px;color:var(--text);
+  padding:15px 18px;font-size:1rem;font-family:'Tajawal',sans-serif;
+  text-align:center;letter-spacing:.25em;outline:none;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+  margin-bottom:14px;
+}
+.lock-input:focus{border-color:rgba(99,102,241,.5);box-shadow:0 0 0 3px rgba(99,102,241,.15);background:rgba(255,255,255,.06)}
+.lock-input.err{border-color:rgba(248,113,113,.6);box-shadow:0 0 0 3px rgba(248,113,113,.12);animation:shake .35s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
+.lock-btn{
+  width:100%;padding:15px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),#4f46e5);
+  color:#fff;font-weight:800;font-size:1rem;font-family:'Tajawal',sans-serif;
+  cursor:pointer;transition:transform .2s,box-shadow .2s,filter .2s;
+  box-shadow:0 12px 28px rgba(99,102,241,0.3);
+}
+.lock-btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.lock-err{color:var(--danger);font-size:.88rem;margin-top:12px;min-height:18px;display:none}
+
+/* ── SHELL ── */
+#adminPanel{display:none;height:100vh;overflow:hidden}
+.shell{display:flex;height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:260px;flex-shrink:0;
+  background:linear-gradient(180deg,var(--bg-soft),var(--bg));
+  border-left:1px solid var(--border-soft);
+  display:flex;flex-direction:column;overflow-y:auto;
+}
+.sb-brand{
+  padding:24px 20px;border-bottom:1px solid var(--border-soft);
+  display:flex;align-items:center;gap:12px;
+}
+.sb-mark{
+  width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(99,102,241,.3),rgba(34,211,238,.2));
+  border:1px solid rgba(99,102,241,.3);
+  display:grid;place-items:center;
+}
+.sb-name{font-weight:900;font-size:.95rem;color:var(--text)}
+.sb-ver{font-size:.7rem;color:var(--muted);margin-top:2px}
+.sb-section{padding:16px 16px 6px;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;margin:2px 8px;border-radius:var(--radius-md);
+  cursor:pointer;font-size:.88rem;color:var(--muted);
+  border:none;background:none;width:calc(100% - 16px);
+  text-align:right;font-family:'Tajawal',sans-serif;
+  transition:background .2s,color .2s;
+}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--text)}
+.nav-item.active{background:var(--primary-s);color:var(--primary);font-weight:700;border:1px solid var(--border)}
+.nav-icon{width:18px;text-align:center;flex-shrink:0}
+.sb-divider{border:none;border-top:1px solid var(--border-soft);margin:6px 12px}
+.sb-footer{margin-top:auto;padding:16px;border-top:1px solid var(--border-soft);font-size:.72rem;color:var(--muted);text-align:center;line-height:1.6}
+
+/* ── MAIN AREA ── */
+.main{flex:1;overflow-y:auto;background:var(--bg)}
+
+/* ── PAGE HEADER ── */
+.page-hd{
+  padding:20px 28px;border-bottom:1px solid var(--border-soft);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:rgba(22,31,46,.8);backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:10;
+}
+.page-title{font-size:1.15rem;font-weight:800;color:var(--text)}
+.page-sub{font-size:.8rem;color:var(--muted);margin-top:2px}
+
+/* ── CONTENT ── */
+.section{display:none;padding:28px;animation:fadeIn .3s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── GRID ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+
+/* ── CARDS ── */
+.card{
+  background:linear-gradient(160deg,rgba(30,42,61,.9),rgba(22,31,46,.95));
+  border:1px solid var(--border-soft);border-radius:var(--radius-xl);
+  box-shadow:var(--shadow);backdrop-filter:blur(12px);overflow:hidden;
+}
+.card-hd{
+  padding:16px 20px;border-bottom:1px solid var(--border-soft);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.card-title{font-size:.95rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:8px}
+.card-body{padding:20px}
+
+/* ── STAT CARDS ── */
+.stat{
+  background:linear-gradient(160deg,rgba(30,42,61,.9),rgba(22,31,46,.95));
+  border:1px solid var(--border-soft);border-radius:var(--radius-xl);
+  padding:20px;position:relative;overflow:hidden;
+}
+.stat::before{
+  content:"";position:absolute;top:-20px;left:-20px;
+  width:80px;height:80px;border-radius:50%;
+  background:var(--primary-s);filter:blur(20px);
+}
+.stat-val{font-size:2.2rem;font-weight:900;color:var(--text);line-height:1;margin-bottom:6px}
+.stat-lbl{font-size:.82rem;color:var(--muted)}
+.stat-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:700;margin-top:8px;
+}
+
+/* ── FORM ── */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:7px;letter-spacing:.02em}
+.field label span{color:var(--danger);margin-right:3px}
+.field .hint{font-size:.74rem;color:var(--muted);margin-top:5px;opacity:.8}
+input,textarea,select{
+  width:100%;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-md);color:var(--text);
+  padding:12px 14px;font-size:.9rem;font-family:'Tajawal',sans-serif;
+  outline:none;transition:border-color .2s,box-shadow .2s,background .2s;
+}
+input::placeholder,textarea::placeholder{color:rgba(148,163,184,.4)}
+input:focus,textarea:focus,select:focus{
+  border-color:rgba(99,102,241,.45);
+  box-shadow:0 0 0 3px rgba(99,102,241,.12);
+  background:rgba(255,255,255,.06);
+}
+input[type="color"]{padding:6px;height:44px;cursor:pointer;border-radius:var(--radius-md)}
+textarea{min-height:90px;resize:vertical}
+select option{background:var(--surface)}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:var(--radius-md);
+  font-size:.88rem;font-weight:700;cursor:pointer;border:none;
+  font-family:'Tajawal',sans-serif;transition:transform .2s,filter .2s,box-shadow .2s;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.btn-primary{background:linear-gradient(135deg,var(--primary),#4f46e5);color:#fff;box-shadow:0 8px 20px rgba(99,102,241,.25)}
+.btn-accent{background:linear-gradient(135deg,var(--accent),#0891b2);color:#0f172a;box-shadow:0 8px 20px rgba(34,211,238,.2)}
+.btn-success{background:linear-gradient(135deg,var(--success),#16a34a);color:#0f172a;box-shadow:0 8px 20px rgba(74,222,128,.2)}
+.btn-danger{background:var(--danger-s);color:var(--danger);border:1px solid rgba(248,113,113,.25)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border-soft)}
+.btn-ghost:hover{background:rgba(255,255,255,.09)}
+.btn-sm{padding:7px 13px;font-size:.8rem}
+.btn-full{width:100%;justify-content:center}
+
+/* ── BADGE ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;font-size:.74rem;font-weight:700}
+.badge-primary{background:var(--primary-s);color:var(--primary);border:1px solid var(--border)}
+.badge-accent{background:var(--accent-s);color:var(--accent)}
+.badge-success{background:var(--success-s);color:var(--success)}
+.badge-danger{background:var(--danger-s);color:var(--danger)}
+.badge-warn{background:rgba(251,191,36,.12);color:var(--warning)}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{
+  padding:10px 14px;text-align:right;
+  font-size:.72rem;font-weight:700;color:var(--muted);
+  background:rgba(0,0,0,.2);border-bottom:1px solid var(--border-soft);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.tbl td{padding:12px 14px;font-size:.86rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.025)}
+.tbl-thumb{width:44px;height:44px;border-radius:10px;object-fit:cover;border:1px solid var(--border-soft)}
+
+/* ── MODAL ── */
+.modal-bg{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
+  z-index:500;align-items:center;justify-content:center;
+}
+.modal-bg.open{display:flex}
+.modal{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-xl);width:min(580px,95vw);
+  max-height:90vh;overflow-y:auto;
+  box-shadow:0 40px 100px rgba(0,0,0,.6);
+  animation:fadeIn .25s ease;
+}
+.modal-hd{padding:20px 24px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:1rem;font-weight:800}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;border-radius:6px;padding:2px 6px;transition:color .2s,background .2s}
+.modal-close:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.modal-body{padding:24px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border-soft);display:flex;justify-content:flex-end;gap:10px}
+
+/* ── NOTIFY ── */
+.notif{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%);
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:12px 20px;
+  font-size:.88rem;font-weight:700;z-index:9999;
+  box-shadow:0 12px 40px rgba(0,0,0,.5);
+  display:flex;align-items:center;gap:8px;min-width:240px;
+  animation:slideDown .3s ease;
+}
+@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.notif.success{border-color:rgba(74,222,128,.35);color:var(--success)}
+.notif.error{border-color:rgba(248,113,113,.35);color:var(--danger)}
+.notif.info{border-color:var(--border);color:var(--accent)}
+
+/* ── STORE CARDS ── */
+.stores-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.store-card{
+  background:linear-gradient(160deg,rgba(30,42,61,.9),rgba(22,31,46,.95));
+  border:1px solid var(--border-soft);border-radius:var(--radius-xl);
+  padding:20px;transition:border-color .25s,transform .25s;
+}
+.store-card:hover{border-color:rgba(99,102,241,.3);transform:translateY(-3px)}
+.store-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.store-avatar{
+  width:48px;height:48px;border-radius:14px;flex-shrink:0;
+  display:grid;place-items:center;font-weight:900;font-size:1.1rem;
+  color:#fff;
+}
+.store-meta h3{font-size:1rem;font-weight:800;margin-bottom:4px}
+.store-meta p{font-size:.8rem;color:var(--muted)}
+.store-stats{display:flex;gap:10px;margin-bottom:14px}
+.store-stat{background:rgba(0,0,0,.2);border-radius:8px;padding:8px 12px;text-align:center;flex:1}
+.store-stat strong{display:block;font-size:1.1rem;font-weight:900;color:var(--text)}
+.store-stat span{font-size:.72rem;color:var(--muted)}
+.store-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ── COLOR PRESETS ── */
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.preset{
+  width:36px;height:36px;border-radius:10px;cursor:pointer;
+  border:2px solid transparent;transition:transform .2s,border-color .2s;
+  display:flex;overflow:hidden;
+}
+.preset:hover{transform:scale(1.12)}
+.preset.sel{border-color:var(--text)}
+.preset-half{flex:1}
+
+/* ── PREVIEW FRAME ── */
+.preview-wrap{background:var(--bg);border:1px solid var(--border-soft);border-radius:var(--radius-xl);overflow:hidden}
+.preview-chrome{padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border-soft);background:rgba(0,0,0,.3)}
+.chrome-dots{display:flex;gap:5px}
+.chrome-dot{width:11px;height:11px;border-radius:50%}
+.preview-url-bar{flex:1;background:rgba(255,255,255,.05);border-radius:6px;padding:4px 12px;font-size:.75rem;color:var(--muted);font-family:monospace}
+.preview-frame{width:100%;height:420px;border:none;background:#fafafa}
+
+/* ── DEPLOY CARD ── */
+.deploy-link-row{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(0,0,0,.2);border-radius:var(--radius-md);margin-bottom:10px}
+.deploy-link-row code{flex:1;font-family:monospace;font-size:.85rem;color:var(--accent);word-break:break-all}
+
+/* ── LOG BOX ── */
+.log-box{background:rgba(0,0,0,.3);border:1px solid var(--border-soft);border-radius:var(--radius-md);padding:14px;max-height:200px;overflow-y:auto;font-family:monospace;font-size:.78rem;line-height:1.8}
+.log-line{display:flex;gap:10px}
+.log-time{color:var(--muted);flex-shrink:0}
+.log-info{color:var(--accent)}
+.log-ok{color:var(--success)}
+.log-err{color:var(--danger)}
+
+/* ── PROGRESS ── */
+.progress{height:5px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .5s ease}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty svg{opacity:.3;margin-bottom:14px}
+.empty h4{font-size:1rem;color:var(--text);margin-bottom:6px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .shell{flex-direction:column}
+  .sidebar{width:100%;max-height:56px;overflow:hidden}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOCK SCREEN ══ -->
+<div id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-logo">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.8" stroke-linecap="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <h2 class="lock-title">Digital Store Factory</h2>
+    <p class="lock-sub">لوحة تحكم NJSERVICES<br>أدخل كلمة المرور للمتابعة</p>
+    <input type="password" id="pwInput" class="lock-input" placeholder="••••••••" autocomplete="current-password"/>
+    <button class="lock-btn" id="loginBtn">دخول إلى اللوحة</button>
+    <p class="lock-err" id="lockErr">كلمة المرور غير صحيحة</p>
+  </div>
+</div>
+
+<!-- ══ ADMIN PANEL ══ -->
+<div id="adminPanel">
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div>
+        <div class="sb-name">Store Factory</div>
+        <div class="sb-ver">v3.0 — NJSERVICES</div>
+      </div>
+    </div>
+
+    <div style="padding:8px 0">
+      <div class="sb-section">الرئيسية</div>
+      <button class="nav-item active" onclick="nav('dashboard',this)">
+        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        لوحة التحكم
+      </button>
+
+      <div class="sb-section">إدارة المتاجر</div>
+      <button class="nav-item" onclick="nav('stores',this)">
+        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        المتاجر
+      </button>
+      <button class="nav-item" onclick="nav('new-store',this)">
+        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        إنشاء متجر جديد
+      </button>
+
+      <hr class="sb-divider"/>
+
+      <div class="sb-section">أدوات</div>
+      <button class="nav-item" onclick="nav('preview',this)">
+        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        معاينة متجر
+      </button>
+      <button class="nav-item" onclick="nav('settings',this)">
+        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        الإعدادات
+      </button>
+    </div>
+
+    <div class="sb-footer">
+      Digital Store Factory v3<br>NJSERVICES © 2026
+      <div style="margin-top:10px">
+        <button class="btn btn-ghost btn-sm btn-full" onclick="logout()" style="font-size:.75rem">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          تسجيل الخروج
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- ▸ DASHBOARD -->
+    <section id="sec-dashboard" class="section active">
+      <div class="page-hd">
+        <div><div class="page-title">لوحة التحكم</div><div class="page-sub">نظرة عامة على كل المتاجر</div></div>
+        <button class="btn btn-primary btn-sm" onclick="nav('new-store',null)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          متجر جديد
+        </button>
+      </div>
+      <div style="padding:28px">
+        <div class="grid-4" style="margin-bottom:24px">
+          <div class="stat">
+            <div class="stat-val" id="d-total">—</div>
+            <div class="stat-lbl">إجمالي المتاجر</div>
+            <div class="stat-badge badge-primary">كل العملاء</div>
+          </div>
+          <div class="stat" style="--primary-s:rgba(74,222,128,0.12)">
+            <div class="stat-val" id="d-active">—</div>
+            <div class="stat-lbl">متاجر نشطة</div>
+            <div class="stat-badge badge-success">مفعّلة</div>
+          </div>
+          <div class="stat" style="--primary-s:rgba(248,113,113,0.1)">
+            <div class="stat-val" id="d-inactive">—</div>
+            <div class="stat-lbl">متاجر موقفة</div>
+            <div class="stat-badge badge-danger">موقف</div>
+          </div>
+          <div class="stat" style="--primary-s:rgba(34,211,238,0.1)">
+            <div class="stat-val" id="d-products">—</div>
+            <div class="stat-lbl">إجمالي المنتجات</div>
+            <div class="stat-badge badge-accent">كل المتاجر</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              آخر المتاجر المنشأة
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="nav('stores',null)">عرض الكل</button>
+          </div>
+          <div class="card-body" id="d-recent-stores">
+            <div class="empty">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              <h4>لا توجد متاجر بعد</h4>
+              <p style="font-size:.85rem">أنشئ أول متجر لعميلك</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ▸ STORES LIST -->
+    <section id="sec-stores" class="section">
+      <div class="page-hd">
+        <div><div class="page-title">المتاجر</div><div class="page-sub">إدارة كل متاجر العملاء</div></div>
+        <div style="display:flex;gap:10px">
+          <input id="store-search" type="text" placeholder="بحث في المتاجر..."
+            style="width:200px;padding:8px 14px;font-size:.85rem"
+            oninput="filterStores(this.value)"/>
+          <button class="btn btn-primary btn-sm" onclick="nav('new-store',null)">+ متجر جديد</button>
+        </div>
+      </div>
+      <div style="padding:28px">
+        <div class="stores-grid" id="storesGrid">
+          <div class="empty" style="grid-column:1/-1">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <h4>جاري التحميل...</h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ▸ NEW STORE -->
+    <section id="sec-new-store" class="section">
+      <div class="page-hd">
+        <div><div class="page-title">إنشاء متجر جديد</div><div class="page-sub">أدخل بيانات العميل وأنشئ متجره فوراً</div></div>
+      </div>
+      <div style="padding:28px">
+        <div class="grid-2">
+
+          <!-- FORM -->
+          <div style="display:flex;flex-direction:column;gap:16px">
+
+            <div class="card">
+              <div class="card-hd"><div class="card-title">هوية المتجر</div></div>
+              <div class="card-body">
+                <div class="field">
+                  <label><span>*</span>معرّف المتجر (Slug)</label>
+                  <input type="text" id="n-slug" placeholder="ahmed-store" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')"/>
+                  <div class="hint">أحرف لاتينية صغيرة وأرقام وشرطة فقط — يُستخدم في الرابط</div>
+                </div>
+                <div class="field">
+                  <label><span>*</span>اسم المتجر (عربي)</label>
+                  <input type="text" id="n-name-ar" placeholder="متجر أحمد"/>
+                </div>
+                <div class="field">
+                  <label>اسم المتجر (فرنسي)</label>
+                  <input type="text" id="n-name-fr" placeholder="Boutique Ahmed"/>
+                </div>
+                <div class="field">
+                  <label>لغة المتجر</label>
+                  <select id="n-lang">
+                    <option value="ar">عربي فقط</option>
+                    <option value="fr">فرنسي فقط</option>
+                    <option value="both">عربي + فرنسي</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>وصف المتجر (عربي)</label>
+                  <textarea id="n-desc-ar" placeholder="وصف مختصر يظهر في صفحة المتجر..."></textarea>
+                </div>
+                <div class="field">
+                  <label>وصف المتجر (فرنسي)</label>
+                  <textarea id="n-desc-fr" placeholder="Description courte de la boutique..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-hd"><div class="card-title">التواصل والأمان</div></div>
+              <div class="card-body">
+                <div class="field">
+                  <label>رقم واتساب</label>
+                  <input type="tel" id="n-whatsapp" placeholder="212600000000"/>
+                  <div class="hint">مع رمز الدولة، بدون + أو مسافات</div>
+                </div>
+                <div class="field">
+                  <label>رمز العملة</label>
+                  <input type="text" id="n-currency" placeholder="درهم" maxlength="10"/>
+                </div>
+                <div class="field">
+                  <label><span>*</span>كلمة سر لوحة العميل</label>
+                  <input type="text" id="n-password" placeholder="ستُباع هذه الكلمة للعميل"/>
+                  <div class="hint">احفظها جيداً — هذا هو المنتج الذي تبيعه</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- BRANDING -->
+          <div style="display:flex;flex-direction:column;gap:16px">
+
+            <div class="card">
+              <div class="card-hd"><div class="card-title">الهوية البصرية</div></div>
+              <div class="card-body">
+                <div class="field">
+                  <label>رابط الشعار (logo)</label>
+                  <input type="url" id="n-logo" placeholder="https://..."/>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div class="field">
+                    <label>اللون الأساسي</label>
+                    <input type="color" id="n-primary" value="#6366f1"/>
+                  </div>
+                  <div class="field">
+                    <label>اللون الثانوي</label>
+                    <input type="color" id="n-accent" value="#22d3ee"/>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>ألوان جاهزة</label>
+                  <div class="presets" id="colorPresets"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PREVIEW -->
+            <div class="card">
+              <div class="card-hd">
+                <div class="card-title">معاينة الهوية</div>
+              </div>
+              <div class="card-body">
+                <div id="colorPreview" style="border-radius:12px;overflow:hidden;border:1px solid var(--border-soft)">
+                  <div id="pv-header" style="padding:12px 16px;display:flex;align-items:center;gap:10px">
+                    <div id="pv-dot" style="width:32px;height:32px;border-radius:8px;background:#6366f1"></div>
+                    <span id="pv-name" style="font-weight:800;font-size:.95rem;color:#6366f1">اسم المتجر</span>
+                  </div>
+                  <div style="padding:12px 16px;background:rgba(0,0,0,.1)">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:10px;text-align:center">
+                        <div style="height:40px;background:rgba(255,255,255,.05);border-radius:6px;margin-bottom:6px"></div>
+                        <div style="font-size:.75rem;font-weight:700;margin-bottom:4px">منتج تجريبي</div>
+                        <div id="pv-price" style="font-size:.85rem;font-weight:900;color:#6366f1">299 درهم</div>
+                        <div id="pv-btn" style="margin-top:6px;padding:5px 10px;border-radius:6px;background:#22d3ee;color:#0f172a;font-size:.72rem;font-weight:800">+ سلة</div>
+                      </div>
+                      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:10px;text-align:center">
+                        <div style="height:40px;background:rgba(255,255,255,.05);border-radius:6px;margin-bottom:6px"></div>
+                        <div style="font-size:.75rem;font-weight:700;margin-bottom:4px">منتج آخر</div>
+                        <div id="pv-price2" style="font-size:.85rem;font-weight:900;color:#6366f1">199 درهم</div>
+                        <div id="pv-btn2" style="margin-top:6px;padding:5px 10px;border-radius:6px;background:#22d3ee;color:#0f172a;font-size:.72rem;font-weight:800">+ سلة</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-full" style="padding:14px;font-size:1rem" id="createStoreBtn" onclick="createStore()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              إنشاء المتجر الآن
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ▸ PREVIEW -->
+    <section id="sec-preview" class="section">
+      <div class="page-hd">
+        <div><div class="page-title">معاينة متجر</div><div class="page-sub">شاهد أي متجر من لوحتك</div></div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input type="text" id="preview-slug-input" placeholder="slug المتجر..." style="width:180px;padding:8px 14px;font-size:.85rem"/>
+          <button class="btn btn-accent btn-sm" onclick="loadPreview()">عرض</button>
+        </div>
+      </div>
+      <div style="padding:28px">
+        <div class="preview-wrap">
+          <div class="preview-chrome">
+            <div class="chrome-dots">
+              <div class="chrome-dot" style="background:#f87171"></div>
+              <div class="chrome-dot" style="background:#fbbf24"></div>
+              <div class="chrome-dot" style="background:#4ade80"></div>
+            </div>
+            <div class="preview-url-bar" id="preview-url-bar">اختر متجراً للمعاينة</div>
+          </div>
+          <iframe id="previewFrame" class="preview-frame"
+            srcdoc="<div style='display:flex;align-items:center;justify-content:center;height:100%;font-family:sans-serif;color:#64748b;font-size:14px'>أدخل slug المتجر أعلاه</div>">
+          </iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ▸ SETTINGS -->
+    <section id="sec-settings" class="section">
+      <div class="page-hd">
+        <div><div class="page-title">الإعدادات</div><div class="page-sub">إعدادات النظام والأمان</div></div>
+      </div>
+      <div style="padding:28px">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-hd"><div class="card-title">معلومات النظام</div></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;padding:10px;background:rgba(0,0,0,.2);border-radius:8px">
+                  <span style="font-size:.85rem;color:var(--muted)">الإصدار</span>
+                  <span class="badge badge-primary">v3.0.0</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:10px;background:rgba(0,0,0,.2);border-radius:8px">
+                  <span style="font-size:.85rem;color:var(--muted)">قاعدة البيانات</span>
+                  <span class="badge badge-success">Supabase متصل</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:10px;background:rgba(0,0,0,.2);border-radius:8px">
+                  <span style="font-size:.85rem;color:var(--muted)">الاستضافة</span>
+                  <span class="badge badge-accent">Vercel</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><div class="card-title">تغيير كلمة مرور اللوحة</div></div>
+            <div class="card-body">
+              <div class="field">
+                <label>كلمة المرور الحالية</label>
+                <input type="password" id="s-current-pw" placeholder="••••••••"/>
+              </div>
+              <div class="field">
+                <label>كلمة المرور الجديدة</label>
+                <input type="password" id="s-new-pw" placeholder="••••••••"/>
+              </div>
+              <div class="field">
+                <label>تأكيد كلمة المرور</label>
+                <input type="password" id="s-confirm-pw" placeholder="••••••••"/>
+              </div>
+              <button class="btn btn-primary btn-full" onclick="changePw()">حفظ كلمة المرور</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+</div><!-- /adminPanel -->
+
+<!-- ══ MODAL: STORE DETAILS ══ -->
+<div id="storeModal" class="modal-bg">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title" id="storeModalTitle">تفاصيل المتجر</div>
+      <button class="modal-close" onclick="closeStoreModal()">✕</button>
+    </div>
+    <div class="modal-body" id="storeModalBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeStoreModal()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ══ CONFIG ══ */
+const ADMIN_PW_KEY = 'dsf_admin_pw';
+const SESSION_KEY  = 'dsf_session';
+const DEFAULT_PW   = 'njservices2026';
+const API_BASE     = '/api';
+
+/* ══ AUTH ══ */
+function getAdminPw()  { return localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PW; }
+function isLoggedIn()  { return sessionStorage.getItem(SESSION_KEY) === '1'; }
+function login()       { sessionStorage.setItem(SESSION_KEY, '1'); }
+function logout()      { sessionStorage.removeItem(SESSION_KEY); location.reload(); }
+
+function getAdminHeaders() {
+  return {
+    'Content-Type':  'application/json',
+    'X-Admin-Key':   getAdminPw()
+  };
+}
+
+// Auto-unlock
+if (isLoggedIn()) {
+  document.getElementById('lockScreen').style.display  = 'none';
+  document.getElementById('adminPanel').style.display  = 'block';
+  initApp();
+}
+
+document.getElementById('loginBtn').addEventListener('click', tryLogin);
+document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+function tryLogin() {
+  const val = document.getElementById('pwInput').value;
+  if (val === getAdminPw()) {
+    login();
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    initApp();
+  } else {
+    const inp = document.getElementById('pwInput');
+    const err = document.getElementById('lockErr');
+    inp.classList.add('err');
+    err.style.display = 'block';
+    setTimeout(() => inp.classList.remove('err'), 600);
+  }
+}
+
+/* ══ NAVIGATION ══ */
+function nav(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  const sec = document.getElementById('sec-' + name);
+  if (sec) sec.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'stores')    loadStores();
+  if (name === 'new-store') initNewStore();
+}
+
+/* ══ NOTIFY ══ */
+function notify(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `notif ${type}`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2800);
+}
+
+/* ══ API HELPERS ══ */
+async function apiFetch(url, opts = {}) {
+  try {
+    const res  = await fetch(url, opts);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'خطأ في الخادم');
+    return data;
+  } catch (err) {
+    throw err;
+  }
+}
+
+/* ══ DASHBOARD ══ */
+async function loadDashboard() {
+  try {
+    const stores = await apiFetch(`${API_BASE}/stores`, { headers: getAdminHeaders() });
+    const active   = stores.filter(s => s.active).length;
+    const inactive = stores.filter(s => !s.active).length;
+    const products = stores.reduce((s, x) => s + (x.product_count || 0), 0);
+
+    document.getElementById('d-total').textContent    = stores.length;
+    document.getElementById('d-active').textContent   = active;
+    document.getElementById('d-inactive').textContent = inactive;
+    document.getElementById('d-products').textContent = products;
+
+    const recent = stores.slice(0, 4);
+    const container = document.getElementById('d-recent-stores');
+    if (!recent.length) return;
+
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${recent.map(s => `
+          <div style="display:flex;align-items:center;gap:14px;padding:12px;background:rgba(0,0,0,.2);border-radius:${CSS.escape ? '10px' : '10px'}">
+            <div style="width:40px;height:40px;border-radius:10px;background:${s.primary_color || '#6366f1'}22;border:1px solid ${s.primary_color || '#6366f1'}44;display:grid;place-items:center;font-weight:900;font-size:.85rem;color:${s.primary_color || '#6366f1'}">
+              ${(s.name_ar || s.slug).charAt(0)}
+            </div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:.9rem">${esc(s.name_ar || s.slug)}</div>
+              <div style="font-size:.76rem;color:var(--muted)">${esc(s.slug)} · ${s.product_count || 0} منتج</div>
+            </div>
+            <span class="badge ${s.active ? 'badge-success' : 'badge-danger'}">${s.active ? 'نشط' : 'موقف'}</span>
+          </div>
+        `).join('')}
+      </div>`;
+  } catch (err) {
+    notify('خطأ في تحميل البيانات: ' + err.message, 'error');
+  }
+}
+
+/* ══ STORES LIST ══ */
+let allStores = [];
+
+async function loadStores() {
+  const grid = document.getElementById('storesGrid');
+  grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><h4>جاري التحميل...</h4></div>`;
+  try {
+    allStores = await apiFetch(`${API_BASE}/stores`, { headers: getAdminHeaders() });
+    renderStoresGrid(allStores);
+  } catch (err) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><h4>خطأ في التحميل</h4><p>${esc(err.message)}</p></div>`;
+  }
+}
+
+function renderStoresGrid(stores) {
+  const grid = document.getElementById('storesGrid');
+  if (!stores.length) {
+    grid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <h4>لا توجد متاجر</h4><p style="font-size:.85rem">أنشئ أول متجر من القسم أعلاه</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = stores.map(s => `
+    <div class="store-card">
+      <div class="store-card-top">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="store-avatar" style="background:${s.primary_color || '#6366f1'}22;border:1px solid ${s.primary_color || '#6366f1'}44;color:${s.primary_color || '#6366f1'}">
+            ${(s.name_ar || s.slug).charAt(0)}
+          </div>
+          <div class="store-meta">
+            <h3>${esc(s.name_ar || s.slug)}</h3>
+            <p>${s.name_fr ? esc(s.name_fr) + ' · ' : ''}<code style="font-size:.75rem;color:var(--accent)">${esc(s.slug)}</code></p>
+          </div>
+        </div>
+        <span class="badge ${s.active ? 'badge-success' : 'badge-danger'}">${s.active ? 'نشط' : 'موقف'}</span>
+      </div>
+      <div class="store-stats">
+        <div class="store-stat">
+          <strong>${s.product_count || 0}</strong>
+          <span>منتج</span>
+        </div>
+        <div class="store-stat">
+          <strong>${s.lang === 'both' ? 'AR+FR' : s.lang?.toUpperCase() || 'AR'}</strong>
+          <span>اللغة</span>
+        </div>
+        <div class="store-stat">
+          <strong>${s.currency || 'درهم'}</strong>
+          <span>العملة</span>
+        </div>
+      </div>
+      <div class="store-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openStoreModal('${esc(s.slug)}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          التفاصيل
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleStore('${esc(s.slug)}',${!s.active})">
+          ${s.active ? 'إيقاف' : 'تفعيل'}
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="deleteStore('${esc(s.slug)}')">حذف</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterStores(q) {
+  const filtered = allStores.filter(s =>
+    !q || s.slug.includes(q) || (s.name_ar || '').includes(q) || (s.name_fr || '').includes(q)
+  );
+  renderStoresGrid(filtered);
+}
+
+async function toggleStore(slug, active) {
+  try {
+    await apiFetch(`${API_BASE}/stores?slug=${slug}`, {
+      method: 'PUT',
+      headers: getAdminHeaders(),
+      body: JSON.stringify({ active })
+    });
+    notify(active ? `✓ تم تفعيل ${slug}` : `⏸ تم إيقاف ${slug}`, 'info');
+    loadStores();
+  } catch (err) {
+    notify('خطأ: ' + err.message, 'error');
+  }
+}
+
+async function deleteStore(slug) {
+  if (!confirm(`هل أنت متأكد من حذف المتجر "${slug}"؟ سيتم حذف كل منتجاته أيضاً.`)) return;
+  try {
+    await apiFetch(`${API_BASE}/stores?slug=${slug}`, { method: 'DELETE', headers: getAdminHeaders() });
+    notify(`✓ تم حذف المتجر ${slug}`, 'info');
+    loadStores();
+  } catch (err) {
+    notify('خطأ: ' + err.message, 'error');
+  }
+}
+
+/* ══ STORE MODAL ══ */
+async function openStoreModal(slug) {
+  const store = allStores.find(s => s.slug === slug);
+  if (!store) return;
+
+  document.getElementById('storeModalTitle').textContent = store.name_ar || slug;
+  document.getElementById('storeModalBody').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="deploy-link-row">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <code>${location.origin}/store/${slug}</code>
+        <button class="btn btn-ghost btn-sm" onclick="copy('${location.origin}/store/${slug}')">نسخ</button>
+      </div>
+      <div class="deploy-link-row">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <code>${location.origin}/store/${slug}/admin</code>
+        <button class="btn btn-ghost btn-sm" onclick="copy('${location.origin}/store/${slug}/admin')">نسخ</button>
+      </div>
+      <div style="padding:12px;background:rgba(99,102,241,.08);border:1px solid var(--border);border-radius:10px">
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:6px">كلمة سر العميل</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <code id="pw-display" style="flex:1;font-size:.95rem;letter-spacing:.1em">••••••••</code>
+          <button class="btn btn-ghost btn-sm" onclick="togglePwDisplay('${esc(store.slug)}')">إظهار</button>
+          <button class="btn btn-ghost btn-sm" onclick="copy(storePasswordMap['${esc(store.slug)}'] || '')">نسخ</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:.85rem">
+        <div style="padding:10px;background:rgba(0,0,0,.2);border-radius:8px">
+          <div style="color:var(--muted);margin-bottom:4px">واتساب</div>
+          <div style="font-weight:700">+${esc(store.whatsapp || '—')}</div>
+        </div>
+        <div style="padding:10px;background:rgba(0,0,0,.2);border-radius:8px">
+          <div style="color:var(--muted);margin-bottom:4px">العملة</div>
+          <div style="font-weight:700">${esc(store.currency || '—')}</div>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('storeModal').classList.add('open');
+}
+
+const storePasswordMap = {}; // يُخزّن مؤقتاً كلمات السر التي تعرضها
+
+function togglePwDisplay(slug) {
+  // ملاحظة: كلمة السر لا تُرجع من GET /api/stores لأسباب أمنية
+  // تُعرض فقط عند الإنشاء أو من قاعدة البيانات مباشرة
+  const el = document.getElementById('pw-display');
+  if (el.textContent === '••••••••') {
+    notify('كلمة السر لا تُعرض هنا لأسباب أمنية — راجع قاعدة البيانات مباشرة', 'info');
+  }
+}
+
+function closeStoreModal() {
+  document.getElementById('storeModal').classList.remove('open');
+}
+
+/* ══ CREATE STORE ══ */
+const COLOR_PRESETS = [
+  { primary:'#6366f1', accent:'#22d3ee', name:'Indigo & Cyan' },
+  { primary:'#8b5cf6', accent:'#f472b6', name:'Purple & Pink' },
+  { primary:'#0ea5e9', accent:'#34d399', name:'Sky & Emerald' },
+  { primary:'#f59e0b', accent:'#ef4444', name:'Amber & Red' },
+  { primary:'#10b981', accent:'#3b82f6', name:'Emerald & Blue' },
+  { primary:'#ec4899', accent:'#a855f7', name:'Pink & Purple' },
+];
+
+function initNewStore() {
+  renderColorPresets();
+  updateColorPreview();
+  ['n-primary','n-accent','n-name-ar'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', updateColorPreview);
+  });
+}
+
+function renderColorPresets() {
+  const container = document.getElementById('colorPresets');
+  container.innerHTML = COLOR_PRESETS.map((p, i) => `
+    <div class="preset" onclick="applyPreset(${i})" title="${p.name}">
+      <div class="preset-half" style="background:${p.primary}"></div>
+      <div class="preset-half" style="background:${p.accent}"></div>
+    </div>
+  `).join('');
+}
+
+function applyPreset(i) {
+  const p = COLOR_PRESETS[i];
+  document.getElementById('n-primary').value = p.primary;
+  document.getElementById('n-accent').value  = p.accent;
+  document.querySelectorAll('.preset').forEach((el, idx) => el.classList.toggle('sel', idx === i));
+  updateColorPreview();
+}
+
+function updateColorPreview() {
+  const primary = document.getElementById('n-primary')?.value || '#6366f1';
+  const accent  = document.getElementById('n-accent')?.value  || '#22d3ee';
+  const name    = document.getElementById('n-name-ar')?.value || 'اسم المتجر';
+
+  document.getElementById('pv-dot').style.background    = primary;
+  document.getElementById('pv-name').style.color        = primary;
+  document.getElementById('pv-name').textContent        = name;
+  document.getElementById('pv-price').style.color       = primary;
+  document.getElementById('pv-price2').style.color      = primary;
+  document.getElementById('pv-btn').style.background    = accent;
+  document.getElementById('pv-btn2').style.background   = accent;
+  document.getElementById('pv-header').style.background = primary + '15';
+}
+
+async function createStore() {
+  const btn = document.getElementById('createStoreBtn');
+
+  const data = {
+    slug:          document.getElementById('n-slug').value.trim(),
+    name_ar:       document.getElementById('n-name-ar').value.trim(),
+    name_fr:       document.getElementById('n-name-fr').value.trim() || null,
+    lang:          document.getElementById('n-lang').value,
+    desc_ar:       document.getElementById('n-desc-ar').value.trim() || null,
+    desc_fr:       document.getElementById('n-desc-fr').value.trim() || null,
+    whatsapp:      document.getElementById('n-whatsapp').value.replace(/\D/g,''),
+    currency:      document.getElementById('n-currency').value.trim() || 'درهم',
+    password:      document.getElementById('n-password').value.trim(),
+    primary_color: document.getElementById('n-primary').value,
+    accent_color:  document.getElementById('n-accent').value,
+    logo_url:      document.getElementById('n-logo').value.trim() || null,
+  };
+
+  if (!data.slug)     { notify('معرّف المتجر مطلوب', 'error'); return; }
+  if (!data.name_ar)  { notify('اسم المتجر بالعربية مطلوب', 'error'); return; }
+  if (!data.password) { notify('كلمة سر العميل مطلوبة', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ جارٍ الإنشاء...';
+
+  try {
+    await apiFetch(`${API_BASE}/stores`, {
+      method:  'POST',
+      headers: getAdminHeaders(),
+      body:    JSON.stringify(data)
+    });
+
+    notify(`✓ تم إنشاء متجر "${data.name_ar}" بنجاح`, 'success');
+
+    // مسح الحقول
+    ['n-slug','n-name-ar','n-name-fr','n-desc-ar','n-desc-fr',
+     'n-whatsapp','n-currency','n-password','n-logo'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('n-lang').value = 'ar';
+    document.getElementById('n-primary').value = '#6366f1';
+    document.getElementById('n-accent').value  = '#22d3ee';
+    updateColorPreview();
+
+    // الانتقال لقائمة المتاجر
+    setTimeout(() => nav('stores', null), 800);
+
+  } catch (err) {
+    notify('خطأ: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> إنشاء المتجر الآن`;
+  }
+}
+
+/* ══ PREVIEW ══ */
+function loadPreview() {
+  const slug = document.getElementById('preview-slug-input').value.trim();
+  if (!slug) { notify('أدخل slug المتجر', 'error'); return; }
+  const url = `/store/${slug}`;
+  document.getElementById('previewFrame').src = url;
+  document.getElementById('preview-url-bar').textContent = location.origin + url;
+}
+
+/* ══ SETTINGS ══ */
+function changePw() {
+  const current = document.getElementById('s-current-pw').value;
+  const next    = document.getElementById('s-new-pw').value;
+  const confirm = document.getElementById('s-confirm-pw').value;
+
+  if (current !== getAdminPw()) { notify('كلمة المرور الحالية غير صحيحة', 'error'); return; }
+  if (next.length < 6)          { notify('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error'); return; }
+  if (next !== confirm)         { notify('كلمتا المرور غير متطابقتين', 'error'); return; }
+
+  localStorage.setItem(ADMIN_PW_KEY, next);
+  notify('✓ تم تغيير كلمة المرور بنجاح', 'success');
+  ['s-current-pw','s-new-pw','s-confirm-pw'].forEach(id => document.getElementById(id).value = '');
+}
+
+/* ══ UTILS ══ */
+function esc(v) {
+  return String(v || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function copy(text) {
+  navigator.clipboard.writeText(text).then(() => notify('✓ تم النسخ', 'success'));
+}
+
+/* ══ INIT ══ */
+function initApp() {
+  loadDashboard();
+  initNewStore();
+}
+</script>
+</body>
+</html>
