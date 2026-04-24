@@ -731,26 +731,30 @@ select option{background:var(--surface)}
 'use strict';
 
 /* ══ CONFIG ══ */
-const ADMIN_PW_KEY = 'dsf_admin_pw';
 const SESSION_KEY  = 'dsf_session';
-const DEFAULT_PW   = 'njservices2026';
+const ADMIN_KEY_SESSION = 'dsf_admin_key';
 const API_BASE     = '/api';
 
 /* ══ AUTH ══ */
-function getAdminPw()  { return localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PW; }
+function getAdminKey() { return sessionStorage.getItem(ADMIN_KEY_SESSION) || ''; }
 function isLoggedIn()  { return sessionStorage.getItem(SESSION_KEY) === '1'; }
 function login()       { sessionStorage.setItem(SESSION_KEY, '1'); }
-function logout()      { sessionStorage.removeItem(SESSION_KEY); location.reload(); }
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem(ADMIN_KEY_SESSION);
+  location.reload();
+}
 
 function getAdminHeaders() {
+  const adminKey = getAdminKey();
   return {
     'Content-Type':  'application/json',
-    'X-Admin-Key':   getAdminPw()
+    'X-Admin-Key':   adminKey
   };
 }
 
 // Auto-unlock
-if (isLoggedIn()) {
+if (isLoggedIn() && getAdminKey()) {
   document.getElementById('lockScreen').style.display  = 'none';
   document.getElementById('adminPanel').style.display  = 'block';
   initApp();
@@ -759,17 +763,34 @@ if (isLoggedIn()) {
 document.getElementById('loginBtn').addEventListener('click', tryLogin);
 document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
 
-function tryLogin() {
+async function tryLogin() {
   const val = document.getElementById('pwInput').value;
-  if (val === getAdminPw()) {
+  const inp = document.getElementById('pwInput');
+  const err = document.getElementById('lockErr');
+  if (!val.trim()) {
+    inp.classList.add('err');
+    err.textContent = 'الرجاء إدخال مفتاح الإدارة';
+    err.style.display = 'block';
+    setTimeout(() => inp.classList.remove('err'), 600);
+    return;
+  }
+
+  try {
+    await apiFetch(`${API_BASE}/stores`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Key': val.trim()
+      }
+    });
+
+    sessionStorage.setItem(ADMIN_KEY_SESSION, val.trim());
     login();
     document.getElementById('lockScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
     initApp();
-  } else {
-    const inp = document.getElementById('pwInput');
-    const err = document.getElementById('lockErr');
+  } catch {
     inp.classList.add('err');
+    err.textContent = 'مفتاح الإدارة غير صحيح';
     err.style.display = 'block';
     setTimeout(() => inp.classList.remove('err'), 600);
   }
@@ -841,6 +862,11 @@ async function loadDashboard() {
         `).join('')}
       </div>`;
   } catch (err) {
+    if (err.message?.includes('غير مصرح')) {
+      notify('انتهت صلاحية جلسة الإدارة. يرجى تسجيل الدخول مرة أخرى.', 'error');
+      setTimeout(logout, 800);
+      return;
+    }
     notify('خطأ في تحميل البيانات: ' + err.message, 'error');
   }
 }
@@ -1121,12 +1147,12 @@ function changePw() {
   const next    = document.getElementById('s-new-pw').value;
   const confirm = document.getElementById('s-confirm-pw').value;
 
-  if (current !== getAdminPw()) { notify('كلمة المرور الحالية غير صحيحة', 'error'); return; }
+  if (current !== getAdminKey()) { notify('المفتاح الحالي غير صحيح', 'error'); return; }
   if (next.length < 6)          { notify('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error'); return; }
   if (next !== confirm)         { notify('كلمتا المرور غير متطابقتين', 'error'); return; }
 
-  localStorage.setItem(ADMIN_PW_KEY, next);
-  notify('✓ تم تغيير كلمة المرور بنجاح', 'success');
+  sessionStorage.setItem(ADMIN_KEY_SESSION, next);
+  notify('✓ تم تحديث مفتاح الجلسة بنجاح', 'success');
   ['s-current-pw','s-new-pw','s-confirm-pw'].forEach(id => document.getElementById(id).value = '');
 }
 
