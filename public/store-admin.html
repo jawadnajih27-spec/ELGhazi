@@ -885,6 +885,7 @@
     <script>
         // Global State
         const slug = window.location.pathname.split('/')[2];
+        const encodedSlug = encodeURIComponent(slug || '');
         let store = null;
         let products = [];
         let isAuthenticated = false;
@@ -920,12 +921,16 @@
         // Authentication
         function checkAuth() {
             const auth = sessionStorage.getItem(`store_auth_${slug}`);
-            if (auth === '1') {
+            const savedPassword = sessionStorage.getItem(`store_pass_${slug}`);
+            if (auth === '1' && savedPassword) {
                 isAuthenticated = true;
                 document.getElementById('lockScreen').style.display = 'none';
                 document.getElementById('app').classList.add('authenticated');
                 loadStore();
                 loadProducts();
+            } else {
+                sessionStorage.removeItem(`store_auth_${slug}`);
+                sessionStorage.removeItem(`store_pass_${slug}`);
             }
         }
 
@@ -940,7 +945,7 @@
             }
 
             try {
-                const response = await fetch(`/api/stores/auth`, {
+                const response = await fetch(`/api/store-auth`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -954,6 +959,7 @@
                 if (response.ok) {
                     isAuthenticated = true;
                     sessionStorage.setItem(`store_auth_${slug}`, '1');
+                    sessionStorage.setItem(`store_pass_${slug}`, password);
                     document.getElementById('lockScreen').style.display = 'none';
                     document.getElementById('app').classList.add('authenticated');
                     await loadStore();
@@ -978,6 +984,7 @@
 
         function logout() {
             sessionStorage.removeItem(`store_auth_${slug}`);
+            sessionStorage.removeItem(`store_pass_${slug}`);
             isAuthenticated = false;
             document.getElementById('lockScreen').style.display = 'flex';
             document.getElementById('app').classList.remove('authenticated');
@@ -989,7 +996,7 @@
         // Load Store
         async function loadStore() {
             try {
-                const response = await fetch(`/api/stores?slug=${slug}`);
+                const response = await fetch(`/api/stores?slug=${encodedSlug}`);
                 if (!response.ok) throw new Error('Store not found');
                 store = await response.json();
                 
@@ -1019,7 +1026,7 @@
             emptyState.style.display = 'none';
 
             try {
-                const response = await fetch(`/api/products?slug=${slug}`);
+                const response = await fetch(`/api/products?slug=${encodedSlug}`);
                 if (!response.ok) throw new Error('Failed to load products');
                 products = await response.json();
                 renderProductsTable();
@@ -1181,7 +1188,7 @@
                 let response;
                 if (productId) {
                     // Update
-                    response = await fetch(`/api/products?slug=${slug}&id=${productId}`, {
+                    response = await fetch(`/api/products?slug=${encodedSlug}&id=${productId}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1191,7 +1198,7 @@
                     });
                 } else {
                     // Create
-                    response = await fetch(`/api/products?slug=${slug}`, {
+                    response = await fetch(`/api/products?slug=${encodedSlug}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1223,7 +1230,7 @@
             if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
 
             try {
-                const response = await fetch(`/api/products?slug=${slug}&id=${productId}`, {
+                const response = await fetch(`/api/products?slug=${encodedSlug}&id=${productId}`, {
                     method: 'DELETE',
                     headers: {
                         'X-Store-Password': sessionStorage.getItem(`store_pass_${slug}`) || ''
@@ -1254,7 +1261,7 @@
             };
 
             try {
-                const response = await fetch(`/api/stores?slug=${slug}`, {
+                const response = await fetch(`/api/stores?slug=${encodedSlug}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1323,7 +1330,7 @@
                 for (const product of data) {
                     if (product.title_ar && product.price) {
                         try {
-                            const response = await fetch(`/api/products?slug=${slug}`, {
+                            const response = await fetch(`/api/products?slug=${encodedSlug}`, {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
