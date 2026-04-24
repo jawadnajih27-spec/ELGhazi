@@ -32,6 +32,22 @@ function isSuperAdmin(req) {
   return req.headers['x-admin-key'] === SUPER_ADMIN_KEY;
 }
 
+async function verifyStorePassword(slug, password) {
+  if (!slug || !password) return false;
+  const rows = await supabase(
+    `stores?slug=eq.${encodeURIComponent(slug)}&select=password,active`
+  );
+  if (!rows.length || !rows[0].active) return false;
+  return rows[0].password === password;
+}
+
+function isAuthRequest(req) {
+  const pathQuery = req.query?.path;
+  if (Array.isArray(pathQuery) && pathQuery.includes('auth')) return true;
+  if (typeof pathQuery === 'string' && pathQuery.includes('auth')) return true;
+  return req.url?.includes('/auth');
+}
+
 function json(res, status, data) {
   res.status(status).json(data);
 }
@@ -46,8 +62,24 @@ export default async function handler(req, res) {
 
   const { slug } = req.query;
   const method   = req.method;
+  const storePassword = req.headers['x-store-password'];
 
   try {
+    // ── POST /api/stores/auth ── التحقق من كلمة سر العميل
+    if (method === 'POST' && isAuthRequest(req)) {
+      const { slug: authSlug, password } = req.body;
+      if (!authSlug || !password) return json(res, 400, { error: 'بيانات ناقصة' });
+
+      const rows = await supabase(
+        `stores?slug=eq.${encodeURIComponent(authSlug)}&select=password,active`
+      );
+
+      if (!rows.length)        return json(res, 404, { error: 'المتجر غير موجود' });
+      if (!rows[0].active)     return json(res, 403, { error: 'المتجر موقف مؤقتاً' });
+      if (rows[0].password !== password) return json(res, 401, { error: 'كلمة السر غير صحيحة' });
+
+      return json(res, 200, { success: true });
+    }
 
     // ── GET /api/stores?slug=ahmed ── بيانات متجر واحد (عامة)
     // ── GET /api/stores            ── كل المتاجر (super-admin فقط)
@@ -56,7 +88,7 @@ export default async function handler(req, res) {
       if (slug) {
         // عام — لا يحتاج مصادقة — يُرجع بيانات المتجر بدون كلمة السر
         const rows = await supabase(
-          `stores?slug=eq.${encodeURIComponent(slug)}&active=eq.true&select=slug,name_ar,name_fr,lang,whatsapp,currency,primary_color,accent_color,logo_url,desc_ar,desc_fr`
+          `stores?slug=eq.${encodeURIComponent(slug)}&active=eq.true&select=slug,name_ar,name_fr,lang,whatsapp,currency,primary_color,accent_color,logo_url,desc_ar,desc_fr,active`
         );
         if (!rows.length) return json(res, 404, { error: 'المتجر غير موجود أو غير نشط' });
         return json(res, 200, rows[0]);
@@ -124,14 +156,25 @@ export default async function handler(req, res) {
 
     // ── PUT /api/stores?slug=ahmed ── تعديل متجر (super-admin فقط)
     if (method === 'PUT') {
-      if (!isSuperAdmin(req)) return json(res, 401, { error: 'غير مصرح' });
       if (!slug) return json(res, 400, { error: 'slug مطلوب' });
 
-      const allowed = [
+      const superAdmin = isSuperAdmin(req);
+      const storeAuthorized = await verifyStorePassword(slug, storePassword);
+      if (!superAdmin && !storeAuthorized) {
+        return json(res, 401, { error: 'غير مصرح' });
+      }
+
+      const allowedForSuperAdmin = [
         'name_ar','name_fr','lang','password',
         'whatsapp','currency','primary_color','accent_color',
         'logo_url','desc_ar','desc_fr','active'
       ];
+      const allowedForStoreAdmin = [
+        'name_ar','name_fr','lang',
+        'whatsapp','currency','primary_color','accent_color',
+        'logo_url','desc_ar','desc_fr'
+      ];
+      const allowed = superAdmin ? allowedForSuperAdmin : allowedForStoreAdmin;
 
       const updates = {};
       for (const key of allowed) {
@@ -158,22 +201,6 @@ export default async function handler(req, res) {
 
       await supabase(`stores?slug=eq.${encodeURIComponent(slug)}`, 'DELETE');
       return json(res, 200, { success: true, message: `تم حذف المتجر ${slug}` });
-    }
-
-    // ── POST /api/stores/auth ── التحقق من كلمة سر العميل
-    if (method === 'POST' && req.url?.includes('/auth')) {
-      const { slug: authSlug, password } = req.body;
-      if (!authSlug || !password) return json(res, 400, { error: 'بيانات ناقصة' });
-
-      const rows = await supabase(
-        `stores?slug=eq.${encodeURIComponent(authSlug)}&select=password,active`
-      );
-
-      if (!rows.length)        return json(res, 404, { error: 'المتجر غير موجود' });
-      if (!rows[0].active)     return json(res, 403, { error: 'المتجر موقف مؤقتاً' });
-      if (rows[0].password !== password) return json(res, 401, { error: 'كلمة السر غير صحيحة' });
-
-      return json(res, 200, { success: true });
     }
 
     return json(res, 405, { error: 'الطريقة غير مدعومة' });

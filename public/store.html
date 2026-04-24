@@ -799,6 +799,7 @@
     <script>
         // Global State
         const slug = window.location.pathname.split('/')[2] || 'demo-store';
+        const encodedSlug = encodeURIComponent(slug);
         let store = null;
         let products = [];
         let filteredProducts = [];
@@ -827,7 +828,7 @@
         // Load Store Data
         async function loadStore() {
             try {
-                const response = await fetch(`/api/stores?slug=${slug}`);
+                const response = await fetch(`/api/stores?slug=${encodedSlug}`);
                 if (!response.ok) throw new Error('Store not found');
                 store = await response.json();
 
@@ -895,7 +896,7 @@
             document.getElementById('errorState').style.display = 'none';
 
             try {
-                const response = await fetch(`/api/products?slug=${slug}`);
+                const response = await fetch(`/api/products?slug=${encodedSlug}`);
                 if (!response.ok) throw new Error('Failed to load products');
                 products = await response.json();
                 filteredProducts = [...products];
