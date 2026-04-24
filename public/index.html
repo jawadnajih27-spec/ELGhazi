@@ -1,9 +1,94 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8"/>
-  <meta http-equiv="refresh" content="0; url=/super-admin"/>
-  <script>window.location.replace('/super-admin')</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Store Factory | NJSERVICES</title>
+  <style>
+    :root {
+      --bg: #0f1623;
+      --surface: #1e2a3d;
+      --border: rgba(99, 102, 241, 0.18);
+      --primary: #6366f1;
+      --accent: #22d3ee;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(99,102,241,.15), transparent 35%), var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: min(720px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+    }
+    h1 { margin-bottom: 8px; font-size: 1.8rem; }
+    p { color: var(--muted); margin-bottom: 18px; line-height: 1.8; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+    a, button {
+      border: 0;
+      cursor: pointer;
+      text-decoration: none;
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: .95rem;
+    }
+    .outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    input {
+      flex: 1;
+      min-width: 220px;
+      background: #111827;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    small { color: var(--muted); display: block; margin-top: 10px; }
+  </style>
 </head>
-<body></body>
+<body>
+  <main class="card">
+    <h1>Digital Store Factory</h1>
+    <p>تم إصلاح الواجهة الرئيسية. يمكنك الآن الوصول إلى لوحة الـ Super Admin أو فتح أي متجر مباشرة عبر الـ slug.</p>
+    <div class="actions">
+      <a href="/super-admin">لوحة Super Admin</a>
+      <a class="outline" href="/store/demo-store">فتح متجر تجريبي</a>
+    </div>
+    <div class="row">
+      <input id="slugInput" type="text" placeholder="أدخل slug المتجر (مثال: ahmed-store)" />
+      <button type="button" onclick="openStore()">فتح المتجر</button>
+      <button type="button" class="outline" onclick="openStoreAdmin()">لوحة المتجر</button>
+    </div>
+    <small>روابط المتجر: <code>/store/:slug</code> — لوحة المتجر: <code>/store/:slug/admin</code>.</small>
+  </main>
+
+  <script>
+    function getSlug() {
+      return (document.getElementById('slugInput').value || '').trim().toLowerCase();
+    }
+    function openStore() {
+      const slug = getSlug();
+      if (!slug) return;
+      window.location.href = `/store/${encodeURIComponent(slug)}`;
+    }
+    function openStoreAdmin() {
+      const slug = getSlug();
+      if (!slug) return;
+      window.location.href = `/store/${encodeURIComponent(slug)}/admin`;
+    }
+  </script>
+</body>
 </html>
