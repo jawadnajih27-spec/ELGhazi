@@ -1,1408 +1,928 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم المتجر | NJSERVICES</title>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg: #0f1623;
-            --bg-soft: #161f2e;
-            --surface: #1e2a3d;
-            --surface-2: #243247;
-            --border: rgba(99, 102, 241, 0.18);
-            --primary: #6366f1;
-            --primary-soft: rgba(99, 102, 241, 0.12);
-            --accent: #22d3ee;
-            --accent-soft: rgba(34, 211, 238, 0.12);
-            --text: #e2e8f0;
-            --muted: #94a3b8;
-            --success: #4ade80;
-            --danger: #f87171;
-            --warning: #fbbf24;
-            --shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        /* Lock Screen */
-        .lock-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--bg);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .lock-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 3rem;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .lock-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 2rem;
-            background: var(--primary-soft);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .lock-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .lock-subtitle {
-            color: var(--muted);
-            margin-bottom: 2rem;
-        }
-
-        .lock-input {
-            width: 100%;
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1rem;
-            color: var(--text);
-            font-family: 'Tajawal', sans-serif;
-            font-size: 1rem;
-            text-align: center;
-            margin-bottom: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .lock-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-
-        .lock-input.error {
-            border-color: var(--danger);
-            animation: shake 0.5s ease;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        .lock-btn {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 1rem;
-            border-radius: 12px;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .lock-btn:hover {
-            background: var(--accent);
-        }
-
-        .lock-error {
-            color: var(--danger);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            display: none;
-        }
-
-        /* Main App */
-        .app {
-            display: none;
-            min-height: 100vh;
-        }
-
-        .app.authenticated {
-            display: block;
-        }
-
-        .app.authenticated ~ .lock-screen {
-            display: none;
-        }
-
-        /* Header */
-        .admin-header {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .admin-header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .admin-store-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .admin-header-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .btn-logout {
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 0.7rem 1.5rem;
-            border-radius: 12px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-logout:hover {
-            background: var(--danger);
-            border-color: var(--danger);
-        }
-
-        /* Navigation */
-        .admin-nav {
-            background: var(--bg-soft);
-            border-bottom: 1px solid var(--border);
-            padding: 0 2rem;
-            display: flex;
-            gap: 1rem;
-            overflow-x: auto;
-            position: sticky;
-            top: 60px;
-            z-index: 99;
-        }
-
-        .nav-btn {
-            background: transparent;
-            border: none;
-            color: var(--muted);
-            padding: 1rem 1.5rem;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .nav-btn:hover {
-            color: var(--text);
-        }
-
-        .nav-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        /* Content Area */
-        .admin-content {
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        /* Products Table */
-        .table-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.8rem;
-            border-radius: 12px;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 0.8rem 1.8rem;
-            border-radius: 12px;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background: var(--primary-soft);
-            border-color: var(--primary);
-        }
-
-        .btn-danger {
-            background: transparent;
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: 600;
-        }
-
-        .btn-danger:hover {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-icon {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .btn-icon:hover {
-            background: var(--primary-soft);
-            border-color: var(--primary);
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: right;
-            padding: 1rem 1.5rem;
-            background: var(--bg-soft);
-            color: var(--muted);
-            font-weight: 600;
-            font-size: 0.9rem;
-            border-bottom: 1px solid var(--border);
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover {
-            background: var(--primary-soft);
-        }
-
-        .product-thumb {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        .stock-badge {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .stock-badge.in-stock {
-            background: rgba(74, 222, 128, 0.15);
-            color: var(--success);
-        }
-
-        .stock-badge.low-stock {
-            background: rgba(251, 191, 36, 0.15);
-            color: var(--warning);
-        }
-
-        .stock-badge.out-of-stock {
-            background: rgba(248, 113, 113, 0.15);
-            color: var(--danger);
-        }
-
-        /* Settings */
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-        }
-
-        .settings-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-        }
-
-        .settings-card h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .form-group {
-            margin-bottom: 1.2rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--muted);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        textarea {
-            width: 100%;
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 0.8rem 1rem;
-            color: var(--text);
-            font-family: 'Tajawal', sans-serif;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-        }
-
-        input:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .image-input-group {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .image-input-group input {
-            flex: 1;
-        }
-
-        .image-preview {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        .add-image-btn {
-            background: var(--primary-soft);
-            border: 1px dashed var(--primary);
-            color: var(--primary);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 0.5rem;
-        }
-
-        .add-image-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 2rem;
-            max-width: 700px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-        }
-
-        .modal-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .modal-close {
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
-
-        .modal-close:hover {
-            background: var(--danger);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 2rem;
-        }
-
-        /* Loading & States */
-        .loading {
-            text-align: center;
-            padding: 3rem;
-            color: var(--muted);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: var(--muted);
-        }
-
-        .empty-state h3 {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-            color: var(--text);
-        }
-
-        /* Toast Notifications */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            width: 90%;
-            max-width: 500px;
-        }
-
-        .toast {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            animation: slideDown 0.3s ease;
-            backdrop-filter: blur(16px);
-        }
-
-        .toast.success {
-            border-left: 3px solid var(--success);
-        }
-
-        .toast.error {
-            border-left: 3px solid var(--danger);
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-            }
-            to {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .admin-header {
-                padding: 0.8rem 1rem;
-            }
-            
-            .admin-store-name {
-                font-size: 1.1rem;
-            }
-            
-            .admin-nav {
-                padding: 0 1rem;
-                gap: 0.5rem;
-            }
-            
-            .nav-btn {
-                padding: 0.8rem 1rem;
-                font-size: 0.85rem;
-            }
-            
-            .admin-content {
-                padding: 1rem;
-            }
-            
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .table-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            td, th {
-                padding: 0.8rem;
-            }
-        }
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title id="pageTitle">لوحة العميل — NJSERVICES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ══ RESET & DESIGN TOKENS ══ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1623;--bg-soft:#161f2e;--surface:#1e2a3d;--surface-2:#243247;
+  --border:rgba(99,102,241,0.18);--border-soft:rgba(255,255,255,0.06);
+  --primary:#6366f1;--primary-s:rgba(99,102,241,0.12);--accent:#22d3ee;--accent-s:rgba(34,211,238,0.12);
+  --text:#e2e8f0;--muted:#94a3b8;--success:#4ade80;--danger:#f87171;--warning:#fbbf24;
+  --shadow:0 24px 60px rgba(0,0,0,0.45);--radius-xl:20px;--radius-lg:14px;--radius-md:10px;
+}
+html,body{height:100%;font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+
+/* ══ LOCK SCREEN ══ */
+#lockScreen{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 30% 40%, rgba(99,102,241,0.12), transparent 50%),
+             radial-gradient(circle at 80% 70%, rgba(34,211,238,0.08), transparent 40%),
+             var(--bg);
+}
+.lock-card{
+  position:relative;width:min(420px,calc(100% - 40px));
+  background:linear-gradient(160deg,rgba(30,42,61,0.95),rgba(22,31,46,0.98));
+  border:1px solid var(--border);border-radius:24px;
+  padding:48px 40px;
+  box-shadow:var(--shadow),0 0 0 1px rgba(99,102,241,0.06) inset;
+  backdrop-filter:blur(20px);text-align:center;
+}
+.lock-logo{
+  width:72px;height:72px;border-radius:20px;margin:0 auto 24px;
+  background:linear-gradient(135deg,rgba(99,102,241,0.25),rgba(34,211,238,0.15));
+  border:1px solid rgba(99,102,241,0.3);
+  display:grid;place-items:center;
+  box-shadow:0 0 40px rgba(99,102,241,0.2);
+}
+.lock-title{font-family:'Playfair Display',serif;font-size:1.9rem;margin-bottom:6px;letter-spacing:-.02em}
+.lock-sub{color:var(--muted);font-size:.92rem;margin-bottom:32px;line-height:1.7}
+.lock-input{
+  width:100%;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px;color:var(--text);
+  padding:15px 18px;font-size:1rem;font-family:'Tajawal',sans-serif;
+  text-align:center;letter-spacing:.25em;outline:none;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+  margin-bottom:14px;
+}
+.lock-input:focus{border-color:rgba(99,102,241,.5);box-shadow:0 0 0 3px rgba(99,102,241,.15);background:rgba(255,255,255,.06)}
+.lock-input.err{border-color:rgba(248,113,113,.6);box-shadow:0 0 0 3px rgba(248,113,113,.12);animation:shake .35s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
+.lock-btn{
+  width:100%;padding:15px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),#4f46e5);
+  color:#fff;font-weight:800;font-size:1rem;font-family:'Tajawal',sans-serif;
+  cursor:pointer;transition:transform .2s,box-shadow .2s,filter .2s;
+  box-shadow:0 12px 28px rgba(99,102,241,0.3);
+}
+.lock-btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.lock-err{color:var(--danger);font-size:.88rem;margin-top:12px;min-height:18px;display:none}
+
+/* ══ SHELL ══ */
+#adminPanel{display:none;height:100vh;overflow:hidden}
+.shell{display:flex;height:100vh}
+
+/* ══ SIDEBAR ══ */
+.sidebar{
+  width:260px;flex-shrink:0;
+  background:linear-gradient(180deg,var(--bg-soft),var(--bg));
+  border-left:1px solid var(--border-soft);
+  display:flex;flex-direction:column;overflow-y:auto;
+}
+.sb-brand{
+  padding:24px 20px;border-bottom:1px solid var(--border-soft);
+  display:flex;align-items:center;gap:12px;
+}
+.sb-mark{
+  width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(99,102,241,.3),rgba(34,211,238,.2));
+  border:1px solid rgba(99,102,241,.3);
+  display:grid;place-items:center;
+}
+.sb-name{font-weight:900;font-size:.95rem;color:var(--text)}
+.sb-ver{font-size:.7rem;color:var(--muted);margin-top:2px}
+.sb-section{padding:16px 16px 6px;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;margin:2px 8px;border-radius:var(--radius-md);
+  cursor:pointer;font-size:.88rem;color:var(--muted);
+  border:none;background:none;width:calc(100% - 16px);
+  text-align:right;font-family:'Tajawal',sans-serif;
+  transition:background .2s,color .2s;
+}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--text)}
+.nav-item.active{background:var(--primary-s);color:var(--primary);font-weight:700;border:1px solid var(--border)}
+.nav-icon{width:18px;text-align:center;flex-shrink:0}
+.sb-divider{border:none;border-top:1px solid var(--border-soft);margin:6px 12px}
+.sb-footer{margin-top:auto;padding:16px;border-top:1px solid var(--border-soft);font-size:.72rem;color:var(--muted);text-align:center;line-height:1.6}
+
+/* ══ MAIN ══ */
+.main{flex:1;overflow-y:auto;background:var(--bg)}
+.page-hd{
+  padding:20px 28px;border-bottom:1px solid var(--border-soft);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:rgba(22,31,46,.8);backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:10;
+}
+.page-title{font-size:1.15rem;font-weight:800;color:var(--text)}
+.page-sub{font-size:.8rem;color:var(--muted);margin-top:2px}
+
+/* ══ SECTIONS ══ */
+.section{display:none;padding:28px;animation:fadeIn .3s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ GRID ══ */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}}
+
+/* ══ CARDS ══ */
+.card{
+  background:linear-gradient(160deg,rgba(30,42,61,.9),rgba(22,31,46,.95));
+  border:1px solid var(--border-soft);border-radius:var(--radius-xl);
+  box-shadow:var(--shadow);backdrop-filter:blur(12px);overflow:hidden;
+}
+.card-hd{
+  padding:16px 20px;border-bottom:1px solid var(--border-soft);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.card-title{font-size:.95rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:8px}
+.card-body{padding:20px}
+
+/* ══ STAT CARDS ══ */
+.stat{
+  background:linear-gradient(160deg,rgba(30,42,61,.9),rgba(22,31,46,.95));
+  border:1px solid var(--border-soft);border-radius:var(--radius-xl);
+  padding:20px;position:relative;overflow:hidden;
+}
+.stat::before{
+  content:"";position:absolute;top:-20px;left:-20px;
+  width:80px;height:80px;border-radius:50%;
+  background:var(--primary-s);filter:blur(20px);
+}
+.stat-val{font-size:2.2rem;font-weight:900;color:var(--text);line-height:1;margin-bottom:6px}
+.stat-lbl{font-size:.82rem;color:var(--muted)}
+
+/* ══ FORM ══ */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:7px;letter-spacing:.02em}
+.field label span{color:var(--danger);margin-right:3px}
+.field .hint{font-size:.74rem;color:var(--muted);margin-top:5px;opacity:.8}
+input,textarea,select{
+  width:100%;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-md);color:var(--text);
+  padding:12px 14px;font-size:.9rem;font-family:'Tajawal',sans-serif;
+  outline:none;transition:border-color .2s,box-shadow .2s,background .2s;
+}
+input::placeholder,textarea::placeholder{color:rgba(148,163,184,.4)}
+input:focus,textarea:focus,select:focus{
+  border-color:rgba(99,102,241,.45);
+  box-shadow:0 0 0 3px rgba(99,102,241,.12);
+  background:rgba(255,255,255,.06);
+}
+textarea{min-height:90px;resize:vertical}
+select option{background:var(--surface)}
+
+/* ══ BUTTONS ══ */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:var(--radius-md);
+  font-size:.88rem;font-weight:700;cursor:pointer;border:none;
+  font-family:'Tajawal',sans-serif;transition:transform .2s,filter .2s,box-shadow .2s;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.btn-primary{background:linear-gradient(135deg,var(--primary),#4f46e5);color:#fff;box-shadow:0 8px 20px rgba(99,102,241,.25)}
+.btn-accent{background:linear-gradient(135deg,var(--accent),#0891b2);color:#0f172a;box-shadow:0 8px 20px rgba(34,211,238,.2)}
+.btn-success{background:linear-gradient(135deg,var(--success),#16a34a);color:#0f172a;box-shadow:0 8px 20px rgba(74,222,128,.2)}
+.btn-danger{background:var(--danger-s);color:var(--danger);border:1px solid rgba(248,113,113,.25)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border-soft)}
+.btn-ghost:hover{background:rgba(255,255,255,.09)}
+.btn-sm{padding:7px 13px;font-size:.8rem}
+.btn-full{width:100%;justify-content:center}
+
+/* ══ BADGE ══ */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;font-size:.74rem;font-weight:700}
+.badge-primary{background:var(--primary-s);color:var(--primary);border:1px solid var(--border)}
+.badge-success{background:var(--success-s);color:var(--success)}
+.badge-danger{background:var(--danger-s);color:var(--danger)}
+
+/* ══ TABLE ══ */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{
+  padding:10px 14px;text-align:right;
+  font-size:.72rem;font-weight:700;color:var(--muted);
+  background:rgba(0,0,0,.2);border-bottom:1px solid var(--border-soft);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.tbl td{padding:12px 14px;font-size:.86rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.025)}
+
+/* ══ MODAL ══ */
+.modal-bg{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
+  z-index:500;align-items:center;justify-content:center;
+}
+.modal-bg.open{display:flex}
+.modal{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-xl);width:min(580px,95vw);
+  max-height:90vh;overflow-y:auto;
+  box-shadow:0 40px 100px rgba(0,0,0,.6);
+  animation:fadeIn .25s ease;
+}
+.modal-hd{padding:20px 24px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:1rem;font-weight:800}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;border-radius:6px;padding:2px 6px;transition:color .2s,background .2s}
+.modal-close:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.modal-body{padding:24px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border-soft);display:flex;justify-content:flex-end;gap:10px}
+
+/* ══ NOTIFY ══ */
+.notif{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%);
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:12px 20px;
+  font-size:.88rem;font-weight:700;z-index:9999;
+  box-shadow:0 12px 40px rgba(0,0,0,.5);
+  display:flex;align-items:center;gap:8px;min-width:240px;
+  animation:slideDown .3s ease;
+}
+@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.notif.success{border-color:rgba(74,222,128,.35);color:var(--success)}
+.notif.error{border-color:rgba(248,113,113,.35);color:var(--danger)}
+.notif.info{border-color:var(--border);color:var(--accent)}
+
+/* ══ PRODUCT IMAGE PREVIEW ══ */
+.img-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.img-preview-item{width:60px;height:60px;border-radius:8px;object-fit:cover;border:1px solid var(--border-soft);background:var(--surface-2)}
+
+/* ══ EMPTY ══ */
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty svg{opacity:.3;margin-bottom:14px}
+.empty h4{font-size:1rem;color:var(--text);margin-bottom:6px}
+
+/* ══ LINK ROW ══ */
+.link-row{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(0,0,0,.2);border-radius:var(--radius-md);margin-bottom:10px}
+.link-row code{flex:1;font-family:monospace;font-size:.85rem;color:var(--accent);word-break:break-all}
+
+/* ══ SKELETON ══ */
+.skeleton{
+  background:linear-gradient(90deg,var(--surface-2) 25%,var(--surface) 50%,var(--surface-2) 75%);
+  background-size:200% 100%;animation:skeleton 1.5s infinite;border-radius:8px;
+}
+@keyframes skeleton{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:900px){
+  .shell{flex-direction:column}
+  .sidebar{width:100%;max-height:56px;overflow:hidden}
+}
+</style>
 </head>
 <body>
-    <!-- Lock Screen -->
-    <div class="lock-screen" id="lockScreen">
-        <div class="lock-card">
-            <div class="lock-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                    <path d="M7 11V7a5 5 0 0110 0v4"/>
-                </svg>
-            </div>
-            <h2 class="lock-title">لوحة التحكم</h2>
-            <p class="lock-subtitle" id="lockStoreName">المتجر</p>
-            <input type="password" class="lock-input" id="passwordInput" placeholder="أدخل كلمة السر" autocomplete="off">
-            <div class="lock-error" id="lockError">كلمة السر غير صحيحة</div>
-            <button class="lock-btn" onclick="authenticate()">دخول</button>
-        </div>
+
+<!-- ══ LOCK SCREEN ══ -->
+<div id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-logo">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.8" stroke-linecap="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <h2 class="lock-title" id="lockTitle">لوحة العميل</h2>
+    <p class="lock-sub" id="lockSub">أدخل كلمة المرور الخاصة بمتجرك للمتابعة</p>
+    <input type="password" id="pwInput" class="lock-input" placeholder="••••••••" autocomplete="current-password"/>
+    <button class="lock-btn" id="loginBtn">دخول إلى اللوحة</button>
+    <p class="lock-err" id="lockErr">كلمة المرور غير صحيحة</p>
+  </div>
+</div>
+
+<!-- ══ ADMIN PANEL ══ -->
+<div id="adminPanel">
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div>
+        <div class="sb-name" id="sbStoreName">متجري</div>
+        <div class="sb-ver">لوحة العميل</div>
+      </div>
     </div>
 
-    <!-- Main App -->
-    <div class="app" id="app">
-        <!-- Header -->
-        <header class="admin-header">
-            <div class="admin-header-left">
-                <h1 class="admin-store-name" id="adminStoreName">المتجر</h1>
-            </div>
-            <div class="admin-header-right">
-                <button class="btn-logout" onclick="logout()">تسجيل الخروج</button>
-            </div>
-        </header>
+    <div style="padding:8px 0">
+      <div class="sb-section">الرئيسية</div>
+      <button class="nav-item active" onclick="nav('dashboard',this)">
+        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        لوحة التحكم
+      </button>
 
-        <!-- Navigation -->
-        <nav class="admin-nav">
-            <button class="nav-btn active" onclick="switchSection('products')">المنتجات</button>
-            <button class="nav-btn" onclick="switchSection('settings')">إعدادات المتجر</button>
-        </nav>
+      <div class="sb-section">المنتجات</div>
+      <button class="nav-item" onclick="nav('products',this)">
+        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        كل المنتجات
+      </button>
+      <button class="nav-item" onclick="nav('new-product',this)">
+        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        منتج جديد
+      </button>
 
-        <!-- Content -->
-        <div class="admin-content">
-            <!-- Products Section -->
-            <div class="section active" id="productsSection">
-                <div class="table-header">
-                    <h2 class="section-title">المنتجات</h2>
-                    <div style="display: flex; gap: 1rem;">
-                        <button class="btn-secondary" onclick="exportProducts()" style="display: flex; align-items: center; gap: 0.5rem;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-                            </svg>
-                            تصدير JSON
-                        </button>
-                        <button class="btn-secondary" onclick="importProducts()" style="display: flex; align-items: center; gap: 0.5rem;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-                            </svg>
-                            استيراد JSON
-                        </button>
-                        <button class="btn-primary" onclick="openProductModal()">
-                            + إضافة منتج
-                        </button>
-                    </div>
-                </div>
+      <hr class="sb-divider"/>
 
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>الصورة</th>
-                                <th>اسم المنتج</th>
-                                <th>السعر</th>
-                                <th>المخزون</th>
-                                <th>إجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productsTableBody">
-                            <tr>
-                                <td colspan="5" class="loading">جاري تحميل المنتجات...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="empty-state" id="emptyProducts" style="display: none;">
-                    <h3>لا توجد منتجات</h3>
-                    <p>أضف منتجك الأول للبدء</p>
-                </div>
-            </div>
-
-            <!-- Settings Section -->
-            <div class="section" id="settingsSection">
-                <h2 class="section-title" style="margin-bottom: 2rem;">إعدادات المتجر</h2>
-                <div class="settings-grid">
-                    <div class="settings-card">
-                        <h3>معلومات المتجر</h3>
-                        <div class="form-group">
-                            <label>اسم المتجر (عربي)</label>
-                            <input type="text" id="settingsNameAR" placeholder="اسم المتجر بالعربية">
-                        </div>
-                        <div class="form-group">
-                            <label>اسم المتجر (فرنسي)</label>
-                            <input type="text" id="settingsNameFR" placeholder="اسم المتجر بالفرنسية">
-                        </div>
-                        <div class="form-group">
-                            <label>وصف المتجر (عربي)</label>
-                            <textarea id="settingsDescAR" placeholder="وصف المتجر بالعربية"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>وصف المتجر (فرنسي)</label>
-                            <textarea id="settingsDescFR" placeholder="وصف المتجر بالفرنسية"></textarea>
-                        </div>
-                    </div>
-                    <div class="settings-card">
-                        <h3>معلومات الاتصال</h3>
-                        <div class="form-group">
-                            <label>رقم واتساب</label>
-                            <input type="text" id="settingsWhatsApp" placeholder="212600000000">
-                        </div>
-                        <div class="form-group">
-                            <label>رمز العملة</label>
-                            <input type="text" id="settingsCurrency" placeholder="درهم">
-                        </div>
-                        <div class="form-group">
-                            <label>اللغة</label>
-                            <input type="text" id="settingsLang" placeholder="ar / fr / both" disabled style="opacity: 0.5;">
-                            <small style="color: var(--muted); display: block; margin-top: 0.5rem;">يمكن تغييرها فقط من الإدارة الرئيسية</small>
-                        </div>
-                        <button class="btn-primary" onclick="saveSettings()" style="width: 100%; margin-top: 1rem;">
-                            حفظ الإعدادات
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+      <div class="sb-section">متجري</div>
+      <button class="nav-item" onclick="nav('settings',this)">
+        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        إعدادات المتجر
+      </button>
+      <button class="nav-item" onclick="window.open('/store/'+STORE_SLUG,'_blank')">
+        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        زيارة المتجر
+      </button>
     </div>
 
-    <!-- Product Modal -->
-    <div class="modal-overlay" id="productModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="productModalTitle">إضافة منتج جديد</h3>
-                <button class="modal-close" onclick="closeProductModal()">✕</button>
-            </div>
-            <form id="productForm" onsubmit="saveProduct(event)">
-                <input type="hidden" id="productId">
-                <div class="form-group">
-                    <label>اسم المنتج (عربي) *</label>
-                    <input type="text" id="productTitleAR" required placeholder="اسم المنتج بالعربية">
-                </div>
-                <div class="form-group">
-                    <label>اسم المنتج (فرنسي)</label>
-                    <input type="text" id="productTitleFR" placeholder="اسم المنتج بالفرنسية">
-                </div>
-                <div class="form-group">
-                    <label>وصف المنتج (عربي)</label>
-                    <textarea id="productDescAR" placeholder="وصف المنتج بالعربية"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>وصف المنتج (فرنسي)</label>
-                    <textarea id="productDescFR" placeholder="وصف المنتج بالفرنسية"></textarea>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group">
-                        <label>السعر *</label>
-                        <input type="number" id="productPrice" required placeholder="0.00" step="0.01" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label>المخزون</label>
-                        <input type="number" id="productStock" placeholder="99" min="0" value="99">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>الصور (حتى 5 روابط)</label>
-                    <div id="imagesContainer">
-                        <div class="image-input-group">
-                            <input type="text" class="product-image-input" placeholder="رابط الصورة">
-                            <img class="image-preview" src="" alt="" style="display: none;">
-                        </div>
-                    </div>
-                    <button type="button" class="add-image-btn" onclick="addImageInput()">+ إضافة صورة</button>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeProductModal()">إلغاء</button>
-                    <button type="submit" class="btn-primary">حفظ المنتج</button>
-                </div>
-            </form>
-        </div>
+    <div class="sb-footer">
+      <span id="sbFooterName">متجري</span><br>
+      NJSERVICES © 2026
+      <div style="margin-top:10px">
+        <button class="btn btn-ghost btn-sm btn-full" onclick="logout()" style="font-size:.75rem">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          تسجيل الخروج
+        </button>
+      </div>
     </div>
+  </aside>
 
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
+  <!-- MAIN -->
+  <div class="main">
 
-    <!-- Hidden file input for import -->
-    <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="handleImportFile(event)">
+    <!-- ▸ DASHBOARD -->
+    <section id="sec-dashboard" class="section active">
+      <div class="page-hd">
+        <div><div class="page-title">لوحة التحكم</div><div class="page-sub">نظرة عامة على متجرك</div></div>
+        <div style="display:flex;gap:10px">
+          <span class="badge badge-success" id="storeStatusBadge">نشط</span>
+        </div>
+      </div>
+      <div style="padding:28px">
+        <div class="grid-2" style="margin-bottom:24px">
+          <div class="stat">
+            <div class="stat-val" id="d-products">—</div>
+            <div class="stat-lbl">إجمالي المنتجات</div>
+          </div>
+          <div class="stat" style="--primary-s:rgba(34,211,238,0.1)">
+            <div class="stat-val" id="d-link">🔗</div>
+            <div class="stat-lbl">رابط المتجر</div>
+          </div>
+        </div>
 
-    <script>
-        // Global State
-        const slug = window.location.pathname.split('/')[2];
-        const encodedSlug = encodeURIComponent(slug || '');
-        let store = null;
-        let products = [];
-        let isAuthenticated = false;
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              روابط مهمة
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="link-row">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              <code id="storePublicUrl">جاري التحميل...</code>
+              <button class="btn btn-ghost btn-sm" onclick="copyUrl('public')">نسخ</button>
+            </div>
+            <div class="link-row">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <code id="storeAdminUrl">جاري التحميل...</code>
+              <button class="btn btn-ghost btn-sm" onclick="copyUrl('admin')">نسخ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
-            
-            // Preview images on input change
-            document.addEventListener('input', (e) => {
-                if (e.target.classList.contains('product-image-input')) {
-                    const preview = e.target.parentElement.querySelector('.image-preview');
-                    if (e.target.value) {
-                        preview.src = e.target.value;
-                        preview.style.display = 'block';
-                        preview.onerror = () => {
-                            preview.style.display = 'none';
-                        };
-                    } else {
-                        preview.style.display = 'none';
-                    }
-                }
-            });
+    <!-- ▸ PRODUCTS LIST -->
+    <section id="sec-products" class="section">
+      <div class="page-hd">
+        <div><div class="page-title">المنتجات</div><div class="page-sub">إدارة منتجات متجرك</div></div>
+        <div style="display:flex;gap:10px">
+          <input id="product-search" type="text" placeholder="بحث..." style="width:200px;padding:8px 14px;font-size:.85rem" oninput="filterProducts(this.value)"/>
+          <button class="btn btn-primary btn-sm" onclick="nav('new-product',null)">+ منتج جديد</button>
+        </div>
+      </div>
+      <div style="padding:28px">
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <table class="tbl" id="productsTable">
+              <thead><tr>
+                <th>المنتج</th><th>السعر</th><th>المخزون</th><th>الإجراءات</th>
+              </tr></thead>
+              <tbody id="productsTableBody">
+                <tr><td colspan="4" class="empty"><h4>جاري التحميل...</h4></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
 
-            // Enter key for lock screen
-            document.getElementById('passwordInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    authenticate();
-                }
-            });
-        });
+    <!-- ▸ NEW PRODUCT -->
+    <section id="sec-new-product" class="section">
+      <div class="page-hd">
+        <div><div class="page-title">منتج جديد</div><div class="page-sub">أضف منتجاً جديداً لمتجرك</div></div>
+      </div>
+      <div style="padding:28px">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-hd"><div class="card-title">معلومات المنتج</div></div>
+            <div class="card-body">
+              <div class="field">
+                <label><span>*</span>اسم المنتج (عربي)</label>
+                <input type="text" id="p-title-ar" placeholder="مثال: قميص قطني"/>
+              </div>
+              <div class="field">
+                <label>اسم المنتج (فرنسي)</label>
+                <input type="text" id="p-title-fr" placeholder="Ex: T-shirt en coton"/>
+              </div>
+              <div class="field">
+                <label>وصف (عربي)</label>
+                <textarea id="p-desc-ar" placeholder="وصف مختصر للمنتج..."></textarea>
+              </div>
+              <div class="field">
+                <label>وصف (فرنسي)</label>
+                <textarea id="p-desc-fr" placeholder="Description courte..."></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><div class="card-title">التفاصيل والصور</div></div>
+            <div class="card-body">
+              <div class="field">
+                <label><span>*</span>السعر</label>
+                <input type="number" id="p-price" placeholder="299" min="0"/>
+              </div>
+              <div class="field">
+                <label>المخزون</label>
+                <input type="number" id="p-stock" placeholder="99" min="0" value="99"/>
+              </div>
+              <div class="field">
+                <label><span>*</span>رابط الصورة (يمكنك إضافة عدة روابط مفصولة بفاصلة)</label>
+                <textarea id="p-images" placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg" rows="3"></textarea>
+                <div class="hint">5 صور كحد أقصى — الصورة الأولى هي الرئيسية</div>
+              </div>
+              <div class="img-preview" id="imgPreview"></div>
+              <button class="btn btn-primary btn-full" style="margin-top:16px" id="addProductBtn" onclick="addProduct()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                إضافة المنتج
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        // Authentication
-        function checkAuth() {
-            const auth = sessionStorage.getItem(`store_auth_${slug}`);
-            const savedPassword = sessionStorage.getItem(`store_pass_${slug}`);
-            if (auth === '1' && savedPassword) {
-                isAuthenticated = true;
-                document.getElementById('lockScreen').style.display = 'none';
-                document.getElementById('app').classList.add('authenticated');
-                loadStore();
-                loadProducts();
-            } else {
-                sessionStorage.removeItem(`store_auth_${slug}`);
-                sessionStorage.removeItem(`store_pass_${slug}`);
-            }
-        }
-
-        async function authenticate() {
-            const password = document.getElementById('passwordInput').value;
-            const errorEl = document.getElementById('lockError');
-            const inputEl = document.getElementById('passwordInput');
-
-            if (!password) {
-                showError(inputEl, errorEl);
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/store-auth`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        slug: slug,
-                        password: password
-                    })
-                });
-
-                if (response.ok) {
-                    isAuthenticated = true;
-                    sessionStorage.setItem(`store_auth_${slug}`, '1');
-                    sessionStorage.setItem(`store_pass_${slug}`, password);
-                    document.getElementById('lockScreen').style.display = 'none';
-                    document.getElementById('app').classList.add('authenticated');
-                    await loadStore();
-                    await loadProducts();
-                } else {
-                    showError(inputEl, errorEl);
-                }
-            } catch (error) {
-                showError(inputEl, errorEl);
-                console.error('Auth error:', error);
-            }
-        }
-
-        function showError(inputEl, errorEl) {
-            inputEl.classList.add('error');
-            errorEl.style.display = 'block';
-            setTimeout(() => {
-                inputEl.classList.remove('error');
-                errorEl.style.display = 'none';
-            }, 2000);
-        }
-
-        function logout() {
-            sessionStorage.removeItem(`store_auth_${slug}`);
-            sessionStorage.removeItem(`store_pass_${slug}`);
-            isAuthenticated = false;
-            document.getElementById('lockScreen').style.display = 'flex';
-            document.getElementById('app').classList.remove('authenticated');
-            document.getElementById('passwordInput').value = '';
-            store = null;
-            products = [];
-        }
-
-        // Load Store
-        async function loadStore() {
-            try {
-                const response = await fetch(`/api/stores?slug=${encodedSlug}`);
-                if (!response.ok) throw new Error('Store not found');
-                store = await response.json();
-                
-                document.getElementById('lockStoreName').textContent = store.name_ar;
-                document.getElementById('adminStoreName').textContent = store.name_ar;
-                
-                // Load settings
-                document.getElementById('settingsNameAR').value = store.name_ar || '';
-                document.getElementById('settingsNameFR').value = store.name_fr || '';
-                document.getElementById('settingsDescAR').value = store.desc_ar || '';
-                document.getElementById('settingsDescFR').value = store.desc_fr || '';
-                document.getElementById('settingsWhatsApp').value = store.whatsapp || '';
-                document.getElementById('settingsCurrency').value = store.currency || '';
-                document.getElementById('settingsLang').value = store.lang || 'ar';
-            } catch (error) {
-                console.error('Error loading store:', error);
-                showToast('خطأ في تحميل بيانات المتجر', 'error');
-            }
-        }
-
-        // Load Products
-        async function loadProducts() {
-            const tbody = document.getElementById('productsTableBody');
-            const emptyState = document.getElementById('emptyProducts');
-            
-            tbody.innerHTML = '<tr><td colspan="5" class="loading">جاري تحميل المنتجات...</td></tr>';
-            emptyState.style.display = 'none';
-
-            try {
-                const response = await fetch(`/api/products?slug=${encodedSlug}`);
-                if (!response.ok) throw new Error('Failed to load products');
-                products = await response.json();
-                renderProductsTable();
-            } catch (error) {
-                console.error('Error loading products:', error);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--danger);">خطأ في تحميل المنتجات</td></tr>';
-            }
-        }
-
-        function renderProductsTable() {
-            const tbody = document.getElementById('productsTableBody');
-            const emptyState = document.getElementById('emptyProducts');
-
-            if (products.length === 0) {
-                tbody.innerHTML = '';
-                emptyState.style.display = 'block';
-                return;
-            }
-
-            emptyState.style.display = 'none';
-
-            tbody.innerHTML = products.map(product => {
-                const image = product.images && product.images.length > 0 
-                    ? product.images[0] 
-                    : '';
-                const stockStatus = product.stock > 10 ? 'in-stock' : product.stock > 0 ? 'low-stock' : 'out-of-stock';
-                const stockText = product.stock > 10 ? 'متوفر' : product.stock > 0 ? `منخفض (${product.stock})` : 'نفذ';
-
-                return `
-                    <tr>
-                        <td>
-                            ${image 
-                                ? `<img class="product-thumb" src="${image}" alt="" onerror="this.style.display='none'">` 
-                                : '<div class="product-thumb" style="background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--muted);">لا توجد</div>'
-                            }
-                        </td>
-                        <td><strong>${product.title_ar}</strong>${product.title_fr ? `<br><small style="color:var(--muted);">${product.title_fr}</small>` : ''}</td>
-                        <td>${product.price.toFixed(2)} ${store.currency}</td>
-                        <td><span class="stock-badge ${stockStatus}">${stockText}</span></td>
-                        <td>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <button class="btn-icon" onclick="editProduct('${product.id}')" title="تعديل">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                    </svg>
-                                </button>
-                                <button class="btn-icon" onclick="deleteProduct('${product.id}')" title="حذف" style="border-color:var(--danger);color:var(--danger);">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        // Product Modal
-        function openProductModal(productId = null) {
-            const modal = document.getElementById('productModal');
-            const title = document.getElementById('productModalTitle');
-            const form = document.getElementById('productForm');
-            
-            form.reset();
-            document.getElementById('productId').value = '';
-            document.getElementById('productStock').value = '99';
-            
-            // Reset images
-            const imagesContainer = document.getElementById('imagesContainer');
-            imagesContainer.innerHTML = `
-                <div class="image-input-group">
-                    <input type="text" class="product-image-input" placeholder="رابط الصورة">
-                    <img class="image-preview" src="" alt="" style="display: none;">
+    <!-- ▸ SETTINGS -->
+    <section id="sec-settings" class="section">
+      <div class="page-hd">
+        <div><div class="page-title">إعدادات المتجر</div><div class="page-sub">تحديث بيانات متجرك</div></div>
+      </div>
+      <div style="padding:28px">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-hd"><div class="card-title">هوية المتجر</div></div>
+            <div class="card-body">
+              <div class="field">
+                <label>اسم المتجر (عربي)</label>
+                <input type="text" id="s-name-ar"/>
+              </div>
+              <div class="field">
+                <label>اسم المتجر (فرنسي)</label>
+                <input type="text" id="s-name-fr"/>
+              </div>
+              <div class="field">
+                <label>وصف (عربي)</label>
+                <textarea id="s-desc-ar"></textarea>
+              </div>
+              <div class="field">
+                <label>وصف (فرنسي)</label>
+                <textarea id="s-desc-fr"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><div class="card-title">التواصل والمظهر</div></div>
+            <div class="card-body">
+              <div class="field">
+                <label>رقم واتساب</label>
+                <input type="tel" id="s-whatsapp" placeholder="212600000000"/>
+                <div class="hint">مع رمز الدولة بدون + أو مسافات</div>
+              </div>
+              <div class="field">
+                <label>رمز العملة</label>
+                <input type="text" id="s-currency" maxlength="10"/>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="field">
+                  <label>اللون الأساسي</label>
+                  <input type="color" id="s-primary"/>
                 </div>
-            `;
+                <div class="field">
+                  <label>اللون الثانوي</label>
+                  <input type="color" id="s-accent"/>
+                </div>
+              </div>
+              <div class="field">
+                <label>رابط الشعار</label>
+                <input type="url" id="s-logo" placeholder="https://..."/>
+              </div>
+              <button class="btn btn-primary btn-full" onclick="saveSettings()">حفظ التغييرات</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-            if (productId) {
-                title.textContent = 'تعديل المنتج';
-                const product = products.find(p => p.id === productId);
-                if (product) {
-                    document.getElementById('productId').value = product.id;
-                    document.getElementById('productTitleAR').value = product.title_ar || '';
-                    document.getElementById('productTitleFR').value = product.title_fr || '';
-                    document.getElementById('productDescAR').value = product.desc_ar || '';
-                    document.getElementById('productDescFR').value = product.desc_fr || '';
-                    document.getElementById('productPrice').value = product.price;
-                    document.getElementById('productStock').value = product.stock;
+  </div><!-- /main -->
+</div><!-- /shell -->
+</div><!-- /adminPanel -->
 
-                    if (product.images && product.images.length > 0) {
-                        imagesContainer.innerHTML = product.images.map((img, index) => `
-                            <div class="image-input-group">
-                                <input type="text" class="product-image-input" placeholder="رابط الصورة ${index + 1}" value="${img}">
-                                <img class="image-preview" src="${img}" alt="" style="display: block;" onerror="this.style.display='none'">
-                            </div>
-                        `).join('');
-                    }
-                }
-            } else {
-                title.textContent = 'إضافة منتج جديد';
-            }
+<!-- ══ MODAL: EDIT PRODUCT ══ -->
+<div id="editModal" class="modal-bg">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">تعديل المنتج</div>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>اسم المنتج (عربي)</label>
+        <input type="text" id="e-title-ar"/>
+      </div>
+      <div class="field">
+        <label>اسم المنتج (فرنسي)</label>
+        <input type="text" id="e-title-fr"/>
+      </div>
+      <div class="field">
+        <label>وصف (عربي)</label>
+        <textarea id="e-desc-ar"></textarea>
+      </div>
+      <div class="field">
+        <label>وصف (فرنسي)</label>
+        <textarea id="e-desc-fr"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field">
+          <label>السعر</label>
+          <input type="number" id="e-price" min="0"/>
+        </div>
+        <div class="field">
+          <label>المخزون</label>
+          <input type="number" id="e-stock" min="0"/>
+        </div>
+      </div>
+      <div class="field">
+        <label>روابط الصور (مفصولة بفاصلة)</label>
+        <textarea id="e-images" rows="3"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeEditModal()">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveEdit()">حفظ التغييرات</button>
+    </div>
+  </div>
+</div>
 
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
+<script>
+'use strict';
 
-        function closeProductModal() {
-            document.getElementById('productModal').classList.remove('active');
-            document.body.style.overflow = '';
-        }
+/* ══ CONFIG ══ */
+const API_BASE = '/api';
+const urlParams = new URLSearchParams(window.location.search);
+const STORE_SLUG = urlParams.get('slug') || location.pathname.split('/').filter(Boolean).slice(0,-1).pop() || 'demo';
+const SESSION_KEY = 'store_admin_' + STORE_SLUG;
 
-        function addImageInput() {
-            const container = document.getElementById('imagesContainer');
-            const imageInputs = container.querySelectorAll('.image-input-group');
-            
-            if (imageInputs.length >= 5) {
-                showToast('الحد الأقصى 5 صور', 'error');
-                return;
-            }
+let storeData = null;
+let allProducts = [];
+let editingId = null;
 
-            const newInput = document.createElement('div');
-            newInput.className = 'image-input-group';
-            newInput.innerHTML = `
-                <input type="text" class="product-image-input" placeholder="رابط الصورة ${imageInputs.length + 1}">
-                <img class="image-preview" src="" alt="" style="display: none;">
-            `;
-            container.appendChild(newInput);
-        }
+/* ══ AUTH ══ */
+function getStorePassword() { return sessionStorage.getItem(SESSION_KEY); }
+function isLoggedIn() { return !!getStorePassword(); }
+function login(pw) { sessionStorage.setItem(SESSION_KEY, pw); }
+function logout() { sessionStorage.removeItem(SESSION_KEY); location.reload(); }
 
-        async function saveProduct(event) {
-            event.preventDefault();
+function getHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'X-Store-Password': getStorePassword()
+  };
+}
 
-            const productId = document.getElementById('productId').value;
-            const titleAR = document.getElementById('productTitleAR').value;
-            const titleFR = document.getElementById('productTitleFR').value;
-            const descAR = document.getElementById('productDescAR').value;
-            const descFR = document.getElementById('productDescFR').value;
-            const price = parseFloat(document.getElementById('productPrice').value);
-            const stock = parseInt(document.getElementById('productStock').value);
+// Auto-unlock
+if (isLoggedIn()) {
+  document.getElementById('lockScreen').style.display = 'none';
+  document.getElementById('adminPanel').style.display = 'block';
+  initApp();
+}
 
-            // Collect images
-            const imageInputs = document.querySelectorAll('.product-image-input');
-            const images = Array.from(imageInputs)
-                .map(input => input.value.trim())
-                .filter(url => url !== '');
+document.getElementById('loginBtn').addEventListener('click', tryLogin);
+document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
 
-            const productData = {
-                title_ar: titleAR,
-                title_fr: titleFR || null,
-                desc_ar: descAR || null,
-                desc_fr: descFR || null,
-                price: price,
-                stock: stock,
-                images: images
-            };
+async function tryLogin() {
+  const val = document.getElementById('pwInput').value;
+  try {
+    const res = await fetch(`${API_BASE}/stores/auth`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ slug: STORE_SLUG, password: val })
+    });
+    const data = await res.json();
+    if (data.success) {
+      login(val);
+      document.getElementById('lockScreen').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      initApp();
+    } else throw new Error(data.error);
+  } catch (err) {
+    const inp = document.getElementById('pwInput');
+    const errEl = document.getElementById('lockErr');
+    inp.classList.add('err');
+    errEl.style.display = 'block';
+    setTimeout(() => inp.classList.remove('err'), 600);
+  }
+}
 
-            try {
-                let response;
-                if (productId) {
-                    // Update
-                    response = await fetch(`/api/products?slug=${encodedSlug}&id=${productId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Store-Password': sessionStorage.getItem(`store_pass_${slug}`) || ''
-                        },
-                        body: JSON.stringify(productData)
-                    });
-                } else {
-                    // Create
-                    response = await fetch(`/api/products?slug=${encodedSlug}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Store-Password': document.getElementById('passwordInput').value || sessionStorage.getItem(`store_pass_${slug}`) || ''
-                        },
-                        body: JSON.stringify(productData)
-                    });
-                }
+/* ══ NAVIGATION ══ */
+function nav(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  const sec = document.getElementById('sec-' + name);
+  if (sec) sec.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'products') loadProducts();
+  if (name === 'new-product') initNewProduct();
+  if (name === 'settings') loadSettings();
+}
 
-                if (response.ok) {
-                    showToast(productId ? 'تم تحديث المنتج بنجاح' : 'تم إضافة المنتج بنجاح', 'success');
-                    closeProductModal();
-                    await loadProducts();
-                } else {
-                    const error = await response.json();
-                    showToast(error.error || 'حدث خطأ', 'error');
-                }
-            } catch (error) {
-                console.error('Error saving product:', error);
-                showToast('حدث خطأ في حفظ المنتج', 'error');
-            }
-        }
+/* ══ NOTIFY ══ */
+function notify(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `notif ${type}`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2800);
+}
 
-        function editProduct(productId) {
-            openProductModal(productId);
-        }
+/* ══ API HELPERS ══ */
+async function apiFetch(url, opts = {}) {
+  const res = await fetch(url, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'خطأ في الخادم');
+  return data;
+}
 
-        async function deleteProduct(productId) {
-            if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
+/* ══ DASHBOARD ══ */
+async function loadDashboard() {
+  try {
+    const products = await apiFetch(`${API_BASE}/products?slug=${encodeURIComponent(STORE_SLUG)}`);
+    document.getElementById('d-products').textContent = products.length;
+    
+    const publicUrl = location.origin + '/store/' + STORE_SLUG;
+    const adminUrl = location.origin + '/store/' + STORE_SLUG + '/admin';
+    document.getElementById('storePublicUrl').textContent = publicUrl;
+    document.getElementById('storeAdminUrl').textContent = adminUrl;
+    document.getElementById('storeStatusBadge').textContent = storeData?.active ? 'نشط' : 'موقف';
+    document.getElementById('storeStatusBadge').className = 'badge ' + (storeData?.active ? 'badge-success' : 'badge-danger');
+  } catch (err) {
+    notify('خطأ في التحميل: ' + err.message, 'error');
+  }
+}
 
-            try {
-                const response = await fetch(`/api/products?slug=${encodedSlug}&id=${productId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-Store-Password': sessionStorage.getItem(`store_pass_${slug}`) || ''
-                    }
-                });
+/* ══ PRODUCTS ══ */
+async function loadProducts() {
+  const tbody = document.getElementById('productsTableBody');
+  tbody.innerHTML = '<tr><td colspan="4" class="empty"><h4>جاري التحميل...</h4></td></tr>';
+  try {
+    allProducts = await apiFetch(`${API_BASE}/products?slug=${encodeURIComponent(STORE_SLUG)}`);
+    renderProductsTable(allProducts);
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="4" class="empty"><h4>خطأ في التحميل</h4><p>${esc(err.message)}</p></td></tr>`;
+  }
+}
 
-                if (response.ok) {
-                    showToast('تم حذف المنتج بنجاح', 'success');
-                    await loadProducts();
-                } else {
-                    showToast('حدث خطأ في حذف المنتج', 'error');
-                }
-            } catch (error) {
-                console.error('Error deleting product:', error);
-                showToast('حدث خطأ في حذف المنتج', 'error');
-            }
-        }
+function renderProductsTable(products) {
+  const tbody = document.getElementById('productsTableBody');
+  if (!products.length) {
+    tbody.innerHTML = `<tr><td colspan="4" class="empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg><h4>لا توجد منتجات</h4><p style="font-size:.85rem">أضف أول منتج من القسم أعلاه</p></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = products.map(p => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:40px;height:40px;border-radius:8px;background:var(--surface-2);display:grid;place-items:center;font-size:1.2rem">${p.images && p.images[0] ? `<img src="${esc(p.images[0])}" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.style.display='none'">` : '📦'}</div>
+          <div>
+            <div style="font-weight:700;font-size:.9rem">${esc(p.title_ar || 'منتج')}</div>
+            <div style="font-size:.75rem;color:var(--muted)">${p.title_fr ? esc(p.title_fr) : ''}</div>
+          </div>
+        </div>
+      </td>
+      <td><span style="font-weight:800;color:var(--accent)">${p.price || 0}</span> <span style="font-size:.75rem;color:var(--muted)">${storeData?.currency || 'درهم'}</span></td>
+      <td><span class="badge ${p.stock === 0 ? 'badge-danger' : p.stock <= 5 ? 'badge-danger' : 'badge-success'}">${p.stock || 0}</span></td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick="openEditModal('${p.id}')">تعديل</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')">حذف</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
 
-        // Settings
-        async function saveSettings() {
-            const updates = {
-                name_ar: document.getElementById('settingsNameAR').value,
-                name_fr: document.getElementById('settingsNameFR').value,
-                desc_ar: document.getElementById('settingsDescAR').value,
-                desc_fr: document.getElementById('settingsDescFR').value,
-                whatsapp: document.getElementById('settingsWhatsApp').value,
-                currency: document.getElementById('settingsCurrency').value
-            };
+function filterProducts(q) {
+  const filtered = allProducts.filter(p =>
+    !q || (p.title_ar || '').includes(q) || (p.title_fr || '').includes(q)
+  );
+  renderProductsTable(filtered);
+}
 
-            try {
-                const response = await fetch(`/api/stores?slug=${encodedSlug}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Store-Password': sessionStorage.getItem(`store_pass_${slug}`) || ''
-                    },
-                    body: JSON.stringify(updates)
-                });
+/* ══ ADD PRODUCT ══ */
+function initNewProduct() {
+  document.getElementById('p-images').addEventListener('input', updateImgPreview);
+}
 
-                if (response.ok) {
-                    showToast('تم حفظ الإعدادات بنجاح', 'success');
-                    await loadStore();
-                } else {
-                    showToast('حدث خطأ في حفظ الإعدادات', 'error');
-                }
-            } catch (error) {
-                console.error('Error saving settings:', error);
-                showToast('حدث خطأ في حفظ الإعدادات', 'error');
-            }
-        }
+function updateImgPreview() {
+  const val = document.getElementById('p-images').value;
+  const urls = val.split(',').map(u => u.trim()).filter(Boolean).slice(0, 5);
+  document.getElementById('imgPreview').innerHTML = urls.map(u =>
+    `<img src="${esc(u)}" class="img-preview-item" onerror="this.style.display='none'">`
+  ).join('');
+}
 
-        // Import/Export
-        function exportProducts() {
-            if (products.length === 0) {
-                showToast('لا توجد منتجات للتصدير', 'error');
-                return;
-            }
+async function addProduct() {
+  const btn = document.getElementById('addProductBtn');
+  const data = {
+    title_ar: document.getElementById('p-title-ar').value.trim(),
+    title_fr: document.getElementById('p-title-fr').value.trim() || null,
+    desc_ar:  document.getElementById('p-desc-ar').value.trim() || null,
+    desc_fr:  document.getElementById('p-desc-fr').value.trim() || null,
+    price:    Number(document.getElementById('p-price').value),
+    stock:    Number(document.getElementById('p-stock').value) || 99,
+    images:   document.getElementById('p-images').value.split(',').map(u => u.trim()).filter(Boolean).slice(0, 5)
+  };
 
-            const exportData = products.map(p => ({
-                title_ar: p.title_ar,
-                title_fr: p.title_fr,
-                desc_ar: p.desc_ar,
-                desc_fr: p.desc_fr,
-                price: p.price,
-                stock: p.stock,
-                images: p.images
-            }));
+  if (!data.title_ar) { notify('اسم المنتج مطلوب', 'error'); return; }
+  if (isNaN(data.price) || data.price < 0) { notify('السعر مطلوب', 'error'); return; }
+  if (!data.images.length) { notify('صورة واحدة على الأقل مطلوبة', 'error'); return; }
 
-            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `products-${slug}-${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            showToast('تم تصدير المنتجات بنجاح', 'success');
-        }
+  btn.disabled = true;
+  btn.textContent = '⏳ جارٍ الإضافة...';
 
-        function importProducts() {
-            document.getElementById('importFileInput').click();
-        }
+  try {
+    await apiFetch(`${API_BASE}/products?slug=${encodeURIComponent(STORE_SLUG)}`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    notify('✓ تم إضافة المنتج بنجاح', 'success');
+    ['p-title-ar','p-title-fr','p-desc-ar','p-desc-fr','p-price','p-images'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('p-stock').value = '99';
+    document.getElementById('imgPreview').innerHTML = '';
+    setTimeout(() => nav('products', null), 800);
+  } catch (err) {
+    notify('خطأ: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> إضافة المنتج`;
+  }
+}
 
-        async function handleImportFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+/* ══ EDIT PRODUCT ══ */
+function openEditModal(id) {
+  const p = allProducts.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('e-title-ar').value = p.title_ar || '';
+  document.getElementById('e-title-fr').value = p.title_fr || '';
+  document.getElementById('e-desc-ar').value = p.desc_ar || '';
+  document.getElementById('e-desc-fr').value = p.desc_fr || '';
+  document.getElementById('e-price').value = p.price || '';
+  document.getElementById('e-stock').value = p.stock || '';
+  document.getElementById('e-images').value = (p.images || []).join(', ');
+  document.getElementById('editModal').classList.add('open');
+}
 
-            try {
-                const text = await file.text();
-                const data = JSON.parse(text);
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('open');
+  editingId = null;
+}
 
-                if (!Array.isArray(data)) {
-                    throw new Error('Invalid format');
-                }
+async function saveEdit() {
+  if (!editingId) return;
+  const data = {
+    title_ar: document.getElementById('e-title-ar').value.trim(),
+    title_fr: document.getElementById('e-title-fr').value.trim() || null,
+    desc_ar:  document.getElementById('e-desc-ar').value.trim() || null,
+    desc_fr:  document.getElementById('e-desc-fr').value.trim() || null,
+    price:    Number(document.getElementById('e-price').value),
+    stock:    Number(document.getElementById('e-stock').value),
+    images:   document.getElementById('e-images').value.split(',').map(u => u.trim()).filter(Boolean).slice(0, 5)
+  };
+  try {
+    await apiFetch(`${API_BASE}/products?slug=${encodeURIComponent(STORE_SLUG)}&id=${editingId}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    notify('✓ تم تحديث المنتج', 'success');
+    closeEditModal();
+    loadProducts();
+  } catch (err) {
+    notify('خطأ: ' + err.message, 'error');
+  }
+}
 
-                let successCount = 0;
-                for (const product of data) {
-                    if (product.title_ar && product.price) {
-                        try {
-                            const response = await fetch(`/api/products?slug=${encodedSlug}`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-Store-Password': sessionStorage.getItem(`store_pass_${slug}`) || ''
-                                },
-                                body: JSON.stringify({
-                                    title_ar: product.title_ar,
-                                    title_fr: product.title_fr || null,
-                                    desc_ar: product.desc_ar || null,
-                                    desc_fr: product.desc_fr || null,
-                                    price: parseFloat(product.price),
-                                    stock: parseInt(product.stock) || 99,
-                                    images: product.images || []
-                                })
-                            });
-                            if (response.ok) successCount++;
-                        } catch (err) {
-                            console.error('Error importing product:', err);
-                        }
-                    }
-                }
+async function deleteProduct(id) {
+  const p = allProducts.find(x => x.id === id);
+  if (!confirm(`حذف "${p?.title_ar || 'هذا المنتج'}"؟`)) return;
+  try {
+    await apiFetch(`${API_BASE}/products?slug=${encodeURIComponent(STORE_SLUG)}&id=${id}`, {
+      method: 'DELETE',
+      headers: getHeaders()
+    });
+    notify('✓ تم الحذف', 'success');
+    loadProducts();
+  } catch (err) {
+    notify('خطأ: ' + err.message, 'error');
+  }
+}
 
-                showToast(`تم استيراد ${successCount} منتج بنجاح`, 'success');
-                await loadProducts();
-            } catch (error) {
-                console.error('Import error:', error);
-                showToast('خطأ في استيراد الملف. تأكد من صحة التنسيق.', 'error');
-            }
+/* ══ SETTINGS ══ */
+async function loadSettings() {
+  try {
+    const store = await apiFetch(`${API_BASE}/stores?slug=${encodeURIComponent(STORE_SLUG)}`);
+    storeData = store;
+    document.getElementById('s-name-ar').value = store.name_ar || '';
+    document.getElementById('s-name-fr').value = store.name_fr || '';
+    document.getElementById('s-desc-ar').value = store.desc_ar || '';
+    document.getElementById('s-desc-fr').value = store.desc_fr || '';
+    document.getElementById('s-whatsapp').value = store.whatsapp || '';
+    document.getElementById('s-currency').value = store.currency || 'درهم';
+    document.getElementById('s-primary').value = store.primary_color || '#6366f1';
+    document.getElementById('s-accent').value = store.accent_color || '#22d3ee';
+    document.getElementById('s-logo').value = store.logo_url || '';
+  } catch (err) {
+    notify('خطأ في تحميل الإعدادات', 'error');
+  }
+}
 
-            // Reset file input
-            event.target.value = '';
-        }
+async function saveSettings() {
+  const updates = {
+    name_ar:       document.getElementById('s-name-ar').value.trim() || undefined,
+    name_fr:       document.getElementById('s-name-fr').value.trim() || null,
+    desc_ar:       document.getElementById('s-desc-ar').value.trim() || null,
+    desc_fr:       document.getElementById('s-desc-fr').value.trim() || null,
+    whatsapp:      document.getElementById('s-whatsapp').value.replace(/\\D/g,'') || undefined,
+    currency:      document.getElementById('s-currency').value.trim() || undefined,
+    primary_color: document.getElementById('s-primary').value,
+    accent_color:  document.getElementById('s-accent').value,
+    logo_url:      document.getElementById('s-logo').value.trim() || null
+  };
+  // Remove undefined values
+  Object.keys(updates).forEach(k => updates[k] === undefined && delete updates[k]);
+  
+  try {
+    await apiFetch(`${API_BASE}/stores?slug=${encodeURIComponent(STORE_SLUG)}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(updates)
+    });
+    notify('✓ تم حفظ الإعدادات', 'success');
+  } catch (err) {
+    notify('خطأ: ' + err.message, 'error');
+  }
+}
 
-        // Navigation
-        function switchSection(section) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+/* ══ UTILS ══ */
+function esc(v) {
+  const div = document.createElement('div');
+  div.textContent = v || '';
+  return div.innerHTML;
+}
 
-            document.getElementById(`${section}Section`).classList.add('active');
-            event.target.classList.add('active');
-        }
+function copyUrl(type) {
+  const url = type === 'public'
+    ? location.origin + '/store/' + STORE_SLUG
+    : location.origin + '/store/' + STORE_SLUG + '/admin';
+  navigator.clipboard.writeText(url).then(() => notify('✓ تم النسخ', 'success'));
+}
 
-        // Toast Notifications
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <span>${message}</span>
-                <button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;">✕</button>
-            `;
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.animation = 'fadeOut 0.3s ease forwards';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // Modal overlay click
-        document.getElementById('productModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('productModal')) {
-                closeProductModal();
-            }
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeProductModal();
-            }
-        });
-    </script>
+/* ══ INIT ══ */
+async function initApp() {
+  try {
+    storeData = await apiFetch(`${API_BASE}/stores?slug=${encodeURIComponent(STORE_SLUG)}`);
+    document.getElementById('sbStoreName').textContent = storeData.name_ar || STORE_SLUG;
+    document.getElementById('sbFooterName').textContent = storeData.name_ar || STORE_SLUG;
+    document.getElementById('pageTitle').textContent = (storeData.name_ar || STORE_SLUG) + ' — لوحة العميل';
+    document.getElementById('lockTitle').textContent = storeData.name_ar || 'لوحة العميل';
+    loadDashboard();
+  } catch (err) {
+    notify('خطأ في تحميل بيانات المتجر', 'error');
+  }
+}
+</script>
 </body>
 </html>
